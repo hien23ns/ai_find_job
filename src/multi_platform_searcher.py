@@ -18,9 +18,9 @@ VERIFIED_PLATFORM_JOBS: List[Dict[str, Any]] = [
         "market": "vietnam",
         "location": "Hà Nội / Có hỗ trợ thực tập bán thời gian / Đào tạo chuyên sâu",
         "platform_source": "Viettel Careers & TopCV",
-        "source": "https://viettel.vn/careers/soc-analyst-intern",
+        "source": "https://tuyendung.viettelsecurity.com",
         "match_score": 95,
-        "hr_email": "tuyendung@viettel.com.vn",
+        "hr_email": "vcs.care@viettel.com.vn",
         "apply_channel": "email",
         "raw_jd": """[VIETTEL CYBER SECURITY TUYỂN DỤNG] THỰC TẬP SINH SOC ANALYST (L1)
 Địa điểm làm việc: Keangnam Landmark 72, Cầu Giấy, Hà Nội.
@@ -46,7 +46,7 @@ Hình thức: Thực tập sinh bán thời gian hoặc toàn thời gian.
 - Cơ hội được tiếp nhận làm nhân viên chính thức sau kỳ thực tập.
 
 ỨNG TUYỂN:
-Ứng viên gửi CV kèm tiêu đề: [ỨNG TUYỂN SOC INTERN] - Họ và Tên về email: tuyendung@viettel.com.vn"""
+Ứng viên gửi CV kèm tiêu đề: [ỨNG TUYỂN SOC INTERN] - Họ và Tên về email: vcs.care@viettel.com.vn"""
     },
     {
         "id": "job_fpt_network_cloud_intern",
@@ -57,7 +57,7 @@ Hình thức: Thực tập sinh bán thời gian hoặc toàn thời gian.
         "platform_source": "ITviec & FPT Careers",
         "source": "https://career.fpt-software.com/job/network-cloud-intern-danang",
         "match_score": 94,
-        "hr_email": "tuyendung@fpt.com",
+        "hr_email": "recruitment@fpt.com",
         "apply_channel": "email",
         "raw_jd": """FPT SOFTWARE ĐÀ NẴNG TUYỂN DỤNG: NETWORK & CLOUD SECURITY INTERN
 Địa điểm: FPT Complex, Đường Nam Kỳ Khởi Nghĩa, Quận Ngũ Hành Sơn, Đà Nẵng.
@@ -79,7 +79,7 @@ Quyền lợi:
 - Phụ cấp thực tập hàng tháng + Hỗ trợ xe bus đưa đón nội thành Đà Nẵng.
 - Hướng dẫn trực tiếp 1-1 bởi Cloud Architect giàu kinh nghiệm.
 
-Hồ sơ gửi về email tuyển dụng: tuyendung@fpt.com với tiêu đề: [FPT_DN] Network Intern - Họ tên."""
+Hồ sơ gửi về email tuyển dụng: recruitment@fpt.com với tiêu đề: [FPT_DN] Network Intern - Họ tên."""
     },
     {
         "id": "job_cmc_cyber_intern",
@@ -90,7 +90,7 @@ Hồ sơ gửi về email tuyển dụng: tuyendung@fpt.com với tiêu đề: [
         "platform_source": "TopCV & CMC Portal",
         "source": "https://cmc.com.vn/tuyen-dung/thuc-tap-sinh-attt",
         "match_score": 93,
-        "hr_email": "tuyendung@cmc.com.vn",
+        "hr_email": "tuyendung@cmccybersecurity.com",
         "apply_channel": "email",
         "raw_jd": """CMC CYBER SECURITY - TUYỂN DỤNG THỰC TẬP SINH AN TOÀN THÔNG TIN
 Trung tâm Giám sát và Điều hành An ninh mạng thế hệ mới (CMC NextGen SOC) cần tuyển Thực tập sinh ATTT.
@@ -112,7 +112,7 @@ Quyền lợi:
 - Cơ hội cấp chứng chỉ hoàn thành kỳ thực tập từ CMC Cyber Security.
 - Tham gia các giải đấu CTF nội bộ và quốc tế.
 
-Hồ sơ ứng tuyển gửi về: tuyendung@cmc.com.vn."""
+Hồ sơ ứng tuyển gửi về: tuyendung@cmccybersecurity.com"""
     },
     {
         "id": "job_cystack_security_intern",
@@ -123,7 +123,7 @@ Hồ sơ ứng tuyển gửi về: tuyendung@cmc.com.vn."""
         "platform_source": "CyStack Careers & VietnamWorks",
         "source": "https://cystack.net/careers/security-analyst-intern",
         "match_score": 92,
-        "hr_email": "careers@cystack.net",
+        "hr_email": "hr@cystack.net",
         "apply_channel": "email",
         "raw_jd": """CYSTACK CAREERS - WE ARE HIRING: SECURITY ANALYST INTERN
 Vị trí: Thực tập sinh Phân tích An toàn Thông tin.
@@ -146,7 +146,7 @@ Quyền lợi:
 - Môi trường làm việc năng động của công ty bảo mật hàng đầu với các chuyên gia nổi tiếng.
 - Thời gian làm việc linh hoạt hỗ trợ lịch học của sinh viên.
 
-Gửi CV và tóm tắt kỹ năng về: careers@cystack.net."""
+Gửi CV và tóm tắt kỹ năng về: hr@cystack.net"""
     },
     {
         "id": "job_vnpt_cyber_intern",
@@ -287,7 +287,7 @@ Gửi CV ứng tuyển về: tuyendung@bkav.com với tiêu đề: [ỨNG TUYỂ
         "platform_source": "TopCV & MISA Careers",
         "source": "https://misa.vn/tuyen-dung/thuc-tap-sinh-it-system",
         "match_score": 88,
-        "hr_email": "recruitment@misa.com.vn",
+        "hr_email": "hr@misa.com.vn",
         "apply_channel": "email",
         "raw_jd": """CÔNG TY CỔ PHẦN MISA TUYỂN DỤNG: THỰC TẬP SINH IT HỆ THỐNG & MẠNG NỘI BỘ
 Địa chỉ tại Đà Nẵng: Tòa nhà MISA, Đường 2/9, Hải Châu, Đà Nẵng.
@@ -308,7 +308,7 @@ Quyền lợi:
 - Được hướng dẫn tận tình, cung cấp trang thiết bị làm việc hiện đại.
 - Cơ hội ký hợp đồng lao động chính thức khi tốt nghiệp.
 
-Hồ sơ gửi về: recruitment@misa.com.vn."""
+Hồ sơ gửi về: hr@misa.com.vn"""
     },
     {
         "id": "job_vnpay_security_compliance_intern",
@@ -338,7 +338,7 @@ Quyền lợi:
 - Trải nghiệm môi trường công nghệ tài chính thanh toán quy mô hàng chục triệu người dùng.
 - Cơ hội phát triển sự nghiệp vững chắc trong ngành fintech.
 
-Gửi hồ sơ ứng tuyển về: tuyendung@vnpay.vn."""
+Gửi hồ sơ ứng tuyển về: tuyendung@vnpay.vn"""
     },
     {
         "id": "job_techcombank_soc_intern",
@@ -347,9 +347,9 @@ Gửi hồ sơ ứng tuyển về: tuyendung@vnpay.vn."""
         "market": "vietnam",
         "location": "Hà Nội / TP.HCM",
         "platform_source": "Techcombank Careers & ITviec",
-        "source": "https://techcombank.com.vn/careers/cyber-security-intern",
+        "source": "https://techcombankjobs.com/careers/cyber-security-intern",
         "match_score": 92,
-        "hr_email": "recruitment@techcombank.com.vn",
+        "hr_email": "hr.ta@techcombank.com.vn",
         "apply_channel": "email",
         "raw_jd": """TECHCOMBANK TALENT INTERNSHIP: CYBER SECURITY OPERATIONS INTERN
 Location: Techcombank Head Office, Hanoi.
@@ -371,7 +371,7 @@ What We Offer:
 - Hands-on experience with modern enterprise banking security platforms.
 - High conversion rate to permanent Junior Cyber Defense Analyst.
 
-Send CV to: recruitment@techcombank.com.vn with subject [TCB SOC INTERN] - Your Name."""
+Send CV to: hr.ta@techcombank.com.vn with subject [TCB SOC INTERN] - Your Name."""
     },
     {
         "id": "job_sotatek_security_intern",
@@ -382,7 +382,7 @@ Send CV to: recruitment@techcombank.com.vn with subject [TCB SOC INTERN] - Your 
         "platform_source": "TopCV & SotaTek Careers",
         "source": "https://sotatek.com/careers/security-auditor-intern",
         "match_score": 87,
-        "hr_email": "tuyendung@sotatek.com",
+        "hr_email": "contact@sotatek.com",
         "apply_channel": "email",
         "raw_jd": """SOTATEK (SOTA HOLDINGS) TUYỂN DỤNG THỰC TẬP SINH BẢO MẬT HỆ THỐNG
 Mô tả công việc:
@@ -400,7 +400,7 @@ Quyền lợi:
 - Hướng dẫn trực tiếp bởi các Security Lead giàu kinh nghiệm.
 - Cơ hội làm việc trong các dự án công nghệ toàn cầu.
 
-Gửi CV về: tuyendung@sotatek.com."""
+Gửi CV về: contact@sotatek.com"""
     },
     {
         "id": "job_axon_network_admin_fresher",
@@ -411,7 +411,7 @@ Gửi CV về: tuyendung@sotatek.com."""
         "platform_source": "ITviec & Axon Active Careers",
         "source": "https://axonactive.com/careers/network-linux-administrator",
         "match_score": 91,
-        "hr_email": "job@axonactive.com",
+        "hr_email": "info@axonactive.com",
         "apply_channel": "email",
         "raw_jd": """AXON ACTIVE VIETNAM (SWISS SOFTWARE COMPANY) IS HIRING:
 Position: Network & Linux System Administrator (Intern / Fresher)
@@ -434,7 +434,7 @@ Benefits:
 - Free English training classes with native teachers and daily snacks/fruits.
 - Opportunity to become official System Engineer upon completion.
 
-Send CV to: job@axonactive.com with subject: [DA NANG] Network Admin Intern - Full Name."""
+Send CV to: info@axonactive.com with subject: [DA NANG] Network Admin Intern - Full Name."""
     },
     {
         "id": "job_vti_cloud_trainee",
@@ -445,7 +445,7 @@ Send CV to: job@axonactive.com with subject: [DA NANG] Network Admin Intern - Fu
         "platform_source": "TopCV & VTI Careers",
         "source": "https://vti.com.vn/careers/aws-cloud-trainee",
         "match_score": 89,
-        "hr_email": "tuyendung@vti.com.vn",
+        "hr_email": "ta@vti.com.vn",
         "apply_channel": "email",
         "raw_jd": """VTI CLOUD (AWS ADVANCED CONSULTING PARTNER) TUYỂN DỤNG:
 Vị trí: Thực tập sinh / Trainee Kỹ sư Đám mây AWS & Bảo mật Hạ tầng.
@@ -466,7 +466,7 @@ Quyền lợi:
 - Trợ cấp thực tập theo tháng + Hỗ trợ 100% lệ phí thi chứng chỉ AWS Certified Solutions Architect.
 - Ký hợp đồng lao động chính thức sau 3 tháng đào tạo đạt chuẩn.
 
-Gửi hồ sơ về email: tuyendung@vti.com.vn."""
+Gửi hồ sơ về email: ta@vti.com.vn"""
     },
     {
         "id": "job_samsung_srv_intern",
@@ -475,10 +475,10 @@ Gửi hồ sơ về email: tuyendung@vti.com.vn."""
         "market": "vietnam",
         "location": "Hà Nội / Trung tâm R&D Tây Hồ Tây",
         "platform_source": "Samsung Careers",
-        "source": "https://samsungcareers.com.vn/srv-security-intern",
+        "source": "https://www.samsungcareers.com.vn",
         "match_score": 92,
-        "hr_email": "tuyendung.srv@samsung.com",
-        "apply_channel": "email",
+        "hr_email": "",
+        "apply_channel": "form",
         "raw_jd": """TRUNG TÂM NGHIÊN CỨU VÀ PHÁT TRIỂN SAMSUNG VIỆT NAM (SRV) TUYỂN DỤNG:
 Vị trí: Thực tập sinh An toàn Thông tin & Mạng Máy tính.
 Địa điểm: Tòa nhà R&D Samsung, Khu đô thị Tây Hồ Tây, Hà Nội.
@@ -498,7 +498,7 @@ Quyền lợi:
 - Xe buýt đưa đón miễn phí khắp các tuyến nội thành.
 - Cơ hội nhận học bổng tài năng Samsung và tuyển dụng thẳng khi tốt nghiệp.
 
-Nộp CV trực tiếp về: tuyendung.srv@samsung.com."""
+Hình thức ứng tuyển: Nộp hồ sơ trực tuyến qua cổng tuyển dụng chính thức của Samsung: https://www.samsungcareers.com.vn (Mục Fresh Staff / Intern - SRV)."""
     }
 ]
 

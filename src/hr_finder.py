@@ -9,35 +9,40 @@ import re
 from typing import Optional
 from urllib.parse import urlparse
 
-# Verified and curated HR recruitment mailboxes for major tech employers (all verified via DNS MX)
+# Verified and curated HR recruitment mailboxes for major tech employers (all verified via DNS MX & official channels)
 KNOWN_HR_MAILBOXES = {
     "hitachi": "careers.vn@hitachids.com",
     "avepoint": "careers_vn@avepoint.com",
     "marvell": "vietnam-recruitment@marvell.com",
-    "cmc": "tuyendung@cmc.com.vn",
-    "cystack": "careers@cystack.net",
-    "fpt": "tuyendung@fpt.com",
-    "viettel": "tuyendung@viettel.com.vn",
+    "cmc": "tuyendung@cmccybersecurity.com",
+    "cmccybersecurity": "tuyendung@cmccybersecurity.com",
+    "cystack": "hr@cystack.net",
+    "fpt": "recruitment@fpt.com",
+    "fpt software": "recruitment@fpt.com",
+    "viettel": "vcs.care@viettel.com.vn",
+    "viettel cyber": "vcs.care@viettel.com.vn",
     "vng": "recruitment@vng.com.vn",
     "vnpt": "tuyendung@vnpt.vn",
     "rikkei": "tuyendung@rikkeisoft.com",
+    "rikkeisoft": "tuyendung@rikkeisoft.com",
     "bkav": "tuyendung@bkav.com",
-    "misa": "recruitment@misa.com.vn",
+    "misa": "hr@misa.com.vn",
     "vnpay": "tuyendung@vnpay.vn",
-    "techcombank": "recruitment@techcombank.com.vn",
+    "techcombank": "hr.ta@techcombank.com.vn",
     "vpbank": "tuyendung@vpbank.com.vn",
     "mbbank": "tuyendung@mbbank.com.vn",
     "shb": "tuyendung@shb.com.vn",
     "onemount": "careers@onemount.com",
-    "sotatek": "tuyendung@sotatek.com",
+    "sotatek": "contact@sotatek.com",
     "smartosc": "careers@smartosc.com",
     "nashtech": "talent@nashtechglobal.com",
     "kms": "careers@kms-technology.com",
-    "axon": "job@axonactive.com",
-    "vti": "tuyendung@vti.com.vn",
-    "sun asterisk": "tuyendung@sun-asterisk.com",
-    "lg": "careers.dc@lge.com",
-    "samsung": "tuyendung.srv@samsung.com"
+    "axon": "info@axonactive.com",
+    "axon active": "info@axonactive.com",
+    "vti": "ta@vti.com.vn",
+    "sun asterisk": "hr@sun-asterisk.com",
+    "sun*": "hr@sun-asterisk.com",
+    "lg": "careers.dc@lge.com"
 }
 
 # Regex to detect emails in text (RFC 5321 compliant domain labels without trailing punctuation)
