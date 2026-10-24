@@ -1,0 +1,30 @@
+======================================================================
+ BẰNG CHỨNG XÁC MINH REPO GỐC UPSTREAM (ai-job-search-dev/ai-job-search)
+======================================================================
+Thời điểm thực hiện: 2026-10-24 12:44:00
+Thư mục lưu trữ: PROJECT_ROOT/upstream
+URL kho lưu trữ gốc: https://github.com/ai-job-search-dev/ai-job-search.git
+Commit hash hiện tại: e16acee3abdaae57f8026789338a3c6eebf4608b
+Tác giả commit gần nhất: abdulwasea89 <165668178+abdulwasea89@users.noreply.github.com>
+Ngày commit: Wed Oct 21 10:29:11 2026 +0500
+Tiêu đề commit: perf(scrape): filter duplicates before detail fetches and keep history out of context (#710)
+Giấy phép bản quyền (License): MIT License
+
+--- KẾT QUẢ CHẠY SECURITY GUARDS UPSTREAM ---
+Lệnh: python tools/security_guards.py
+Thư mục: C:\Users\Lenovo\Downloads\ai-find-job\upstream
+Exit Code: 0
+Stdout:
+security_guards: OK (permissions allowlist, hooks allowlist, gitignore rules, package manifests, no tracked node_modules, skill/command allowed-tools, agent tools)
+
+--- KẾT QUẢ CHẠY TOÀN BỘ TEST SUITE UPSTREAM ---
+Lệnh: python -m unittest discover -s tests -p "test_*.py"
+Thư mục: C:\Users\Lenovo\Downloads\ai-find-job\upstream
+Exit Code: 0
+Stdout tóm tắt:
+...........................................................................................s.......................................ss.....................................................................................................................................sssss..............................................................................................................................................................................................................................ssssssss.sssss................................................................................sssss......ss....................................................................................ss.....s................................................................................................................................................
+----------------------------------------------------------------------
+Ran 836 tests in 94.802s
+
+OK (skipped=31)
+======================================================================

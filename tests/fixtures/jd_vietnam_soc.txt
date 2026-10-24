@@ -1,0 +1,23 @@
+Tuyển dụng: Thực tập sinh Giám sát An ninh mạng (SOC Analyst Intern)
+Công ty Cổ phần Công nghệ An toàn Thông tin CyberSec VN
+Địa điểm: Cầu Giấy, Hà Nội | Hình thức: Toàn thời gian / Thực tập 3-6 tháng
+Phụ cấp: 5.000.000 - 8.000.000 VND / tháng
+
+MÔ TẢ CÔNG VIỆC:
+- Tham gia trực ca giám sát hệ thống SIEM (Splunk, ELK) để theo dõi các cảnh báo an ninh mạng.
+- Phân tích gói tin mạng bằng Wireshark và đối soát log firewall/hệ thống khi có nghi vấn bất thường.
+- Phối hợp với SOC Analyst L2 điều tra ban đầu các cảnh báo mã độc, tấn công brute-force hoặc dò quét cổng mạng.
+- Viết báo cáo sự cố (incident report) và đề xuất cập nhật các rule giám sát trên Snort/Suricata.
+- Viết script Python hoặc Bash tự động thu thập và tiền xử lý log từ các máy chủ Linux.
+
+YÊU CẦU ỨNG VIÊN:
+- Sinh viên năm cuối hoặc mới tốt nghiệp chuyên ngành An toàn thông tin, CNTT, Điện tử viễn thông.
+- Nắm vững kiến thức nền tảng mạng máy tính: Mô hình OSI, bộ giao thức TCP/IP, DNS, HTTP/HTTPS.
+- Có kỹ năng sử dụng công cụ phân tích mạng Wireshark, Nmap và hệ điều hành Linux (Ubuntu/CentOS).
+- Có kiến thức cơ bản về ngôn ngữ lập trình Python để phục vụ xử lý chuỗi và đọc file log.
+- Tiếng Anh: Khả năng đọc hiểu tốt tài liệu kỹ thuật và viết báo cáo cơ bản.
+- Tinh thần kỷ luật, cẩn trọng, bảo mật thông tin tuyệt đối.
+
+QUYỀN LỢI:
+- Được đào tạo bài bản quy trình SOC Analyst chuẩn quốc tế.
+- Cơ hội được giữ lại làm việc chính thức thành SOC Analyst L1 sau kỳ thực tập.

@@ -1,0 +1,21 @@
+Freelance Project: Automated Python Web Server Log Parser & Linux Hardening Script
+Client: FinOps Cloud LLC (Remote / Worldwide)
+Budget: $800 - $1,200 USD (Milestone-based payment)
+Duration: 2 weeks
+
+Project Description:
+We are looking for a cybersecurity-oriented developer/engineer to build an automated Python log analysis utility and a Linux server hardening checklist/script for our staging environment.
+
+Key Deliverables:
+1. Python CLI tool to parse Apache/Nginx combined access logs, identify IP addresses performing directory traversal, SQL injection patterns, or excessive 404/500 errors, and export CSV/JSON reports.
+2. A clean Bash hardening script for Ubuntu 22.04 LTS: enforce SSH key authentication, disable root login, configure UFW firewall rules, and set up basic auditd rules.
+3. Test documentation and execution verification guide.
+
+Acceptance Criteria:
+- Code must run cleanly on Ubuntu Linux with Python 3.10+.
+- Zero false positives on standard test datasets provided by client.
+- Complete documentation with clear operational runbooks.
+
+Access & Authorization:
+- Testing will be conducted strictly on a containerized Staging sandbox provided by the client. No access to production or credentials required.
+- Formal Letter of Authorization (LOA) for security testing will be signed.

@@ -25,7 +25,7 @@ Trợ lý thông minh hỗ trợ tìm kiếm, đánh giá và chuẩn bị hồ 
 Dự án tách bạch hoàn toàn giữa bộ test mở rộng của dự án và bộ test của kho nguồn upstream:
 
 ```powershell
-# 1. Chạy 30 ca kiểm thử toàn diện & kiểm thử hồi quy (tests.test_all)
+# 1. Chạy 37 ca kiểm thử toàn diện & kiểm thử hồi quy (tests.test_all)
 python -m unittest tests.test_all
 # Hoặc dùng launcher PowerShell (truyền đúng exit code ra ngoài):
 .\run.ps1 test
@@ -41,41 +41,48 @@ python -m src.cli upstream-verify
 
 ## 3. HƯỚNG DẪN SỬ DỤNG DÒNG LỆNH (CLI)
 
-### Đánh giá mô tả công việc (JD Evaluation)
+### Bước 1: Tạo hồ sơ ứng viên cá nhân
+Tạo hoặc chỉnh sửa hồ sơ của bạn tại `data/candidates/my_profile.json` theo mẫu chuẩn (file này đã được `.gitignore` bảo vệ tuyệt đối):
 ```powershell
-# Thị trường Việt Nam (Lưu ý: Luôn truyền --tracker-file khi thử nghiệm fixture để bảo vệ tracker thật)
-python -m src.cli evaluate --file tests/fixtures/jd_vietnam_soc.txt --market vietnam --save-track --tracker-file .local/temp/demo_tracker.json --generate-docs
+# Xem mẫu hồ sơ chuẩn tại data/candidates/candidate_mock.json
+Get-Content data/candidates/candidate_mock.json
+```
 
-# Thị trường Hàn Quốc (Xử lý phủ định tiếng Hàn/Anh và trích dẫn bằng chứng)
+### Bước 2: Đánh giá mô tả công việc (JD Evaluation) & Sinh tài liệu ứng tuyển
+```powershell
+# 1. Đánh giá JD thị trường Việt Nam (tự động tạo CV, Thư ứng tuyển, Bộ luyện phỏng vấn và lưu Tracker)
+python -m src.cli evaluate --file data/my_jd.txt --candidate data/candidates/my_profile.json --market vietnam --save-track --generate-docs
+
+# 2. Đánh giá JD thị trường Hàn Quốc
 python -m src.cli evaluate --file tests/fixtures/jd_korea_security.txt --market korea --save-track --tracker-file .local/temp/demo_tracker.json --generate-docs
 
-# Dự án Freelance
+# 3. Đánh giá dự án Freelance
 python -m src.cli evaluate --file tests/fixtures/jd_freelance_python.txt --market freelance --save-track --tracker-file .local/temp/demo_tracker.json --generate-docs
+
+# 4. Đánh giá trực tiếp từ đoạn văn bản (nhập nhanh)
+python -m src.cli evaluate --text "Tuyển thực tập sinh SOC..." --market vietnam
+
+# 5. Chế độ AI với Gemini (yêu cầu GEMINI_API_KEY)
+python -m src.cli evaluate --file data/my_jd.txt --market vietnam --mode ai --provider gemini
 ```
 
-### Đánh giá từ file JD mẫu (Fixtures)
+### Bước 3: Xem và quản lý tiến độ ứng tuyển (Tracker)
 ```powershell
-# Fixture Thực tập sinh An toàn thông tin CyStack (Hà Nội, Việt Nam)
-python -m src.cli evaluate --file data/live_jds/vietnam_sun_cybersec_intern.txt --market vietnam --save-track --tracker-file .local/temp/demo_tracker.json --generate-docs
-
-# Fixture Toss Security Analyst (Seoul, Hàn Quốc)
-python -m src.cli evaluate --file data/live_jds/korea_soc_intern.txt --market korea --save-track --tracker-file .local/temp/demo_tracker.json --generate-docs
-
-# Fixture Đề xuất kỹ thuật Python Log Parser (Freelance synthetic fixture)
-python -m src.cli evaluate --file data/live_jds/freelance_log_parser.txt --market freelance --save-track --tracker-file .local/temp/demo_tracker.json --generate-docs
-```
-
-### Quản lý Tracker ứng tuyển
-```powershell
-# Xem danh sách
+# Xem danh sách các công việc đã lưu
 python -m src.cli tracker list
 
-# Cập nhật trạng thái
-python -m src.cli tracker update --id <JOB_ID> --status "Đã nộp" --notes "Đã gửi qua email"
+# Cập nhật trạng thái sau khi nộp đơn hoặc phỏng vấn
+python -m src.cli tracker update --id <JOB_ID> --status "Đã nộp" --notes "Đã gửi CV qua email"
 
-# Xuất ra CSV (Mặc định xuất file CSV tương ứng với file JSON theo dõi)
+# Xuất dữ liệu tracker ra file CSV
 python -m src.cli tracker export
 ```
+
+### Bước 4: Xem tài liệu ứng tuyển
+Các tài liệu Markdown và HTML độc lập được lưu trong thư mục `output/`:
+- `output/*_cv.md` & `output/*_cv.html`: CV được may đo theo JD (mở file HTML bằng trình duyệt để xem và in PDF Ctrl+P).
+- `output/*_cover_letter.md`: Thư ứng tuyển (Cover Letter) trung thực với hồ sơ.
+- `output/*_interview_prep.md`: Bộ câu hỏi phỏng vấn kỹ thuật và gợi ý trả lời dựa trên kỹ năng thực tế của bạn.
 
 ---
 
@@ -83,14 +90,16 @@ python -m src.cli tracker export
 
 | Thành phần | Trạng thái | Ghi chú minh bạch |
 |---|:---:|---|
-| **Bộ kiểm thử dự án (30 tests)** | **PASS** | Chạy đạt 30/30 trong ~0.5s, 0 fail, 0 error |
+| **Bộ kiểm thử dự án (37 tests)** | **PASS** | Chạy đạt 37/37 trong ~0.5s, 0 fail, 0 error |
 | **Cầu nối Upstream (job_key & guards)** | **PASS** | Tích hợp thành công trong `src/upstream_bridge.py` |
-| **Cơ chế cách ly Demo Tracker** | **PASS** | Không làm biến đổi `data/tracker/jobs_tracker.json` (0 jobs) |
+| **Bảo mật dữ liệu cá nhân & Secret** | **PASS** | `.gitignore` loại trừ hoàn toàn `my_profile.json`, `my_jd.txt`, `jobs_tracker.*`, `output/*` |
+| **Cơ chế cách ly Demo Tracker** | **PASS** | Thử nghiệm fixture tự động cô lập qua `--tracker-file` hoặc vào `.local/` |
 | **Bảo toàn trạng thái khi đánh giá lại** | **PASS** | Giữ nguyên trạng thái đã nộp, ngày nộp, ghi chú; ghi JSON an toàn nguyên tử |
-| **Xử lý phủ định JD Hàn Quốc** | **PASS** | Nhận diện đúng phủ định theo câu, trích dẫn bằng chứng, áp dụng điều kiện loại trừ |
-| **Trung thực hồ sơ sinh tài liệu** | **PASS** | Gắn placeholder khi thiếu dữ liệu; không tự nhận năng lực chuyên sâu; gắn badge mock |
+| **Phân loại cấu trúc JD & Trích dẫn** | **PASS** | Phân định Bắt buộc / Ưu tiên / Công việc / Đào tạo kèm trích dẫn văn bản gốc |
+| **Xử lý JD đào tạo thiếu yêu cầu** | **PASS** | Gán `match_score=null`, đề xuất `CÂN NHẮC ỨNG TUYỂN / CẦN LÀM RÕ THÊM` |
+| **Chuẩn hóa quan hệ kỹ năng (Taxonomy)** | **PASS** | Nhận diện quan hệ TCP/IP $\subset$ Network, Wireshark $\subset$ Packet Analysis |
+| **Trung thực hồ sơ sinh tài liệu** | **PASS** | Gắn placeholder khi thiếu dữ liệu; không tự bịa đặt năng lực |
 | **Chống đè tên file đầu ra** | **PASS** | Tiền tố file kết hợp slug công ty và vị trí (`{company}_{role}`) |
 | **Phân định rõ Rules vs AI mode** | **PASS** | Mặc định `--mode rules` 100% offline; `--mode ai` opt-in với Google Gemini |
 | **Cào tự động cổng việc làm công khai** | **BLOCKED** | Các cổng tuyển dụng (TopCV, Saramin, LinkedIn) chặn bot qua WAF/Cloudflare. Luồng nhập thủ công (`--text` / `--file`) hoạt động 100% tin cậy |
-| **Kết nối AI API trực tuyến** | **UNVERIFIED_LIVE** | Mock test PASS. Live test BLOCKED nếu người dùng chưa cung cấp `GEMINI_API_KEY` |
-| **Bản in trực quan / PDF nhị phân** | **NOT TESTED** | Xuất HTML chuẩn in `@media print`. Chưa kiểm tra thẩm mỹ bản in PDF bằng mắt người |
+

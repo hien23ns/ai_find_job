@@ -1,0 +1,26 @@
+[DỮ LIỆU MẪU DỰ ÁN FREELANCE (SYNTHETIC FIXTURE DỰA TRÊN YÊU CẦU MÃ NGUỒN CÔNG CỤ TỰ ĐỘNG HÓA)]
+Phân loại: Dữ liệu mẫu giả định (Synthetic Technical Specification Fixture)
+Mục đích: Dùng để kiểm thử hệ thống đánh giá dự án Freelance và sinh Proposal tự động.
+Lưu ý quan trọng: KHÔNG PHẢI tin tuyển dụng freelance có thật trên sàn thương mại. Không có hợp đồng hoặc ngân sách thực tế được cam kết.
+
+Tên bài toán: Xây dựng công cụ phân tích log và lọc trùng dữ liệu trạng thái (Python Log Parser Utility)
+Đơn vị đề bài mẫu: Nhóm phát triển mã nguồn mở (Dựa trên thiết kế công cụ scrape_state.py)
+Nguồn tham chiếu kỹ thuật: tools/scrape_state.py (Tham chiếu mã nguồn upstream trong dự án)
+Thời điểm thiết lập fixture: 2026-10-24 13:00:00
+
+Phạm vi công việc & Đầu ra bàn giao (Scope & Deliverables):
+- Phát triển module Python độc lập để đọc các bản ghi log, chuẩn hóa khóa định danh duy nhất (canonical job_key).
+- Lọc bỏ các bản ghi trùng lặp trước khi tiến hành xử lý nặng.
+- Lưu trữ trạng thái sạch, không ghi đè ra ngoài thư mục được chỉ định.
+- Bàn giao mã nguồn hoàn chỉnh kèm tài liệu hướng dẫn vận hành (README) và bài test tự động.
+
+Yêu cầu kỹ thuật (Technical Requirements):
+- Ngôn ngữ: Python 3.10+ (thư viện chuẩn: hashlib, json, re, pathlib).
+- Xử lý ngoại lệ đầy đủ đối với dòng log bị lỗi định dạng.
+- Đảm bảo an toàn đường dẫn, không duyệt thoát ra ngoài thư mục cho phép (Directory Traversal Defense).
+
+Điều kiện thương mại & Tiến độ (Commercial Terms - Cần làm rõ):
+- Ngân sách: [Chưa xác định ngân sách - Cần lập báo giá và đề xuất mức chi phí dựa trên khối lượng công việc]
+- Thời hạn bàn giao: [Chưa xác định thời hạn trong đề bài - Cần thỏa thuận tiến độ cụ thể]
+- Mốc thanh toán: [Chưa có thỏa thuận chính thức - Đề xuất thanh toán theo mốc bàn giao sau khi thống nhất phạm vi]
+- Thẩm quyền & Pháp lý: Thao tác thực hiện trên file log thử nghiệm nội bộ; không yêu cầu và không cấp quyền truy cập hệ thống production.

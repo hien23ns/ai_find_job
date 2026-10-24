@@ -1,0 +1,28 @@
+[DỮ LIỆU MẪU CÔNG VIỆC THỊ TRƯỜNG HÀN QUỐC (DEMO FIXTURE DỰA TRÊN TIÊU CHUẨN SOC INTERN/JUNIOR)]
+Phân loại: Dữ liệu mẫu kiểm thử thị trường Hàn Quốc (Korea Job Posting Fixture)
+Mục đích: Dùng để kiểm thử hệ thống đánh giá đặc thù Hàn Quốc (Ngôn ngữ, Visa, Nơi cư trú, Tiêu chí loại trừ).
+Lưu ý quan trọng: Văn bản này là fixture mẫu đối chiếu dựa trên tiêu chuẩn tuyển dụng kỹ sư SOC, không phải một đường link tin tuyển dụng sống đơn lẻ tại thời điểm hiện tại.
+
+Tiêu đề vị trí: [신입/주니어] Security Analyst (정보보안 및 보안관제 엔지니어)
+Đơn vị tham chiếu: Viva Republica (Toss) - Tham khảo thông tin cổng nghề nghiệp https://toss.im/career
+Địa điểm làm việc: 대한민국 서울특별시 강남구 테헤란로 142
+Thời điểm cập nhật fixture: 2026-10-24 13:00:00
+
+Mô tả công việc (Roles & Responsibilities):
+- 24/365 금융 보안관제(SOC) 모니터링 및 실시간 침해사고 1차 대응
+- 방화벽, IPS/IDS, WAF, SIEM 시스템 이벤트 로그 분석 및 위협 트래픽 탐지
+- 네트워크 패킷 분석(Wireshark 활용) 및 이상 징후 조사
+- Linux 서버 환경에서의 로그 수집 및 Python 스크립트를 활용한 보안 운영 자동화
+- 보안 취약점 진단 보조 및 침해 대응 보고서 작성
+
+Yêu cầu ứng viên (Qualifications):
+- 정보보호, 컴퓨터공학, 정보통신 관련 전공 졸업자 또는 졸업 예정자 (신입 가능)
+- TCP/IP 네트워크 기초 개념 및 Linux 운영체제에 대한 탄탄한 이해 보유자
+- 패킷 분석 도구(Wireshark) 및 네트워크 보안 솔루션 기본 원리 숙지자
+- 한국어 의사소통 가능자 (팀 내 업무 협업 및 상황 보고)
+
+Tình trạng các điều kiện đặc thù (Không suy diễn ngoài nội dung văn bản):
+- Hỗ trợ Visa làm việc: [Chưa rõ - Nội dung công bố không đề cập bảo lãnh visa]
+- Chấp nhận ứng viên nước ngoài: [Chưa rõ - Nội dung công bố không đề cập quốc tịch]
+- Yêu cầu tiếng Anh: [Chưa rõ - Không nhắc tới tiếng Anh trong văn bản]
+- Yêu cầu nơi cư trú: [Yêu cầu cư trú tại Hàn Quốc / Có mặt trực tiếp tại văn phòng Seoul]

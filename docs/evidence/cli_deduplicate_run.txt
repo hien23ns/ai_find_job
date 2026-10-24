@@ -1,0 +1,9 @@
+﻿======================================================================
+ BẰNG CHỨNG THỰC THI CLI LỌC TRÙNG TIN TUYỂN DỤNG (DEDUPLICATION)
+======================================================================
+Thời điểm: 2026-10-24 12:52:44
+Lệnh: python -m src.cli deduplicate --file tests/fixtures/jd_duplicates.json
+Exit Code: 0
+Stdout/Stderr:
+ [*] Tổng số tin đưa vào: 4 [+] Số tin duy nhất (Unique): 3 [-] Số tin trùng lặp (Duplicates): 1  Các tin bị trùng:  - SOC Analyst Intern (CyberSec VN) [Hash: ddeaecd6...] 
+======================================================================

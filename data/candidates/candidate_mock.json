@@ -1,0 +1,92 @@
+{
+  "name": "Nguyễn Văn An (Mock Candidate)",
+  "is_mock": true,
+  "summary": "Sinh viên tốt nghiệp chuyên ngành An toàn thông tin, có nền tảng vững chắc về mạng máy tính, hệ điều hành Linux và phân tích gói tin. Từng thực hiện các đồ án và bài lab chuyên sâu về phát hiện tấn công và tự động hóa xử lý log bằng Python.",
+  "contact": {
+    "email": "nguyenvanan.mock@example.com",
+    "phone": "+84 901 234 567",
+    "github": "https://github.com/mock-candidate-an",
+    "linkedin": "https://linkedin.com/in/mock-candidate-an",
+    "location": "Hà Nội, Việt Nam"
+  },
+  "years_of_experience": 0,
+  "education": [
+    {
+      "institution": "Đại học Bách Khoa Hà Nội",
+      "degree": "Kỹ sư",
+      "major": "An toàn thông tin",
+      "year": "2020 - 2024",
+      "gpa": "3.2/4.0"
+    }
+  ],
+  "coursework": [
+    {
+      "course_name": "Mạng máy tính nâng cao",
+      "topics": "Mô hình OSI, TCP/IP, cơ chế định tuyến OSPF, BGP, phân tích lưu lượng mạng"
+    },
+    {
+      "course_name": "An toàn hệ điều hành & Mã độc",
+      "topics": "Cấu trúc Linux kernel, cơ chế phân quyền, bảo mật dịch vụ SSH, phân tích hành vi mã độc cơ bản"
+    },
+    {
+      "course_name": "Mật mã học ứng dụng",
+      "topics": "Thuật toán mã hóa đối xứng AES, mã hóa công khai RSA, chữ ký số, hàm băm SHA"
+    }
+  ],
+  "labs_and_simulations": [
+    {
+      "name": "Phân tích gói tin mạng và phát hiện tấn công",
+      "tools": ["Wireshark", "Tcpdump", "Nmap"],
+      "description": "Thực hành bắt gói tin mạng, phân tích cờ TCP SYN/FIN, phát hiện quét cổng Nmap SYN scan và tấn công brute-force SSH."
+    },
+    {
+      "name": "Giả lập giám sát an ninh SOC với Snort & Suricata",
+      "tools": ["Snort", "Suricata", "ELK"],
+      "description": "Viết rule cảnh báo xâm nhập (IDS rules) cho Snort/Suricata, phân tích log cảnh báo tấn công web SQLi và XSS."
+    },
+    {
+      "name": "Hardening máy chủ Linux Ubuntu",
+      "tools": ["Linux", "Bash", "UFW", "Auditd"],
+      "description": "Cấu hình tường lửa UFW, vô hiệu hóa đăng nhập root qua SSH, thiết lập xác thực bằng SSH key và giám sát file log hệ thống qua auditd."
+    }
+  ],
+  "personal_projects": [
+    {
+      "name": "Python Log Parser & Anomaly Detection",
+      "technologies": ["Python", "Regex", "Pandas"],
+      "description": "Xây dựng công cụ dòng lệnh bằng Python tự động đọc và phân tích file log truy cập web (Nginx/Apache), nhận diện địa chỉ IP có tần suất request bất thường và xuất báo cáo CSV.",
+      "repo_url": "https://github.com/mock-candidate-an/python-log-parser"
+    },
+    {
+      "name": "Home Lab Network Security Monitoring",
+      "technologies": ["pfSense", "Wireshark", "Syslog"],
+      "description": "Xây dựng môi trường mạng ảo hóa với tường lửa pfSense, phân chia VLAN nội bộ, định tuyến lưu lượng và ghi log tập trung."
+    }
+  ],
+  "work_experience": [
+    {
+      "role": "Thực tập sinh Quản trị Mạng (Network Intern)",
+      "company": "Công ty TNHH Giải pháp Số Mẫu (Mock Company)",
+      "period": "06/2023 - 09/2023",
+      "description": "Hỗ trợ đội ngũ IT nội bộ bấm cáp mạng, cấu hình VLAN trên switch Cisco cơ bản, giám sát tình trạng hoạt động thiết bị mạng và ghi chép sự cố.",
+      "technologies": ["Cisco Switch", "VLAN", "TCP/IP"]
+    }
+  ],
+  "skills": {
+    "network": ["TCP/IP", "Wireshark", "VLAN", "Routing", "Subnetting", "DNS"],
+    "security": ["Snort", "Suricata", "Nmap", "Log Analysis", "OSINT", "Firewall"],
+    "systems": ["Linux", "Ubuntu", "Bash"],
+    "programming": ["Python", "Regex", "Pandas Basics"]
+  },
+  "certifications": [],
+  "languages": {
+    "vietnamese": "Bản ngữ (Native)",
+    "english": "TOEIC 750 (Đọc hiểu tài liệu kỹ thuật & trao đổi email/chat)",
+    "korean": "Chưa xác nhận"
+  },
+  "residency_and_visa": {
+    "nationality": "Việt Nam",
+    "current_residence": "Hà Nội, Việt Nam",
+    "korea_visa": "Chưa có / Cần bảo lãnh visa E-7"
+  }
+}

@@ -1,0 +1,22 @@
+[DỮ LIỆU MẪU CÔNG VIỆC THỰC TẬP AN NINH MẠNG VIỆT NAM (DEMO FIXTURE THỰC TẬP SINH AN TOÀN THÔNG TIN)]
+Phân loại: Dữ liệu mẫu kiểm thử thị trường Việt Nam (Vietnam Internship Fixture)
+Mục đích: Dùng để kiểm thử hệ thống đối sánh kỹ năng và tính điểm phù hợp cho cấp độ Thực tập / Fresher.
+Lưu ý quan trọng: Văn bản này là fixture mẫu dùng cho thử nghiệm quy trình, không dùng làm cam kết tuyển dụng hiện hành của doanh nghiệp.
+
+Vị trí: Thực tập sinh An toàn Thông tin & Giám sát An ninh mạng (Security Analyst Intern)
+Đơn vị tham chiếu: Công ty Cổ phần An ninh mạng CyStack (Tham khảo thông tin cổng nghề nghiệp https://cystack.net/vi/careers)
+Địa điểm làm việc: Nam Từ Liêm, Hà Nội
+Thời điểm cập nhật fixture: 2026-10-24 13:00:00
+
+MÔ TẢ CÔNG VIỆC:
+- Tham gia hỗ trợ vận hành và giám sát hệ thống an toàn thông tin, phân tích cảnh báo bảo mật từ các nền tảng giám sát mạng và hệ thống.
+- Phân tích gói tin lưu lượng mạng (sử dụng Wireshark/Tcpdump), kiểm tra log firewall và phát hiện các dấu hiệu quét cổng, dò quét lỗ hổng hoặc hành vi tấn công trái phép.
+- Hỗ trợ đánh giá an toàn thông tin ban đầu (Vulnerability Assessment), nhận diện các lỗ hổng bảo mật phổ biến (OWASP Top 10, CVE).
+- Viết script Python hoặc Bash phục vụ tự động hóa thu thập log, xử lý chuỗi và tạo báo cáo sự cố an ninh.
+
+YÊU CẦU ỨNG VIÊN:
+- Sinh viên năm cuối hoặc mới tốt nghiệp chuyên ngành An toàn thông tin, Công nghệ thông tin, Khoa học máy tính hoặc Mạng máy tính.
+- Nắm vững kiến thức cốt lõi về mô hình mạng OSI, bộ giao thức TCP/IP, DNS, HTTP/HTTPS và cấu trúc hệ điều hành Linux (Ubuntu/CentOS).
+- Có kỹ năng sử dụng công cụ phân tích mạng Wireshark, Nmap, nắm vững nguyên lý hoạt động của Firewall và hệ thống cảnh báo xâm nhập (IDS/IPS).
+- Tiếng Anh: Khả năng đọc hiểu tài liệu kỹ thuật chuyên ngành và trao đổi công việc cơ bản.
+- Tinh thần kỷ luật, đam mê nghiên cứu bảo mật và cam kết tuyệt đối tuân thủ đạo đức nghề nghiệp an ninh mạng.

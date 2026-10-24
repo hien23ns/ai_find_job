@@ -1,0 +1,57 @@
+# Python cache, logs, bytecode, and temporary runtime files
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+.pytest_cache/
+node_modules/
+dist/
+build/
+.local/
+
+# Production tracker files (Real job application history and private notes)
+data/tracker/jobs_tracker.json
+data/tracker/jobs_tracker.csv
+data/tracker/*.json
+data/tracker/*.csv
+!data/tracker/.gitkeep
+
+# Candidate profiles: Ignore ALL candidate profiles by default, allow ONLY specific public test fixtures
+data/candidates/*
+!data/candidates/candidate_mock.json
+!data/candidates/candidate_incomplete.json
+!data/candidates/.gitkeep
+data/private/
+
+# Private user job descriptions in data directory
+data/my_jd.txt
+data/*.txt
+!data/live_jds/*
+
+*.env
+*.env.*
+*.secret
+secrets.json
+credentials.json
+*.pem
+*.key
+
+# Generated application documents containing personal information
+output/*.md
+output/*.html
+output/*.pdf
+output/private/
+!output/.gitkeep
+
+# Review bundles and compressed archives
+review_bundle*.zip
+*.zip
+*.tar.gz
+
+# OS and Editor configurations
+.DS_Store
+Thumbs.db
+*.swp
+*.bak
+.vscode/
+.idea/

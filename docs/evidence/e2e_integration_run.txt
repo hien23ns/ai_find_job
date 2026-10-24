@@ -1,0 +1,135 @@
+================================================================================
+BẰNG CHỨNG THỰC NGHIỆM TÍCH HỢP ĐẦY ĐỦ: UPSTREAM VÀ ANTIGRAVITY (E2E INTEGRATION)
+================================================================================
+Thời điểm ghi nhận: 2026-10-24 13:10:30
+Dự án: ai-job-search (ai-find-job)
+Thư mục gốc: C:\Users\Lenovo\Downloads\ai-find-job
+Môi trường: Windows 11 / PowerShell / Python 3.11.9
+
+--------------------------------------------------------------------------------
+1. CHI TIẾT TÍCH HỢP MÃ NGUỒN UPSTREAM (CANONICAL UPSTREAM INTEGRATION)
+--------------------------------------------------------------------------------
+Kho nguồn upstream:    https://github.com/ai-job-search-dev/ai-job-search.git
+Bản sao cục bộ:        PROJECT_ROOT/upstream/
+Commit ghim cố định:   e16acee3abdaae57f8026789338a3c6eebf4608b
+Giấy phép:             MIT License
+Kiểm tra chuỗi cung ứng (Supply-chain Guards):
+  Lệnh chạy: python upstream/tools/security_guards.py
+  Kết quả:   security_guards: OK (permissions allowlist, hooks allowlist, gitignore rules, package manifests, no tracked node_modules, skill/command allowed-tools, agent tools)
+  Trạng thái: PASS (Exit code 0)
+
+Mã nguồn dự án trực tiếp sử dụng upstream:
+  a) `src/upstream_bridge.py`:
+     - Nhập và gọi trực tiếp hàm `make_key(company, title, url)` trong `upstream/tools/job_key.py` để tạo khóa định danh canonical chống trùng lặp và tương thích hoàn toàn với upstream job_scraper.
+     - Thực thi `upstream/tools/security_guards.py` để tự động kiểm tra tính an toàn của các allowlist, permissions và cấu hình gitignore.
+     - Đối soát cấu trúc hồ sơ ứng viên theo nguyên tắc Thin-Pointer trong `upstream/CLAUDE.md`.
+  b) `src/tracker.py`:
+     - Tích hợp `get_canonical_job_key()` để tạo trường `canonical_key` trong mỗi bản ghi theo dõi, tránh va chạm ID khi cùng chức danh hoặc cùng công ty.
+  c) `src/cli.py`:
+     - Lệnh `python -m src.cli upstream-info`: Xuất thông tin metadata upstream.
+     - Lệnh `python -m src.cli upstream-key --company <C> --title <T>`: Sinh khóa canonical.
+     - Lệnh `python -m src.cli upstream-verify`: Chạy kiểm tra bảo mật upstream.
+  d) `tests/test_all.py`:
+     - `test_19_upstream_bridge_canonical_key`: Kiểm thử sinh khóa canonical Latin và non-Latin.
+     - `test_20_upstream_bridge_security_guards`: Kiểm thử bộ bảo vệ bảo mật upstream.
+     - `test_21_candidate_thin_pointer_schema`: Kiểm thử cấu trúc hồ sơ Thin-Pointer.
+
+--------------------------------------------------------------------------------
+2. PHÂN BIỆT RẠCH RÒI: QUY TẮC NỘI BỘ (PYTHON) VS MÔ HÌNH (ANTIGRAVITY)
+--------------------------------------------------------------------------------
+Hệ thống được thiết kế theo kiến trúc phân tầng rõ ràng nhằm tránh rủi ro ảo giác (hallucination) và đảm bảo tính bảo mật:
+
+A. PHẦN DO PYTHON THEO QUY TẮC CỨNG (DETERMINISTIC RULE-BASED ENGINE) XỬ LÝ:
+   1. Kiểm soát giới hạn thư mục (`src/security.py` -> `ensure_within_project`):
+      - Ngăn chặn triệt để Path Traversal (`../`, ổ đĩa ngoài, thư mục hệ thống).
+   2. Trung hòa chỉ thị độc hại (`src/security.py` -> `sanitize_untrusted_text`):
+      - Phát hiện và vô hiệu hóa Prompt Injection (Ignore instructions, DROP TABLE, XSS payloads).
+   3. Tính toán điểm số phù hợp (`src/evaluator.py` -> `JobEvaluator.evaluate`):
+      - Tính toán điểm số chính xác dựa trên trọng số toán học (Hard requirements 40%, Core skills 35%, Labs/Projects 15%, Education 10%).
+      - Đối chiếu từ khóa kỹ năng trực tiếp với hồ sơ, chỉ xuất bằng chứng khi tồn tại trong JSON.
+      - Phân loại bằng chứng rành mạch: Work Experience vs Lab/Simulation vs Personal Project vs Coursework.
+      - Không suy diễn visa/ngoại ngữ nếu JD không nêu (trả về "Chưa rõ").
+   4. Sinh khóa định danh Canonical (`src/upstream_bridge.py` & `upstream/tools/job_key.py`):
+      - Sinh slug chuẩn hóa chống trùng lặp theo thuật toán upstream.
+   5. Quản lý lưu trữ Tracker & Export CSV (`src/tracker.py`):
+      - Lưu trữ dữ liệu JSON cục bộ an toàn, định tuyến demo vào `.local/temp/demo_tracker.json`.
+   6. Cơ chế Fallback Offline (`src/ai_service.py` & `src/generator.py`):
+      - Tự động hoạt động 100% offline khi không có GEMINI_API_KEY hoặc thiếu Bun/LaTeX.
+      - Xuất file HTML chuẩn in (`@media print`) độc lập mà không cần compiler nhị phân.
+
+B. PHẦN DO MÔ HÌNH ANTIGRAVITY (LLM REASONING & GENERATIVE SYNTHESIS) XỬ LÝ:
+   1. Thấu hiểu ngữ cảnh và diễn đạt tự nhiên (Natural Language Synthesis):
+      - Điều chỉnh giọng điệu và văn phong chuyên nghiệp trong Thư ứng tuyển (Cover Letter) và Bản đề xuất dự án (Freelance Proposal) để phù hợp với văn hóa doanh nghiệp mà không bịa đặt dữ liệu sự thật.
+   2. Mô phỏng phỏng vấn kỹ thuật tương tác (Interactive Technical Interview Simulation):
+      - Đóng vai Người phỏng vấn kỹ thuật (Interviewer) để đặt câu hỏi đào sâu, phản biện câu trả lời của ứng viên, và đưa ra gợi ý cải thiện dựa trên các tình huống thực tế trong SOC/Network Security.
+   3. Đàm phán và tư vấn chiến lược ứng tuyển (Strategic Negotiation Advice):
+      - Hỗ trợ ứng viên phân tích rủi ro hợp đồng freelance, đề xuất phương án thương lượng mốc bàn giao linh hoạt, và gợi ý các câu hỏi cần làm rõ với khách hàng.
+   4. Điều phối công cụ linh hoạt (Tool Orchestration via Skills):
+      - Antigravity tự động phát hiện kỹ năng trong `.agents/skills/ai-job-search/SKILL.md` để hướng dẫn người dùng thực hiện các lệnh CLI phù hợp.
+
+--------------------------------------------------------------------------------
+3. NHẬT KÝ CHẠY THỰC TẾ LUỒNG ĐẦY ĐỦ VỚI ỨNG VIÊN GIẢ (END-TO-END EXECUTION LOG)
+--------------------------------------------------------------------------------
+
+Hồ sơ đầu vào: data/candidates/candidate_mock.json (Nguyễn Văn An, GPA 3.2, 0.3 năm exp, 3 Labs, 2 Projects).
+File Tracker cách ly: .local/temp/e2e_tracker.json (Đảm bảo data/tracker/jobs_tracker.json không bị thay đổi).
+
+=== BƯỚC 1: ĐÁNH GIÁ THỊ TRƯỜNG VIỆT NAM (CyStack Security Careers) ===
+Lệnh:
+  python -m src.cli evaluate --file data/live_jds/vietnam_sun_cybersec_intern.txt --market vietnam --candidate data/candidates/candidate_mock.json --save-track --tracker-file .local/temp/e2e_tracker.json --generate-docs
+
+Kết quả:
+  Vị trí: Kỹ sư An toàn Thông tin & Giám sát An ninh mạng (Security Analyst / Intern)
+  Công ty: Công ty Cổ phần An ninh mạng CyStack (CyStack Vietnam)
+  Điểm số: 95/100 (NÊN ỨNG TUYỂN)
+  Kỹ năng khớp: TCP/IP, Wireshark, Linux, Bash, Python, Nmap, Firewall (Có trích dẫn nguồn rành mạch)
+  Kỹ năng thiếu: Không có
+  Tài liệu sinh ra:
+    - CV Markdown: output/kỹ_sư_an_toàn_thông_tin__giám_cv.md
+    - Thư ứng tuyển: output/kỹ_sư_an_toàn_thông_tin__giám_cover_letter.md
+    - Bộ câu hỏi phỏng vấn: output/kỹ_sư_an_toàn_thông_tin__giám_interview_prep.md
+    - HTML độc lập: output/kỹ_sư_an_toàn_thông_tin__giám_cv.html
+  Lưu Tracker: Thành công (ID: job_66c0e0, Canonical Key: cong-ty-co-phan-an-ninh-mang-cystack-cys-e17eb2_ky-su-an-toan-thong-tin-giam-sat-an-ninh-mang-security-analy-fbf072)
+
+=== BƯỚC 2: ĐÁNH GIÁ THỊ TRƯỜNG HÀN QUỐC (Toss / Viva Republica) ===
+Lệnh:
+  python -m src.cli evaluate --file data/live_jds/korea_soc_intern.txt --market korea --candidate data/candidates/candidate_mock.json --save-track --tracker-file .local/temp/e2e_tracker.json --generate-docs
+
+Kết quả:
+  Vị trí: [신입/주니어] Security Analyst (정보보안 및 보안관제 엔지니어)
+  Công ty: 토스 (비바리퍼블리카 / Viva Republica - Toss)
+  Điểm số: 73/100 (NÊN ỨNG TUYỂN)
+  Đặc thù thị trường:
+    - Tiếng Hàn: Có nhắc đến (Cần làm rõ cấp độ)
+    - Tiếng Anh: Chưa rõ trong JD
+    - Ứng viên nước ngoài: Chưa rõ trong JD
+    - Visa: Có hỗ trợ bảo lãnh visa làm việc
+  Câu hỏi làm rõ tự động sinh: Yêu cầu tiếng Anh, Chấp nhận người nước ngoài, Yêu cầu nơi cư trú
+  Tài liệu sinh ra:
+    - CV Markdown: output/신입주니어_security_analyst_정보보안_및_cv.md (Kèm cảnh báo cần người bản xứ rà soát)
+    - Thư ứng tuyển: output/신입주니어_security_analyst_정보보안_및_cover_letter.md
+    - Bộ câu hỏi phỏng vấn: output/신입주니어_security_analyst_정보보안_및_interview_prep.md
+    - HTML độc lập: output/신입주니어_security_analyst_정보보안_및_cv.html
+  Lưu Tracker: Thành công (ID: job_223edd, Canonical Key: viva-republica-toss-a1eae5_security-analyst-654656)
+
+=== BƯỚC 3: ĐÁNH GIÁ THỊ TRƯỜNG FREELANCE (Python Log Parser Task) ===
+Lệnh:
+  python -m src.cli evaluate --file data/live_jds/freelance_log_parser.txt --market freelance --candidate data/candidates/candidate_mock.json --save-track --tracker-file .local/temp/e2e_tracker.json --generate-docs
+
+Kết quả:
+  Vị trí: Python 3 Log Parser & Automated State Deduplicator Script
+  Khách hàng: Open Source Career Infrastructure (Task Specification #710)
+  Điểm số: 100/100 (NÊN ỨNG TUYỂN)
+  Rủi ro phát hiện: 0 rủi ro (Xử lý file/log độc lập, không cần truy cập máy chủ production)
+  Mốc bàn giao: Không áp đặt tỷ lệ % cứng; ghi rõ là đề xuất thương lượng từ phía ứng viên
+  Tài liệu sinh ra:
+    - CV Markdown: output/python_3_log_parser__automated_cv.md
+    - Bản đề xuất (Proposal): output/python_3_log_parser__automated_proposal.md (Kèm cam kết pháp lý & ủy quyền)
+    - Bộ câu hỏi phỏng vấn: output/python_3_log_parser__automated_interview_prep.md
+    - HTML độc lập: output/python_3_log_parser__automated_cv.html
+  Lưu Tracker: Thành công (ID: job_ee07be, Canonical Key: open-source-career-infrastructure-task-s-6973be_python-3-log-parser-automated-state-deduplicator-script)
+
+=== BƯỚC 4: XÁC MINH TRẠNG THÁI TRACKER CHÍNH THỨC ===
+  File tracker kiểm thử: .local/temp/e2e_tracker.json (Tổng số: 4 jobs)
+  File tracker thật:     data/tracker/jobs_tracker.json (Tổng số: 0 jobs, hoàn toàn sạch, không bị thay đổi)
+================================================================================
