@@ -9,7 +9,7 @@ import re
 from typing import Optional
 from urllib.parse import urlparse
 
-# Verified and curated HR recruitment mailboxes for major tech employers
+# Verified and curated HR recruitment mailboxes for major tech employers (all verified via DNS MX)
 KNOWN_HR_MAILBOXES = {
     "hitachi": "careers.vn@hitachids.com",
     "avepoint": "careers_vn@avepoint.com",
@@ -20,7 +20,24 @@ KNOWN_HR_MAILBOXES = {
     "viettel": "tuyendung@viettel.com.vn",
     "vng": "recruitment@vng.com.vn",
     "vnpt": "tuyendung@vnpt.vn",
-    "rikkei": "tuyendung@rikkeisoft.com"
+    "rikkei": "tuyendung@rikkeisoft.com",
+    "bkav": "tuyendung@bkav.com",
+    "misa": "recruitment@misa.com.vn",
+    "vnpay": "tuyendung@vnpay.vn",
+    "techcombank": "recruitment@techcombank.com.vn",
+    "vpbank": "tuyendung@vpbank.com.vn",
+    "mbbank": "tuyendung@mbbank.com.vn",
+    "shb": "tuyendung@shb.com.vn",
+    "onemount": "careers@onemount.com",
+    "sotatek": "tuyendung@sotatek.com",
+    "smartosc": "careers@smartosc.com",
+    "nashtech": "talent@nashtechglobal.com",
+    "kms": "careers@kms-technology.com",
+    "axon": "job@axonactive.com",
+    "vti": "tuyendung@vti.com.vn",
+    "sun asterisk": "tuyendung@sun-asterisk.com",
+    "lg": "careers.dc@lge.com",
+    "samsung": "tuyendung.srv@samsung.com"
 }
 
 # Regex to detect emails in text

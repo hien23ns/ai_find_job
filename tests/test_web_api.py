@@ -184,6 +184,34 @@ class TestWebApi(unittest.TestCase):
         self.assertEqual(resp_conn.status_code, 200)
         self.assertTrue(resp_conn.json()["success"])
 
+    def test_candidate_form_assist_endpoint(self):
+        resp = self.client.get("/api/candidate/form-assist")
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["full_name"], "Ngô Văn Hiền")
+        self.assertEqual(data["email"], "hienngo090800@gmail.com")
+        self.assertEqual(data["phone"], "0393492064")
+        self.assertTrue("VKU" in data["university"] or "Việt - Hàn" in data["university"])
+
+    def test_mark_form_submitted_endpoint(self):
+        db = DatabaseManager()
+        test_id = "test_form_mark_job"
+        db.save_job({
+            "id": test_id,
+            "title": "Cloud Trainee",
+            "company": "Form Test Corp",
+            "market": "vietnam",
+            "status": "Chưa nộp"
+        })
+        resp = self.client.post(
+            f"/api/jobs/{test_id}/mark-form-submitted",
+            headers={"X-CSRF-Token": CSRF_TOKEN}
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["status"], "success")
+        updated = db.get_job(test_id)
+        self.assertEqual(updated["status"], "Đã nộp qua form")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -197,9 +197,91 @@ async def update_profile(request: Request):
 
 # --- Jobs Search and Evaluation Endpoints ---
 @app.get("/api/jobs")
-async def list_jobs(market: Optional[str] = None, status: Optional[str] = None, q: Optional[str] = None):
+async def list_jobs(
+    market: Optional[str] = None,
+    status: Optional[str] = None,
+    q: Optional[str] = None,
+    only_email: bool = False
+):
     db = DatabaseManager()
-    return db.list_jobs(market=market, status=status, search_query=q)
+    raw_jobs = db.list_jobs(market=market, status=status, search_query=q)
+    enriched = []
+    for j in raw_jobs:
+        hr_email = find_hr_email(company=j.get("company", ""), raw_jd=j.get("raw_jd", ""), source_url=j.get("source", ""))
+        apply_url = find_apply_url(company=j.get("company", ""), raw_jd=j.get("raw_jd", ""), source_url=j.get("source", ""))
+        has_email = bool(hr_email and "@" in hr_email)
+        if only_email and not has_email:
+            continue
+        j_copy = dict(j)
+        j_copy["hr_email"] = hr_email
+        j_copy["has_hr_email"] = has_email
+        j_copy["apply_url"] = apply_url
+        j_copy["preferred_channel"] = "email" if has_email else "form"
+        enriched.append(j_copy)
+
+    # Sort: Prioritize jobs with verified HR email first, then match_score descending, then updated_at
+    enriched.sort(key=lambda x: (1 if x["has_hr_email"] else 0, x.get("match_score", 0), x.get("updated_at", "")), reverse=True)
+    return enriched
+
+
+@app.get("/api/candidate/form-assist")
+async def get_candidate_form_assist():
+    candidate_data = {}
+    if CANDIDATE_FILE.exists():
+        candidate_data = json.loads(CANDIDATE_FILE.read_text(encoding="utf-8"))
+
+    edu = candidate_data.get("education", [{}])[0] if candidate_data.get("education") else {}
+    contact = candidate_data.get("contact", {})
+    return {
+        "full_name": candidate_data.get("name", "Ngô Văn Hiền"),
+        "email": contact.get("email", "hienngo090800@gmail.com"),
+        "phone": contact.get("phone", "0393492064"),
+        "university": edu.get("institution", "Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU)"),
+        "major": edu.get("major", "Mạng và An toàn thông tin"),
+        "graduation_year": "2028 (Dự kiến)",
+        "location": contact.get("location", "Ngũ Hành Sơn, Đà Nẵng, Việt Nam"),
+        "github": contact.get("github", "https://github.com/hien23ns"),
+        "linkedin": contact.get("linkedin", "https://www.linkedin.com/in/ngovanhien"),
+        "website": contact.get("website", "https://ngovanhien.id.vn"),
+        "summary": candidate_data.get("summary", "")
+    }
+
+
+@app.post("/api/jobs/{job_id}/mark-form-submitted")
+async def mark_job_form_submitted(job_id: str, request: Request):
+    db = DatabaseManager()
+    job = db.get_job(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Không tìm thấy việc làm")
+
+    now_date = datetime.now().strftime("%Y-%m-%d")
+    job["status"] = "Đã nộp qua form"
+    job["application_date"] = now_date
+    job["apply_channel"] = "form"
+    db.save_job(job)
+
+    app_record = db.get_application_by_job_id(job_id)
+    if app_record:
+        worker = get_worker()
+        worker.transition_state(
+            app_record["id"], "SUBMITTED",
+            action="MANUAL_FORM_SUBMISSION_CONFIRMED",
+            details="Ứng viên đã điền form tuyển dụng và xác nhận nộp thành công."
+        )
+
+    return {
+        "status": "success",
+        "message": f"🎉 Đã ghi nhận nộp form thành công cho '{job['company']} - {job['title']}'!"
+    }
+
+
+@app.post("/api/applications/{app_id}/mark-form-submitted")
+async def mark_app_form_submitted(app_id: str, request: Request):
+    db = DatabaseManager()
+    app_record = db.get_application(app_id) or db.get_application_by_job_id(app_id)
+    if not app_record:
+        raise HTTPException(status_code=404, detail="Không tìm thấy hồ sơ ứng tuyển")
+    return await mark_job_form_submitted(app_record["job_id"], request)
 
 
 @app.get("/api/jobs/{job_id}")

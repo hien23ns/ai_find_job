@@ -94,6 +94,12 @@ function navToTab(tabName) {
   if (tabName === "settings") loadSettingsData();
 }
 
+function openPackageTabForJob(jobId) {
+  currentSelectedJobId = jobId;
+  navToTab("packages");
+  loadPackageDetails(jobId);
+}
+
 async function loadLatestPackage() {
   try {
     const res = await fetch("/api/queue");
@@ -179,19 +185,25 @@ async function loadDashboardData() {
     const jobsRes = await fetch("/api/jobs");
     const jobs = await jobsRes.json();
     const tbody = document.querySelector("#dashboard-recent-jobs-table tbody");
-    tbody.innerHTML = "";
-
-    jobs.slice(0, 5).forEach(j => {
+    jobs.slice(0, 6).forEach(j => {
       const tr = document.createElement("tr");
+      const actionBtn = j.has_hr_email
+        ? `<button class="btn btn-success btn-sm" style="background:#15803d; color:#fff; font-weight:700; margin-left:4px;" onclick="triggerAutoApplyEmail('${j.id}')">🚀 Apply Mail</button>`
+        : `<button class="btn btn-primary btn-sm" style="background:#2563eb; color:#fff; font-weight:700; margin-left:4px;" onclick="openFormHelperModal('${j.id}')">📝 Mở Form</button>`;
+
+      const channelBadge = j.has_hr_email
+        ? `<span class="badge badge-green" style="font-size:11px;">✉️ ${escapeHtml(j.hr_email)}</span>`
+        : `<span class="badge badge-amber" style="font-size:11px;">🌐 Nộp Form</span>`;
+
       tr.innerHTML = `
         <td style="font-weight:600;">${escapeHtml(j.company)}</td>
         <td>${escapeHtml(j.title)}</td>
-        <td><span class="badge badge-gray">${escapeHtml(j.market)}</span></td>
+        <td>${channelBadge}</td>
         <td><span class="badge ${j.match_score >= 80 ? 'badge-green' : 'badge-amber'}">${j.match_score}/100</span></td>
         <td><span class="badge ${getStatusBadgeClass(j.status)}">${escapeHtml(j.status)}</span></td>
         <td style="white-space:nowrap;">
           <button class="btn btn-secondary btn-sm" onclick="openJobDetail('${j.id}')">Chi tiết</button>
-          <button class="btn btn-success btn-sm" style="background:#15803d; color:#fff; font-weight:700; margin-left:4px;" onclick="triggerAutoApplyEmail('${j.id}')">🚀 Apply</button>
+          ${actionBtn}
         </td>
       `;
       tbody.appendChild(tr);
@@ -321,40 +333,175 @@ async function saveProfileData() {
   }
 }
 
-// 3. Search
+// 3. Search & Job Filtering
+let cachedJobsList = [];
+let currentJobFilter = "all";
+let currentFormJobId = null;
+
 async function loadJobsList() {
   try {
     const res = await fetch("/api/jobs");
-    const jobs = await res.json();
-    renderJobsTable(jobs, "#search-results-table tbody");
+    cachedJobsList = await res.json();
+    const countEl = document.getElementById("search-total-count");
+    if (countEl) countEl.innerText = cachedJobsList.length;
+    filterJobsList(currentJobFilter);
   } catch (e) {
     console.error("Error loading jobs list", e);
   }
 }
 
+function filterJobsList(filterType) {
+  currentJobFilter = filterType;
+  document.querySelectorAll(".filter-job-btn").forEach(b => b.classList.remove("active"));
+  const activeBtn = document.getElementById(`btn-filter-${filterType}`);
+  if (activeBtn) activeBtn.classList.add("active");
+
+  let filtered = cachedJobsList;
+  if (filterType === "email") {
+    filtered = cachedJobsList.filter(j => j.has_hr_email);
+  } else if (filterType === "form") {
+    filtered = cachedJobsList.filter(j => !j.has_hr_email);
+  }
+
+  renderJobsTable(filtered, "#search-results-table tbody");
+}
+
 function renderJobsTable(jobs, selector) {
   const tbody = document.querySelector(selector);
   tbody.innerHTML = "";
-  if (jobs.length === 0) {
-    tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#94a3b8; padding:20px;'>Chưa có việc làm nào. Bấm 'Tìm kiếm việc ngay' để thu thập.</td></tr>";
+  if (!jobs || jobs.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#94a3b8; padding:20px;'>Không tìm thấy việc làm phù hợp với bộ lọc hiện tại. Bấm 'Tìm kiếm việc ngay' để cập nhật.</td></tr>";
     return;
   }
   jobs.forEach(j => {
     const tr = document.createElement("tr");
+
+    const channelBadge = j.has_hr_email
+      ? `<span class="badge badge-green" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:600; font-size:11.5px;">✉️ HR: ${escapeHtml(j.hr_email)}</span>`
+      : `<span class="badge badge-amber" style="background:#fef9c3; color:#854d0e; border:1px solid #fde047; font-weight:600; font-size:11.5px;">🌐 Nộp Form / Link</span>`;
+
+    const applyActionBtn = j.has_hr_email
+      ? `<button class="btn btn-success btn-sm" style="background:#15803d; color:#fff; font-weight:700; margin-left:4px;" onclick="triggerAutoApplyEmail('${j.id}')">🚀 Gửi Email Apply</button>`
+      : `<button class="btn btn-primary btn-sm" style="background:#2563eb; color:#fff; font-weight:700; margin-left:4px;" onclick="openFormHelperModal('${j.id}')">📝 Điền & Nộp Form</button>`;
+
     tr.innerHTML = `
       <td style="font-weight:600;">${escapeHtml(j.company)}</td>
       <td>${escapeHtml(j.title)}</td>
-      <td><span class="badge badge-gray">${escapeHtml(j.market)}</span></td>
+      <td>${channelBadge}</td>
       <td><span class="badge ${j.match_score >= 80 ? 'badge-green' : 'badge-amber'}">${j.match_score}/100</span></td>
       <td><span class="badge ${getStatusBadgeClass(j.status)}">${escapeHtml(j.status)}</span></td>
       <td style="white-space:nowrap;">
         <button class="btn btn-secondary btn-sm" onclick="openJobDetail('${j.id}')">Xem JD</button>
         <button class="btn btn-primary btn-sm" style="margin-left:4px;" onclick="openPackageTabForJob('${j.id}')">Hồ sơ</button>
-        <button class="btn btn-success btn-sm" style="background:#15803d; color:#fff; font-weight:700; margin-left:4px;" onclick="triggerAutoApplyEmail('${j.id}')">🚀 Apply</button>
+        ${applyActionBtn}
       </td>
     `;
     tbody.appendChild(tr);
   });
+}
+
+async function openFormHelperModal(jobId) {
+  currentFormJobId = jobId;
+  currentSelectedJobId = jobId;
+  try {
+    const res = await fetch(`/api/jobs/${jobId}`);
+    const data = await res.json();
+    const j = data.job;
+
+    document.getElementById("form-helper-title").innerText = `Hỗ trợ Điền Form: ${j.company} - ${j.title}`;
+    document.getElementById("form-helper-subtitle").innerText = `Thị trường: ${j.market.toUpperCase()} | Điểm phù hợp kỹ năng: ${j.match_score}/100`;
+
+    const formUrl = j.source || data.auto_apply_url || "";
+    document.getElementById("form-helper-url-text").innerText = formUrl || "Không có đường dẫn web (Xem chi tiết JD)";
+    const openBtn = document.getElementById("btn-open-external-form");
+    if (formUrl && formUrl.startsWith("http")) {
+      openBtn.href = formUrl;
+      openBtn.style.display = "inline-flex";
+      // Automatically open the form URL in a new browser tab as requested by the user
+      window.open(formUrl, "_blank");
+      showToast("🌐 Đang mở trang form tuyển dụng trên trình duyệt trong tab mới...", "info");
+    } else {
+      openBtn.style.display = "none";
+    }
+
+    // Load candidate info
+    const assistRes = await fetch("/api/candidate/form-assist");
+    if (assistRes.ok) {
+      const c = await assistRes.json();
+      document.getElementById("copy-val-name").innerText = c.full_name || "Ngô Văn Hiền";
+      document.getElementById("copy-val-email").innerText = c.email || "hienngo090800@gmail.com";
+      document.getElementById("copy-val-phone").innerText = c.phone || "0393492064";
+      document.getElementById("copy-val-location").innerText = c.location || "Ngũ Hành Sơn, Đà Nẵng";
+      document.getElementById("copy-val-university").innerText = c.university || "Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU)";
+      document.getElementById("copy-val-major").innerText = c.major || "Mạng và An toàn thông tin";
+      document.getElementById("copy-val-grad").innerText = c.graduation_year || "2028 (Dự kiến)";
+      document.getElementById("copy-val-github").innerText = c.github || "https://github.com/hien23ns";
+      document.getElementById("copy-val-linkedin").innerText = c.linkedin || "https://www.linkedin.com/in/ngovanhien";
+    }
+
+    // Load package info for CV PDF & Cover letter
+    const pkgRes = await fetch(`/api/packages/${jobId}`);
+    if (pkgRes.ok) {
+      const pkg = await pkgRes.json();
+      document.getElementById("form-helper-download-pdf").href = pkg.pdf_url;
+      document.getElementById("form-helper-view-pdf").href = pkg.pdf_url;
+      document.getElementById("form-helper-cl-text").value = pkg.cover_letter_text || "";
+    }
+
+    // Hook submit button
+    const markBtn = document.getElementById("btn-form-helper-mark-submitted");
+    markBtn.onclick = () => markFormAsSubmitted(jobId);
+
+    // Open modal
+    document.getElementById("form-helper-modal").classList.add("open");
+  } catch (e) {
+    showToast("Lỗi khi tải thông tin hỗ trợ điền form", "error");
+  }
+}
+
+function closeFormHelperModal() {
+  document.getElementById("form-helper-modal").classList.remove("open");
+}
+
+function copyFormAssistValue(elementId, labelName) {
+  const el = document.getElementById(elementId);
+  const text = el.tagName === "TEXTAREA" || el.tagName === "INPUT" ? el.value : el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast(`📋 Đã sao chép ${labelName}: ${text}`, "success");
+  }).catch(() => {
+    showToast(`Đã chọn ${labelName}: ${text}`, "info");
+  });
+}
+
+async function markFormAsSubmitted(jobId) {
+  const targetId = jobId || currentFormJobId;
+  if (!targetId) return;
+
+  const btn = document.getElementById("btn-form-helper-mark-submitted");
+  btn.innerText = "⏳ Đang cập nhật...";
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`/api/jobs/${targetId}/mark-form-submitted`, {
+      method: "POST",
+      headers: getFetchHeaders()
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast(data.message || "Đã ghi nhận nộp form thành công!", "success");
+      closeFormHelperModal();
+      loadDashboardData();
+      loadJobsList();
+      loadTrackerData();
+    } else {
+      showToast(data.detail || "Không thể cập nhật trạng thái", "error");
+    }
+  } catch (e) {
+    showToast("Lỗi kết nối khi cập nhật trạng thái nộp form", "error");
+  } finally {
+    btn.innerText = "✅ Tôi đã nộp xong (Cập nhật Tracker)";
+    btn.disabled = false;
+  }
 }
 
 async function runJobSearch() {

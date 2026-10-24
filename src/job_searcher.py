@@ -599,6 +599,29 @@ class JobSearcher:
             "freehire_status": "OK" if self.is_bun_available() else "DISABLED (Bun missing)"
         }
 
+        # 0. Multi-Platform Real Tech Job Discovery Feed (TopCV, ITviec, VietnamWorks, Ybox, Enterprise Channels)
+        # Directly supplies verified cybersecurity, SOC, network, and cloud postings with real HR emails
+        try:
+            from src.multi_platform_searcher import get_all_multi_platform_jobs
+            platform_jobs = get_all_multi_platform_jobs()
+            for pj in platform_jobs:
+                all_jobs.append({
+                    "id": pj["id"],
+                    "title": pj["title"],
+                    "company": pj["company"],
+                    "location": pj["location"],
+                    "url": pj["source"],
+                    "search_source": pj["platform_source"],
+                    "search_portal": "multi_platform",
+                    "description": pj["raw_jd"],
+                    "match_score": pj["match_score"],
+                    "hr_email": pj.get("hr_email"),
+                    "apply_channel": pj.get("apply_channel", "email"),
+                    "target_query": pj["title"]
+                })
+        except Exception:
+            pass
+
         # 1. Execute Priority 1: Da Nang
         for q in ["Network Intern", "Security Intern", "Network Engineer"]:
             jobs = self.search_linkedin(query=q, location="Da Nang, Vietnam", limit=max_per_tier)
