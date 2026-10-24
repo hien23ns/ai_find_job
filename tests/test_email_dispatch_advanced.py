@@ -115,6 +115,18 @@ class TestEmailDispatchAdvanced(unittest.TestCase):
         self.assertEqual(res.status, "FAILED")
         self.assertIn("Thiếu tệp đính kèm", res.message)
 
+    def test_recipient_trailing_dot_and_punctuation_sanitization(self):
+        provider = LocalMockEmailProvider()
+        res = provider.send_email(
+            from_email="cand@test.com",
+            from_name="Ngô Văn Hiền",
+            to_email="careers@cystack.net.",
+            subject="Test Application",
+            body_text="Body text"
+        )
+        self.assertEqual(res.status, "SENT")
+        self.assertEqual(provider.sent_messages[-1]["to"], "careers@cystack.net")
+
 
 if __name__ == "__main__":
     unittest.main()

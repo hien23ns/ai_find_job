@@ -306,8 +306,8 @@ class ApplicationWorker:
 
     def _handle_email_application(self, app: Dict[str, Any], mode: str, dry_run: bool) -> None:
         app_id = app["id"]
-        to_email = app.get("recipient")
-        if not to_email or "@" not in to_email:
+        to_email = (app.get("recipient") or "").strip(" \t\r\n.,;:!?'\"()[]<>").lower().rstrip(".")
+        if not to_email or "@" not in to_email or "." not in to_email.split("@")[-1]:
             self.transition_state(
                 app_id, "AWAITING_USER",
                 action="INVALID_RECIPIENT_EMAIL",

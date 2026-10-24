@@ -40,8 +40,8 @@ KNOWN_HR_MAILBOXES = {
     "samsung": "tuyendung.srv@samsung.com"
 }
 
-# Regex to detect emails in text
-EMAIL_REGEX = re.compile(r'([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)', re.IGNORECASE)
+# Regex to detect emails in text (RFC 5321 compliant domain labels without trailing punctuation)
+EMAIL_REGEX = re.compile(r'([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+)', re.IGNORECASE)
 
 # Ignored emails that should never be targeted as HR recipients
 IGNORED_EMAIL_DOMAINS = [
@@ -50,6 +50,15 @@ IGNORED_EMAIL_DOMAINS = [
 IGNORED_EMAIL_PREFIXES = [
     "noreply", "no-reply", "donotreply", "support", "admin", "abuse", "mailer-daemon"
 ]
+
+
+def sanitize_email(raw_email: str) -> str:
+    """Sanitizes an email string, removing extraneous trailing punctuation and ensuring RFC 5321 compliance."""
+    if not raw_email:
+        return ""
+    clean = raw_email.strip(" \t\r\n.,;:!?'\"()[]<>").lower()
+    clean = clean.rstrip(".")
+    return clean
 
 
 def find_hr_email(company: str = "", raw_jd: str = "", source_url: str = "") -> str:
@@ -65,7 +74,9 @@ def find_hr_email(company: str = "", raw_jd: str = "", source_url: str = "") -> 
     if raw_jd:
         found_emails = EMAIL_REGEX.findall(raw_jd)
         for email in found_emails:
-            clean_email = email.strip().lower()
+            clean_email = sanitize_email(email)
+            if not clean_email or "@" not in clean_email or "." not in clean_email.split("@")[-1]:
+                continue
             # Exclude candidate's own email and common public/system addresses
             if "hienngo090800" in clean_email:
                 continue
@@ -82,7 +93,9 @@ def find_hr_email(company: str = "", raw_jd: str = "", source_url: str = "") -> 
 
         # If any valid corporate email found in JD
         for email in found_emails:
-            clean_email = email.strip().lower()
+            clean_email = sanitize_email(email)
+            if not clean_email or "@" not in clean_email or "." not in clean_email.split("@")[-1]:
+                continue
             if "hienngo090800" in clean_email:
                 continue
             domain = clean_email.split("@")[-1]
@@ -92,7 +105,7 @@ def find_hr_email(company: str = "", raw_jd: str = "", source_url: str = "") -> 
     # 2. Check verified known HR mailboxes
     for k, email in KNOWN_HR_MAILBOXES.items():
         if k in company_lower:
-            return email
+            return sanitize_email(email)
 
     # 3. Do NOT guess random email addresses. Return empty string so user or form link can be used.
     return ""

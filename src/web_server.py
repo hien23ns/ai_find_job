@@ -36,7 +36,7 @@ from src.email_sender import (
 )
 from src.evaluator import JobEvaluator
 from src.form_automation import FormAutomationManager, FormAutomationResult
-from src.hr_finder import find_hr_email, find_apply_url
+from src.hr_finder import find_hr_email, find_apply_url, sanitize_email
 from src.job_searcher import JobSearcher
 from src.modern_tech_cv import create_job_application_package
 from src.security import ensure_within_project
@@ -207,9 +207,9 @@ async def list_jobs(
     raw_jobs = db.list_jobs(market=market, status=status, search_query=q)
     enriched = []
     for j in raw_jobs:
-        hr_email = find_hr_email(company=j.get("company", ""), raw_jd=j.get("raw_jd", ""), source_url=j.get("source", ""))
+        hr_email = sanitize_email(find_hr_email(company=j.get("company", ""), raw_jd=j.get("raw_jd", ""), source_url=j.get("source", "")))
         apply_url = find_apply_url(company=j.get("company", ""), raw_jd=j.get("raw_jd", ""), source_url=j.get("source", ""))
-        has_email = bool(hr_email and "@" in hr_email)
+        has_email = bool(hr_email and "@" in hr_email and "." in hr_email.split("@")[-1])
         if only_email and not has_email:
             continue
         j_copy = dict(j)
@@ -669,26 +669,27 @@ async def direct_send_email(app_id: str, request: Request):
         raise HTTPException(status_code=400, detail=f"Công việc này đã nộp thành công trước đó ({app_record['status']}). Chặn gửi trùng để bảo vệ an toàn.")
 
     if "recipient" in payload and payload["recipient"]:
-        app_record["recipient"] = payload["recipient"].strip()
+        app_record["recipient"] = sanitize_email(payload["recipient"])
         app_record["channel"] = "email"
         db.save_application(app_record)
 
-    to_email = app_record.get("recipient", "").strip()
+    to_email = sanitize_email(app_record.get("recipient", ""))
     if not to_email:
         job_id = app_record.get("job_id")
         job = db.get_job(job_id) if job_id else None
         if job:
-            found_email = find_hr_email(
+            found_email = sanitize_email(find_hr_email(
                 company=job.get("company", ""),
                 raw_jd=job.get("raw_jd", ""),
                 source_url=job.get("source", "")
-            )
+            ))
             if found_email and "@" in found_email:
                 to_email = found_email
                 app_record["recipient"] = to_email
                 app_record["channel"] = "email"
                 db.save_application(app_record)
 
+    to_email = sanitize_email(to_email)
     if not to_email or "@" not in to_email or "." not in to_email.split("@")[-1]:
         raise HTTPException(status_code=400, detail="Vui lòng nhập địa chỉ email người nhận hợp lệ (ví dụ: hr@company.com).")
 
@@ -790,11 +791,11 @@ async def auto_apply_email_by_job(job_id: str, request: Request):
         app_record = db.get_application(pkg_res["application_id"])
 
     # 2. Automatically find HR email
-    to_email = payload.get("recipient")
+    to_email = sanitize_email(payload.get("recipient", ""))
     if not to_email:
-        to_email = find_hr_email(company=job.get("company", ""), raw_jd=job.get("raw_jd", ""), source_url=job.get("source", ""))
+        to_email = sanitize_email(find_hr_email(company=job.get("company", ""), raw_jd=job.get("raw_jd", ""), source_url=job.get("source", "")))
 
-    if not to_email or "@" not in to_email:
+    if not to_email or "@" not in to_email or "." not in to_email.split("@")[-1]:
         apply_url = find_apply_url(company=job.get("company", ""), raw_jd=job.get("raw_jd", ""), source_url=job.get("source", ""))
         url_hint = f" ({apply_url})" if apply_url else ""
         raise HTTPException(

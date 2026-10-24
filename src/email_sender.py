@@ -159,6 +159,7 @@ class LocalMockEmailProvider(BaseEmailProvider):
         body_html: Optional[str] = None,
         attachment_paths: Optional[List[Path]] = None
     ) -> EmailDispatchResult:
+        to_email = (to_email or "").strip(" \t\r\n.,;:!?'\"()[]<>").lower().rstrip(".")
         # Header injection validation
         if "\r" in to_email or "\n" in to_email or "\r" in subject or "\n" in subject:
             return EmailDispatchResult(
@@ -239,6 +240,9 @@ class SmtpEmailProvider(BaseEmailProvider):
         body_html: Optional[str] = None,
         attachment_paths: Optional[List[Path]] = None
     ) -> EmailDispatchResult:
+        # 0. Sanitize recipient address (RFC 5321: strip whitespace, trailing dots, punctuation)
+        to_email = (to_email or "").strip(" \t\r\n.,;:!?'\"()[]<>").lower().rstrip(".")
+
         # 1. Header injection validation
         if any(c in to_email for c in ["\r", "\n"]) or any(c in subject for c in ["\r", "\n"]):
             return EmailDispatchResult(
