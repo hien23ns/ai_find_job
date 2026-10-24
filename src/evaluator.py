@@ -526,31 +526,63 @@ class JobEvaluator:
                 )
                 break
 
+        # 6. GPA Requirement check
+        gpa_match = re.search(r"\bgpa\s*(?:of|từ|>=|trên|tối\s*thiểu)?\s*([234]\.[0-9])(?:\s*/\s*4(?:\.0)?)?", lower_content)
+        if gpa_match:
+            req_gpa = float(gpa_match.group(1))
+            cand_gpa = None
+            for edu in education_list:
+                gpa_str = str(edu.get("gpa", ""))
+                cand_gpa_m = re.search(r"([0-4]\.[0-9]+)", gpa_str)
+                if cand_gpa_m:
+                    cand_gpa = float(cand_gpa_m.group(1))
+                    break
+
+            quote_gpa = next((req["raw_quote"] for req in sections.get("mandatory_requirements", []) if "gpa" in req["text"].lower()), gpa_match.group(0))
+
+            if cand_gpa is not None:
+                if cand_gpa < req_gpa:
+                    unclear_items.append(
+                        f"Chưa đáp ứng yêu cầu GPA: JD yêu cầu tối thiểu GPA {req_gpa}/4.0 (Trích dẫn: '{quote_gpa}'), "
+                        f"trong khi điểm GPA hiện tại của hồ sơ là {cand_gpa}/4.0. Cần hỏi HR liệu có chính sách xem xét linh hoạt ngoại lệ dựa trên đồ án thực tế và kỹ năng không."
+                    )
+                    clarification_questions.append(
+                        f"Hỏi HR về GPA: Ứng viên có điểm GPA {cand_gpa}/4.0 (so với tiêu chuẩn {req_gpa}/4.0), công ty có thể xem xét dựa trên các đồ án phần mềm thực tế và kỹ năng thực hành không?"
+                    )
+                    feasibility_status["gpa"] = "Chưa đáp ứng yêu cầu GPA (Cần hỏi HR ngoại lệ)"
+                else:
+                    hard_reqs.append(f"Điểm GPA: Thỏa mãn tiêu chuẩn ({cand_gpa}/4.0 >= {req_gpa}/4.0)")
+                    feasibility_status["gpa"] = "Thỏa mãn"
+            else:
+                unclear_items.append(f"[Cần xác nhận] Điểm GPA: JD yêu cầu '{quote_gpa}', nhưng hồ sơ ứng viên chưa cập nhật GPA.")
+                clarification_questions.append("Xác nhận GPA: Ứng viên cần bổ sung điểm trung bình tích lũy GPA vào hồ sơ.")
+                feasibility_status["gpa"] = "Chưa có dữ liệu"
+
         # Calculate Hard Requirements Score
         # Căn cứ của 20/40 điểm điều kiện bắt buộc:
         # - 20 điểm cơ sở: Cấp độ tuyển dụng (Fresher/Intern) không có điều kiện loại trừ vi phạm.
         # - 20 điểm tính khả thi thực tế: Địa điểm làm việc (7đ), Lịch làm việc (7đ), Năm học (6đ).
-        # Khi các điều kiện này chưa được xác nhận, phần điểm tương ứng để ở trạng thái UNKNOWN (0đ), không gán điểm tùy ý.
+        # Khi các điều kiện này chưa được xác nhận hoặc chưa đáp ứng, phần điểm tương ứng để ở trạng thái UNKNOWN (0đ), không gán điểm tùy ý.
         if disqualifiers:
             hard_score = 0.0
             hard_explanation = "0.0/40 (Không thỏa mãn: Có điều kiện loại trừ vi phạm)"
         else:
-            unconfirmed_count = sum(1 for v in feasibility_status.values() if "Cần xác nhận" in v or "Chưa có dữ liệu" in v)
+            unconfirmed_count = sum(1 for v in feasibility_status.values() if "Cần xác nhận" in v or "Chưa có dữ liệu" in v or "Chưa đáp ứng" in v)
             if unconfirmed_count == 0:
                 hard_score = 40.0
                 hard_explanation = "40.0/40 (Thỏa mãn đầy đủ các điều kiện bắt buộc và tính khả thi)"
             elif unconfirmed_count == 1:
                 hard_score = 33.0
-                hard_explanation = "33.0/40 (Căn cứ: 20đ cấp độ thỏa mãn + 13đ cho 2 điều kiện khả thi; 1 điều kiện ở trạng thái Unknown)"
+                hard_explanation = "33.0/40 (Căn cứ: 20đ cấp độ thỏa mãn + 13đ cho 2 điều kiện khả thi; 1 điều kiện ở trạng thái Unknown/Chưa đáp ứng)"
             elif unconfirmed_count == 2:
                 hard_score = 26.0
-                hard_explanation = "26.0/40 (Căn cứ: 20đ cấp độ thỏa mãn + 6đ cho 1 điều kiện khả thi; 2 điều kiện ở trạng thái Unknown)"
+                hard_explanation = "26.0/40 (Căn cứ: 20đ cấp độ thỏa mãn + 6đ cho 1 điều kiện khả thi; 2 điều kiện ở trạng thái Unknown/Chưa đáp ứng)"
             else:
                 hard_score = 20.0
                 hard_explanation = (
                     "20.0/40 (Căn cứ: 20/20đ cấp độ đạt chuẩn không có loại trừ; "
-                    "20đ tính khả thi thực tế ở trạng thái Unknown do 3 điều kiện chưa xác minh: "
-                    "Địa điểm on-site, Lịch làm việc full-time, Năm học; không gán điểm tùy ý)"
+                    "20đ tính khả thi thực tế ở trạng thái Unknown/Chưa đáp ứng: "
+                    "không gán điểm tùy ý)"
                 )
 
         return hard_reqs, disqualifiers, unclear_items, clarification_questions, hard_score, hard_explanation, feasibility_status
@@ -671,8 +703,16 @@ class JobEvaluator:
                 "lịch làm việc Thứ Hai–thứ Sáu đối với sinh viên, và chính sách phụ cấp trước khi nộp đơn."
             )
         elif total_score >= 70:
-            recommendation = "NÊN ỨNG TUYỂN"
-            rationale = f"Mức độ phù hợp kỹ năng cao ({total_score}/100), hồ sơ đáp ứng tốt các yêu cầu trọng tâm."
+            if "Chưa đáp ứng" in feasibility_status.get("gpa", ""):
+                recommendation = "CÂN NHẮC ỨNG TUYỂN (CẦN XÁC MINH GPA VỚI HR)"
+                rationale = (
+                    f"Hồ sơ đáp ứng tốt các kỹ năng kỹ thuật ({total_score}/100), tuy nhiên chưa đáp ứng tiêu chuẩn GPA "
+                    f"nêu trong JD (2.9/4.0 so với yêu cầu 3.0/4.0). Không khẳng định đáp ứng hoàn toàn; "
+                    f"cần liên hệ hỏi HR về khả năng xem xét ngoại lệ trước khi nộp hồ sơ."
+                )
+            else:
+                recommendation = "NÊN ỨNG TUYỂN"
+                rationale = f"Mức độ phù hợp kỹ năng cao ({total_score}/100), hồ sơ đáp ứng tốt các yêu cầu trọng tâm."
         elif total_score >= 50:
             recommendation = "CÂN NHẮC ỨNG TUYỂN"
             rationale = f"Mức độ phù hợp trung bình ({total_score}/100), cần chuẩn bị kỹ năng bổ sung trước khi phỏng vấn."
@@ -705,7 +745,9 @@ class JobEvaluator:
             "missing_skills": missing_skills,
             "korea_specifics": korea_details,
             "freelance_specifics": freelance_details,
+            "feasibility_status": feasibility_status,
             "unclear_items": unclear_items,
+            "unverified_conditions": unclear_items,
             "clarification_questions": clarification_questions,
             "recommendation": recommendation,
             "rationale": rationale

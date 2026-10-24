@@ -14,17 +14,29 @@ Kỹ năng này hướng dẫn Antigravity Agent thực hiện toàn diện quy 
 
 ## 2. QUY TRÌNH THỰC HIỆN TỪ ĐẦU ĐẾN CUỐI (END-TO-END WORKFLOW)
 
-### Bước 1: Tiếp nhận mô tả công việc (JD Input)
-Agent có thể nhận JD qua 3 kênh:
-1. **File văn bản UTF-8 trong dự án:** `tests/fixtures/jd_vietnam_soc.txt` hoặc file do người dùng cung cấp trong thư mục dự án.
-2. **Văn bản trực tiếp (Text input):** Đoạn text mô tả công việc người dùng paste vào chat.
-3. **URL công khai:** Nếu URL bị chặn hoặc yêu cầu đăng nhập/CAPTCHA, chuyển ngay sang yêu cầu người dùng copy nội dung text thủ công.
+### Bước 1: Tự động tìm tin thật hoặc tiếp nhận JD
+Agent có thể:
+1. **Tự động tìm kiếm tin thật qua cổng upstream:**
+   ```powershell
+   # Tìm kiếm và hiển thị phân loại theo 4 nhóm ưu tiên (Đà Nẵng, Remote, Hà Nội/HCM, Freelance)
+   python -m src.cli search --limit 2
+
+   # Tự động tìm, chọn tin phù hợp nhất và sinh trọn bộ tài liệu ứng tuyển
+   python -m src.cli search --auto-evaluate --tracker-status "Đã đánh giá"
+
+   # Chọn cụ thể một tin từ kết quả tìm kiếm (ví dụ tin số 2) để tạo hồ sơ
+   python -m src.cli search --stage-id 2 --tracker-status "Đã đánh giá"
+   ```
+2. **File văn bản UTF-8 trong dự án:** `tests/fixtures/jd_vietnam_soc.txt` hoặc file do người dùng cung cấp trong thư mục dự án (`data/my_jd.txt`).
+3. **Văn bản trực tiếp (Text input):** Đoạn text mô tả công việc người dùng paste vào chat.
+4. **URL công khai:** Nếu URL bị chặn hoặc yêu cầu đăng nhập/CAPTCHA, chuyển ngay sang yêu cầu người dùng copy nội dung text thủ công.
 
 ### Bước 2: Chạy đánh giá mức độ phù hợp (Evaluation)
 Sử dụng công cụ `run_command` để gọi CLI trong `PROJECT_ROOT`:
 ```powershell
 python -m src.cli evaluate --file <path_to_jd> --market <vietnam|korea|freelance> --save-track --generate-docs
 ```
+
 
 ### Bước 3: Kiểm tra và bàn giao kết quả
 1. Đọc báo cáo đánh giá được in ra:

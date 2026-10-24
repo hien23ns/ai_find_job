@@ -1,0 +1,90 @@
+======================================================================
+ THÔNG TIN TIN TUYỂN DỤNG GỐC (VERIFIED LIVE JOB POSTING)
+======================================================================
+Vị trí:             Cloud & DevOps Intern
+Công ty:            Hitachi Digital Services
+URL gốc:            https://www.linkedin.com/jobs/view/4481162663
+URL thay thế:       https://vn.linkedin.com/jobs/view/cloud-devops-intern-at-hitachi-digital-services-4481162663
+Thời điểm thu thập: 2026-10-24 23:15:42
+Nguồn dữ liệu:      LinkedIn (Public Guest API qua upstream linkedin-search)
+Địa điểm làm việc:  Đà Nang, Da Nang City, Vietnam
+Hình thức:          Internship (Thực tập)
+Cấp bậc (Seniority):Not Applicable
+Trạng thái nhận đơn: ĐANG NHẬN HỒ SƠ (Không phát hiện banner 'No longer accepting applications' hoặc 'Closed')
+Lưu ý xác minh:     Tải trang thành công hoặc không có banner đóng không bảo đảm 100% còn nhận hồ sơ; cần xác nhận tình trạng thực tế với nhà tuyển dụng.
+
+----------------------------------------------------------------------
+ TRÍCH ĐOẠN ĐIỀU KIỆN THEN CHỐT TỪ JD & ĐỐI CHIẾU TRUNG THỰC
+----------------------------------------------------------------------
+1. YÊU CẦU GPA:
+   - Trích dẫn chính xác JD:
+     "GPA of 3.0/4.0 or above."
+   - Đối chiếu hồ sơ cá nhân:
+     GPA hiện tại của ứng viên là 2.9/4.0.
+   - Kết luận kiểm toán:
+     CHƯA ĐÁP ỨNG YÊU CẦU GPA. Không tự nâng điểm, không khẳng định đáp ứng hoàn toàn. Cần liên hệ hỏi HR xem công ty có chính sách xem xét linh hoạt ngoại lệ dựa trên đồ án thực tế và kỹ năng thực hành không.
+
+2. YÊU CẦU TIẾNG ANH:
+   - Trích dẫn chính xác JD:
+     "Good communication skills in English (Japanese is a plus)"
+   - Đối chiếu hồ sơ cá nhân:
+     Hồ sơ ghi "Giao tiếp cơ bản, đọc hiểu tài liệu kỹ thuật".
+   - Kết luận kiểm toán:
+     Đạt yêu cầu đọc hiểu kỹ thuật; cần rèn luyện thêm khả năng giao tiếp tự tin để đáp ứng vòng phỏng vấn bằng tiếng Anh.
+
+3. LỊCH THỰC TẬP & CHÍNH SÁCH LINH HOẠT:
+   - Trích dẫn chính xác JD:
+     "We're also champions of life balance and offer flexible arrangements that work for you (role and location dependent)."
+   - Lưu ý phân tích bắt buộc:
+     KHÔNG SUY RA INTERNSHIP ĐỒNG NGHĨA VỚI PART-TIME. JD không quy định cụ thể số buổi làm việc mỗi tuần hay số giờ tối thiểu. Cần hỏi trực tiếp HR về thời lượng bắt buộc (ví dụ: tối thiểu bao nhiêu buổi/tuần) để đối chiếu với lịch học tín chỉ tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU).
+
+----------------------------------------------------------------------
+ TOÀN VĂN MÔ TẢ CÔNG VIỆC GỐC (RAW JOB DESCRIPTION)
+----------------------------------------------------------------------
+Our Company
+
+We're Hitachi Digital Services, a global digital solutions and transformation business with a bold vision of our world's potential. We're people-centric and here to power good. Every day, we future-proof urban spaces, conserve natural resources, protect rainforests, and save lives. This is a world where innovation, technology, and deep expertise come together to take our company and customers from what's now to what's next. We make it happen through the power of acceleration.
+
+Imagine the sheer breadth of talent it takes to bring a better tomorrow closer to today. We don't expect you to 'fit' every requirement – your life experience, character, perspective, and passion for achieving great things in the world are equally as important to us.
+
+Requirements
+
+Job Description
+
+Pursuing a Bachelor's degree in Computer Science, Software Engineering, Information Technology, or a related field.
+Good communication skills in English (Japanese is a plus)
+GPA of 3.0/4.0 or above.
+Good programming knowledge in at least one of the following technology stacks: Python, Java, Node.js/TypeScript, or C#/.NET.
+Basic understanding of data structures, databases, REST APIs, operating systems, and client-server architecture.
+Familiarity with Git or another version control system.
+Experience completing at least one academic, personal, or open-source software project.
+Basic understanding of at least one Cloud platform such as AWS, Azure, or GCP.
+Interest in Cloud Engineering, DevOps, automation, system reliability, and technical troubleshooting.
+Familiarity with AI-assisted development tools such as GitHub Copilot, Claude, Cursor, or similar.
+Ability to explain, validate, test, and troubleshoot code or configurations created with AI assistance.
+Strong analytical, problem-solving, teamwork, ownership, and continuous learning mindset.
+
+Preferred Qualifications
+
+Exposure to Linux command-line environments or scripting with Python, Bash, or PowerShell.
+Familiarity with Docker, Docker Compose, or container concepts.
+Exposure to CI/CD, networking, application deployment, or infrastructure automation.
+Personal or academic projects involving backend development, REST APIs, databases, system integration, deployment, or automation.
+Ability to work effectively in a collaborative and fast-paced environment.
+
+About Us
+
+We're a global, team of innovators. Together, we harness engineering excellence and passion to co-create meaningful solutions to complex challenges. We turn organizations into data-driven leaders that can make a positive impact on their industries and society. If you believe that innovation can bring a better tomorrow closer to today, this is the place for you.
+
+Fostering innovation through diverse perspectives
+
+Hitachi is a global company operating across a wide range of industries and regions. One of the things that sets Hitachi apart is the diversity of our business and people, which drives our innovation and growth.
+
+We are committed to building an inclusive culture based on mutual respect and merit-based systems. We believe that when people feel valued, heard, and safe to express themselves, they do their best work.
+
+How we look after you
+
+We help take care of your today and tomorrow with industry-leading benefits, support, and services that look after your holistic health and wellbeing. We're also champions of life balance and offer flexible arrangements that work for you (role and location dependent). We're always looking for new ways of working that bring out our best, which leads to unexpected ideas. So here, you'll experience a sense of belonging, and discover autonomy, freedom, and ownership as you work alongside talented people you enjoy sharing knowledge with.
+
+We're proud to say we're an equal opportunity employer and welcome all applicants for employment without attention to race, colour, religion, sex, sexual orientation, gender identity, national origin, veteran, age, disability status or any other protected characteristic. Should you need reasonable accommodations during the recruitment process, please let us know so that we can do our best to set you up for success.
+======================================================================

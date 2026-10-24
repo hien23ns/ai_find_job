@@ -1,0 +1,72 @@
+{
+  "name": "Ngô Văn Hiền",
+  "is_mock": true,
+  "summary": "Sinh viên ngành Mạng và An toàn thông tin tại VKU (GPA 2.9/4.0), định hướng thực tập và phát triển kỹ năng Cloud & DevOps, Network/Security.",
+  "contact": {
+    "email": "hienngo090800@gmail.com",
+    "phone": "0393492064",
+    "location": "Đà Nẵng, Việt Nam",
+    "github": "https://github.com/hien23ns",
+    "linkedin": "https://linkedin.com/in/ngovanhien",
+    "website": "https://ngovanhien.id.vn"
+  },
+  "years_of_experience": 0,
+  "education": [
+    {
+      "institution": "Trường Đại học Công nghệ Thông tin và Truyền thông Việt - Hàn (VKU)",
+      "degree": "Kỹ sư",
+      "major": "Mạng và An toàn thông tin",
+      "year": "2023 – 2028",
+      "gpa": "2.9/4.0"
+    }
+  ],
+  "skills": {
+    "programming": ["Python", "Java", "Bash"],
+    "systems_networking": ["Linux", "TCP/IP", "OSI Model", "Wireshark", "Nmap", "Firewall"],
+    "cloud_infrastructure": ["AWS IAM", "AWS EC2", "AWS S3", "Shared Responsibility Model"],
+    "security": ["Vulnerability Assessment", "Traffic Analysis", "Log Analysis"]
+  },
+  "projects": [
+    {
+      "name": "Chia sẻ màn hình P2P sử dụng WebRTC",
+      "name_en": "P2P Screen Sharing using WebRTC",
+      "technologies": ["WebRTC", "P2P"],
+      "verified": true,
+      "description_vi": "Xây dựng ứng dụng chia sẻ màn hình trực tiếp ngang hàng P2P qua trình duyệt sử dụng giao thức WebRTC.",
+      "description_en": "Built a peer-to-peer screen sharing application between browsers using the WebRTC protocol."
+    },
+    {
+      "name": "Ứng dụng mạng xã hội Android",
+      "name_en": "Android Social Media Application",
+      "technologies": ["Android", "Java"],
+      "verified": true,
+      "description_vi": "Phát triển ứng dụng Android trên nền tảng Java phục vụ kết nối và tương tác giữa người dùng.",
+      "description_en": "Developed an Android application in Java for basic user connectivity and interaction."
+    },
+    {
+      "name": "SecMon - Threat Monitoring Tool",
+      "name_en": "SecMon - Threat Monitoring Tool",
+      "technologies": ["Python"],
+      "verified": false,
+      "description_vi": "Hệ thống giám sát an ninh mạng nội bộ.",
+      "description_en": "Internal threat detection tool."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "AWS Certified Cloud Practitioner",
+      "issuer": "Amazon Web Services",
+      "year": "2024"
+    }
+  ],
+  "languages": [
+    {
+      "language": "Tiếng Việt",
+      "proficiency": "Bản ngữ"
+    },
+    {
+      "language": "Tiếng Anh",
+      "proficiency": "Đọc hiểu tài liệu kỹ thuật"
+    }
+  ]
+}

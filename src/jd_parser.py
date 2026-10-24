@@ -104,12 +104,19 @@ def parse_jd_text(text: str, source: str = "manual_text", metadata: Optional[Dic
                 if not (line.startswith("[") and line.endswith("]")) and line != title:
                     company = line[:80]
                     break
-        
+    # Extract job_id if present
+    job_id = meta.get("job_id", "")
+    if not job_id:
+        m_id = re.search(r'(?:job[-_ ]?id|id tin|mã tin|view)/?[:\s]+([0-9a-zA-Z_-]{5,30})', sanitized, re.IGNORECASE)
+        if m_id:
+            job_id = m_id.group(1).strip()
+
     jd_hash = compute_jd_hash(title, company, sanitized)
     
     return {
         "title": title or "Chưa rõ tiêu đề",
         "company": company or "Chưa rõ công ty",
+        "job_id": job_id,
         "source": source,
         "raw_content": sanitized,
         "hash": jd_hash,
@@ -129,8 +136,16 @@ def read_jd_file(file_path: Union[str, Path]) -> Dict:
     except UnicodeDecodeError:
         # Fallback to utf-8 with replacement
         content = safe_path.read_text(encoding="utf-8", errors="replace")
+
+    meta = {"source": f"file://{safe_path.name}"}
+    m_url = re.search(r'(?:url gốc|url|source)[:\s]+(https?://[^\s\r\n]+)', content, re.IGNORECASE)
+    if m_url:
+        meta["source"] = m_url.group(1).strip()
+    m_fn = re.search(r'(\d{6,20})', safe_path.name)
+    if m_fn:
+        meta["job_id"] = m_fn.group(1)
         
-    return parse_jd_text(content, source=f"file://{safe_path.name}")
+    return parse_jd_text(content, source=meta.get("source", f"file://{safe_path.name}"), metadata=meta)
 
 def fetch_jd_url(url: str, timeout: int = 10) -> Dict:
     """

@@ -25,6 +25,7 @@ if (-not $SubCommand) {
     Write-Host "ai-job-search Windows Launcher" -ForegroundColor Cyan
     Write-Host "Cú pháp:"
     Write-Host "  .\run.ps1 test                       : Chạy bộ kiểm thử tự động toàn diện"
+    Write-Host "  .\run.ps1 search [options]           : Tự động tìm kiếm việc qua portal upstream"
     Write-Host "  .\run.ps1 eval --file <path> [...]  : Đánh giá mô tả công việc (JD)"
     Write-Host "  .\run.ps1 tracker list               : Xem danh sách theo dõi ứng tuyển"
     Write-Host "  .\run.ps1 tracker export             : Xuất dữ liệu tracker ra CSV"
@@ -34,6 +35,10 @@ if (-not $SubCommand) {
 
 if ($SubCommand -eq "test") {
     python -m unittest tests.test_all
+    exit $LASTEXITCODE
+} elseif ($SubCommand -eq "search") {
+    $Remaining = $args[1..($args.Length-1)]
+    python -m src.cli search $Remaining
     exit $LASTEXITCODE
 } elseif ($SubCommand -eq "eval") {
     $Remaining = $args[1..($args.Length-1)]
@@ -56,3 +61,4 @@ if ($SubCommand -eq "test") {
     python -m src.cli $args
     exit $LASTEXITCODE
 }
+

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ai-find-job - Trợ lý Tìm việc & Ứng tuyển Tự động</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <!-- Sidebar Navigation -->
+  <aside class="app-sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">AG</div>
+      <div class="brand-text">
+        <h1>ai-find-job</h1>
+        <p>Hệ thống Ứng tuyển Tự động</p>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a class="nav-link active" data-tab="dashboard">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+          Tổng quan
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-tab="profile">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+          Hồ sơ cá nhân
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-tab="search">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          Tìm việc làm
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-tab="packages">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+          Bộ hồ sơ & Soạn thảo
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-tab="queue">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          Trung tâm ứng tuyển
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-tab="tracker">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+          Tracker ứng tuyển
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-tab="settings">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+          Cài đặt & Tự động hóa
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <button class="kill-switch-btn" id="kill-switch-btn">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+        DỪNG TOÀN BỘ (KILL SWITCH)
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content View -->
+  <main class="app-main">
+    <header class="top-header">
+      <div class="header-title" id="page-header-title">Tổng quan hệ thống</div>
+      <div class="system-status-pills">
+        <div class="status-pill" id="pill-worker">
+          <span class="pill-dot" id="dot-worker"></span>
+          <span id="text-worker">Worker: Đang kết nối</span>
+        </div>
+        <div class="status-pill" id="pill-browser">
+          <span class="pill-dot" id="dot-browser"></span>
+          <span id="text-browser">Browser: Playwright</span>
+        </div>
+        <div class="status-pill" id="pill-email">
+          <span class="pill-dot" id="dot-email"></span>
+          <span id="text-email">Email: Mock/Offline</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-body">
+      <!-- 1. TỔNG QUAN (DASHBOARD) -->
+      <section class="page-section active" id="sec-dashboard">
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon blue"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg></div>
+            <div class="kpi-info"><h3 id="kpi-total-jobs">0</h3><p>Tổng việc đã lưu</p></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon teal"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
+            <div class="kpi-info"><h3 id="kpi-submitted-jobs">0</h3><p>Đã nộp đơn</p></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon amber"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg></div>
+            <div class="kpi-info"><h3 id="kpi-attention-jobs">0</h3><p>Cần kiểm tra (Hồ sơ/Lịch)</p></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon green"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg></div>
+            <div class="kpi-info"><h3 id="kpi-queue-count">0</h3><p>Hàng đợi xử lý</p></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Việc làm mới phù hợp (Khuyến nghị ứng tuyển)</div>
+            <button class="btn btn-secondary btn-sm" onclick="navToTab('search')">Tìm việc mới</button>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <table class="data-table" id="dashboard-recent-jobs-table">
+              <thead>
+                <tr>
+                  <th>Công ty</th>
+                  <th>Vị trí</th>
+                  <th>Thị trường</th>
+                  <th>Điểm Match</th>
+                  <th>Trạng thái</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. HỒ SƠ CÁ NHÂN (PROFILE) -->
+      <section class="page-section" id="sec-profile">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Hồ sơ ứng viên thực tế (data/candidates/my_profile.json)</div>
+            <button class="btn btn-primary btn-sm" id="btn-save-profile">Lưu thay đổi</button>
+          </div>
+          <div class="card-body">
+            <!-- Top Bio & Avatar -->
+            <div style="display:flex; gap:24px; align-items:flex-start;">
+              <div style="width:160px; text-align:center;">
+                <img id="profile-avatar-img" src="/api/profile/avatar" style="width:130px; height:150px; object-fit:cover; border-radius:6px; border:2px solid #0284c7; background:#e2e8f0;" alt="Avatar">
+                <p style="font-size:11.5px; color:#64748b; margin-top:8px;">Ảnh chân dung thực tế</p>
+              </div>
+              <div style="flex:1;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
+                  <div class="form-group">
+                    <label class="form-label">Họ và tên</label>
+                    <input type="text" class="form-control" id="prof-name">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Chuyên ngành & Cơ sở đào tạo</label>
+                    <input type="text" class="form-control" id="prof-major">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="prof-email">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="text" class="form-control" id="prof-phone">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Niên khóa & Tốt nghiệp dự kiến</label>
+                    <input type="text" class="form-control" id="prof-grad">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Địa điểm hiện tại</label>
+                    <input type="text" class="form-control" id="prof-location">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Liên kết GitHub / LinkedIn</label>
+                    <input type="text" class="form-control" id="prof-links">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Summary -->
+            <div style="margin-top:20px;">
+              <div class="form-group">
+                <label class="form-label">Tóm tắt mục tiêu nghề nghiệp (Summary)</label>
+                <textarea class="form-control" id="prof-summary" style="min-height:75px; font-size:12.5px; line-height:1.5;"></textarea>
+              </div>
+            </div>
+
+            <!-- Skills & Projects -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:18px; margin-top:14px;">
+              <div class="form-group">
+                <label class="form-label">Kỹ năng chuyên môn (Theo nhóm bằng chứng)</label>
+                <textarea class="form-control" id="prof-skills" style="min-height:160px; font-size:12.5px; line-height:1.6;"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Đồ án thực tế đã hoàn thành (Projects)</label>
+                <textarea class="form-control" id="prof-projects" style="min-height:160px; font-size:12.5px; line-height:1.6;"></textarea>
+              </div>
+            </div>
+
+            <!-- Certs, Languages, Visa -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px; margin-top:14px;">
+              <div class="form-group">
+                <label class="form-label">Chứng chỉ đã xác thực</label>
+                <textarea class="form-control" id="prof-certifications" style="min-height:100px; font-size:12.5px; line-height:1.5;"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Trình độ ngoại ngữ</label>
+                <textarea class="form-control" id="prof-languages" style="min-height:100px; font-size:12.5px; line-height:1.5;"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Quyền làm việc, Visa & Lịch làm</label>
+                <textarea class="form-control" id="prof-visa" style="min-height:100px; font-size:12.5px; line-height:1.5;"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. TÌM VIỆC LÀM (SEARCH) -->
+      <section class="page-section" id="sec-search">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Bộ lọc & Tìm kiếm việc làm</div>
+            <button class="btn btn-primary" id="btn-run-search">Tìm kiếm việc ngay</button>
+          </div>
+          <div class="card-body">
+            <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:16px;">
+              <div class="form-group">
+                <label class="form-label">Từ khóa kỹ năng / Vị trí</label>
+                <input type="text" class="form-control" id="search-keywords" value="cloud devops intern">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Thị trường</label>
+                <select class="form-control" id="search-market">
+                  <option value="vietnam">Việt Nam</option>
+                  <option value="korea">Hàn Quốc (Xác minh visa)</option>
+                  <option value="freelance">Freelance / Dự án</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Giới hạn mỗi cổng (Limit)</label>
+                <input type="number" class="form-control" id="search-limit" value="3" min="1" max="10">
+                <small style="color:#64748b; font-size:11px;">*Giới hạn mỗi truy vấn, không phải tổng kết quả</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Kết quả việc làm tìm thấy</div>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <table class="data-table" id="search-results-table">
+              <thead>
+                <tr>
+                  <th>Công ty</th>
+                  <th>Vị trí</th>
+                  <th>Thị trường</th>
+                  <th>Điểm Match</th>
+                  <th>Trạng thái</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. BỘ HỒ SƠ & SOẠN THẢO (PACKAGES) -->
+      <section class="page-section" id="sec-packages">
+        <!-- Direct Apply & Email Action Bar -->
+        <div class="card" style="margin-bottom:16px; border:2px solid #0284c7; background:linear-gradient(to right, #f0f9ff, #ffffff); position:sticky; top:0; z-index:20; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
+          <div class="card-body" style="padding:16px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
+              <div style="flex:1; min-width:280px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <div>
+                    <label style="font-weight:600; font-size:13px; color:#0369a1; margin:0;">Kênh nộp & Người nhận (Form URL hoặc Email HR):</label>
+                    <span id="pkg-mode-indicator" style="font-size:11.5px; margin-left:8px;"></span>
+                  </div>
+                  <span id="pkg-auto-detected-badge" style="font-size:11.5px; color:#15803d; font-weight:600; background:#dcfce7; padding:2px 8px; border-radius:4px; display:none;"></span>
+                </div>
+                <div style="display:flex; gap:8px;">
+                  <select id="pkg-apply-channel" class="form-control" style="width:140px; font-weight:600;">
+                    <option value="email">Gửi Email</option>
+                    <option value="form">Điền Form</option>
+                  </select>
+                  <input type="text" id="pkg-apply-recipient" class="form-control" placeholder="URL form tuyển dụng hoặc Email HR (vd: hr@company.com)" style="flex:1;">
+                </div>
+              </div>
+              <div style="display:flex; gap:10px; align-items:flex-end;">
+                <button class="btn btn-success" id="btn-auto-apply-email-direct" style="background:#15803d; color:#fff; border:none; padding:8px 16px; border-radius:6px; font-weight:700; cursor:pointer; box-shadow:0 2px 4px rgba(21,128,61,0.2);">
+                  🚀 Tự tìm mail HR & Gửi Apply ngay
+                </button>
+                <button class="btn btn-primary" id="btn-trigger-form-fill" style="background:#0284c7;">
+                  ⚡ Tự điền Form Apply (Playwright)
+                </button>
+                <button class="btn btn-secondary" id="btn-trigger-send-email">
+                  ✉️ Gửi Email ứng tuyển
+                </button>
+                <button class="btn btn-secondary" id="btn-enqueue-app">
+                  📋 Hàng đợi
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title" id="package-view-title">Soạn thảo & Xem trước Hồ sơ ứng tuyển theo Job</div>
+            <button class="btn btn-primary btn-sm" id="btn-save-doc-edits">Lưu nội dung thư/email</button>
+          </div>
+          <div class="card-body">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+              <div>
+                <h4 style="font-size:14px; margin-bottom:10px; color:#0f172a;">Xem trước CV Modern Tech (PDF 1 Trang)</h4>
+                <div style="border:1px solid #cbd5e1; border-radius:6px; height:500px; overflow:hidden; background:#e2e8f0;">
+                  <iframe id="cv-pdf-preview-iframe" src="" style="width:100%; height:100%; border:none;"></iframe>
+                </div>
+                <div style="margin-top:10px;">
+                  <a id="btn-download-pdf" href="#" target="_blank" class="btn btn-secondary btn-sm">Mở tệp PDF riêng</a>
+                  <a id="btn-open-preview-html" href="#" target="_blank" class="btn btn-secondary btn-sm" style="margin-left:8px;">Xem trước Email HTML</a>
+                </div>
+              </div>
+              <div>
+                <div class="form-group">
+                  <label class="form-label">Thư ứng tuyển (Cover Letter) - Có thể sửa trực tiếp</label>
+                  <textarea class="form-control" id="pkg-cover-letter-text" style="height:210px; font-family:monospace; font-size:12px;"></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Nội dung Email (Options A & B) - Có thể sửa trực tiếp</label>
+                  <textarea class="form-control" id="pkg-email-body-text" style="height:210px; font-family:monospace; font-size:12px;"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. TRUNG TÂM ỨNG TUYỂN (QUEUE) -->
+      <section class="page-section" id="sec-queue">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Hàng đợi ứng tuyển tự động (State Machine Queue)</div>
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-secondary btn-sm" onclick="loadQueueData()">Làm mới</button>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <table class="data-table" id="queue-table">
+              <thead>
+                <tr>
+                  <th>Công ty</th>
+                  <th>Vị trí</th>
+                  <th>Kênh nộp</th>
+                  <th>Trạng thái hiện tại</th>
+                  <th>Tiến trình</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. TRACKER ỨNG TUYỂN -->
+      <section class="page-section" id="sec-tracker">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Danh sách theo dõi đơn ứng tuyển (Tracker)</div>
+            <a class="btn btn-secondary btn-sm" href="/api/tracker/export-csv" target="_blank">Xuất file CSV</a>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <table class="data-table" id="tracker-full-table">
+              <thead>
+                <tr>
+                  <th>Mã Job</th>
+                  <th>Công ty</th>
+                  <th>Vị trí</th>
+                  <th>Điểm</th>
+                  <th>Trạng thái</th>
+                  <th>Ngày nộp</th>
+                  <th>Ghi chú</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. CÀI ĐẶT & KẾT NỐI (SETTINGS) -->
+      <section class="page-section" id="sec-settings">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Cấu hình tự động hóa & Hạn mức an toàn</div>
+            <button class="btn btn-primary btn-sm" id="btn-save-settings">Lưu cấu hình</button>
+          </div>
+          <div class="card-body">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+              <div>
+                <div class="form-group">
+                  <label class="form-label">Chế độ tự động hóa</label>
+                  <select class="form-control" id="set-automation-mode">
+                    <option value="prepare">1. Chuẩn bị (Không gửi email, không submit form)</option>
+                    <option value="review" selected>2. Có duyệt - Mặc định (Tự điền form, kiểm tra trước khi gửi)</option>
+                    <option value="auto">3. Tự động theo phạm vi (Tự động nộp trong hạn mức đã cấp phép)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Hạn mức số đơn tối đa / ngày (Múi giờ Asia/Ho_Chi_Minh)</label>
+                  <input type="number" class="form-control" id="set-daily-limit" value="5" min="1" max="50">
+                </div>
+              </div>
+              <div>
+                <h4 style="font-size:13.5px; margin-bottom:10px; color:#0f172a;">Kiểm tra kết nối thiết bị</h4>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                  <button class="btn btn-secondary" id="btn-test-browser-connection">
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                    Kiểm tra Trình duyệt Playwright
+                  </button>
+                  <button class="btn btn-secondary" id="btn-test-email-connection">
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                    Kiểm tra Kết nối Email
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        <!-- CẤU HÌNH GMAIL THẬT (GOOGLE SMTP) -->
+        <div class="card" style="margin-top:20px; border:2px solid #16a34a; background:#f0fdf4;">
+          <div class="card-header" style="background:#dcfce7; border-bottom:1px solid #bbf7d0;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">✉️</span>
+              <div class="card-title" style="color:#166534; font-weight:700;">Cấu hình Gửi Email THẬT qua Gmail (Google SMTP)</div>
+            </div>
+            <span id="email-mode-badge" class="badge badge-amber">Đang ở chế độ Thử nghiệm (Mock)</span>
+          </div>
+          <div class="card-body">
+            <p style="font-size:13px; color:#1e293b; line-height:1.6; margin-bottom:16px;">
+              Mặc định hệ thống chạy ở chế độ <strong>Thử nghiệm Cục bộ (Mock)</strong> để bảo vệ an toàn. Để gửi email ứng tuyển <strong>THẬT 100%</strong> từ chính hộp thư Gmail của bạn (thư xuất hiện ngay trong mục <em>Đã gửi</em> của Gmail), hãy chọn và cấu hình bên dưới:
+            </p>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+              <div class="form-group">
+                <label class="form-label" style="font-weight:600;">Chế độ gửi thư:</label>
+                <select class="form-control" id="cfg-email-provider-type">
+                  <option value="smtp">1. Gửi THẬT từ Gmail cá nhân (Google SMTP TLS 587)</option>
+                  <option value="mock">2. Thử nghiệm Cục bộ / Mock Offline (Không gửi thật)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-weight:600;">Địa chỉ Gmail gửi đi:</label>
+                <input type="email" class="form-control" id="cfg-gmail-username" value="hienngo090800@gmail.com">
+              </div>
+            </div>
+
+            <div id="cfg-gmail-creds-container" style="margin-top:10px;">
+              <div class="form-group">
+                <label class="form-label" style="font-weight:600;">Mật khẩu ứng dụng Google (App Password - 16 ký tự):</label>
+                <div style="display:flex; gap:10px;">
+                  <input type="password" class="form-control" id="cfg-gmail-password" placeholder="Ví dụ: abcd efgh ijkl mnop (Mã 16 chữ cái)" style="font-family:monospace; font-size:14px; letter-spacing:1px; flex:1;">
+                  <button class="btn btn-secondary" type="button" id="btn-toggle-gmail-pwd" style="padding:0 12px;">👁️</button>
+                  <button class="btn btn-success" id="btn-save-gmail-creds" style="background:#15803d; color:#fff; font-weight:700; padding:8px 20px;">
+                    🔐 Xác thực & Lưu kết nối Gmail
+                  </button>
+                </div>
+                <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:6px; padding:10px 14px; margin-top:12px; font-size:12px; color:#475569; line-height:1.6;">
+                  <strong>📌 Hướng dẫn tạo Mật khẩu ứng dụng Gmail (chỉ mất 1 phút):</strong><br>
+                  1. Truy cập: <a href="https://myaccount.google.com/apppasswords" target="_blank" style="color:#0284c7; font-weight:600;">myaccount.google.com/apppasswords</a> (Yêu cầu tài khoản Google đã bật <em>Xác minh 2 bước</em>).<br>
+                  2. Đặt tên ứng dụng (ví dụ: <code>ai-find-job</code>) và bấm <strong>Tạo</strong>.<br>
+                  3. Google sẽ cấp mã 16 ký tự màu vàng (ví dụ: <code>xxxx xxxx xxxx xxxx</code>). Dán mã đó vào ô trên và bấm <strong>Xác thực & Lưu kết nối Gmail</strong>.<br>
+                  <em>*Mã được mã hóa an toàn cục bộ trên máy tính của bạn (.local/email_credentials.enc) và không bao giờ gửi ra bên ngoài.</em>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Modals -->
+  <!-- Interactive Question Prompt Modal for AWAITING_USER -->
+  <div class="modal-overlay" id="question-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="card-title" id="q-modal-title">Cần người dùng can thiệp / Trả lời</h3>
+        <button class="btn btn-secondary btn-sm" onclick="closeQuestionModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p id="q-modal-desc" style="margin-bottom:14px; font-size:13.5px; color:#1e293b;"></p>
+        <div class="form-group">
+          <label class="form-label" id="q-modal-input-label">Câu trả lời của bạn:</label>
+          <input type="text" class="form-control" id="q-modal-input">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeQuestionModal()">Hủy</button>
+        <button class="btn btn-primary" id="btn-submit-q-answer">Xác nhận & Tiếp tục hàng đợi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Job Detail Modal -->
+  <div class="modal-overlay" id="job-detail-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="card-title" id="job-modal-title">Chi tiết tuyển dụng</h3>
+        <button class="btn btn-secondary btn-sm" onclick="closeJobModal()">×</button>
+      </div>
+      <div class="modal-body" id="job-modal-body">
+        <!-- Content populated via JS -->
+      </div>
+      <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <button class="btn btn-secondary" onclick="closeJobModal()">Đóng</button>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary" id="btn-modal-create-pkg">Tạo bộ hồ sơ</button>
+          <button class="btn btn-success" id="btn-modal-auto-apply" style="background:#15803d; color:#fff; font-weight:700;">🚀 Tự tìm mail HR & Gửi Apply ngay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

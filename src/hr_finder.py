@@ -1,0 +1,134 @@
+"""
+Automated HR Email & Application Portal Discovery Engine.
+Extracts contact emails directly from raw job descriptions, identifies official company domains,
+and maps verified HR recruitment channels for automated application dispatch.
+"""
+
+from pathlib import Path
+import re
+from typing import Optional
+from urllib.parse import urlparse
+
+# Verified and curated HR recruitment mailboxes for major tech employers
+KNOWN_HR_MAILBOXES = {
+    "hitachi": "careers.vn@hitachids.com",
+    "avepoint": "careers_vn@avepoint.com",
+    "marvell": "vietnam-recruitment@marvell.com",
+    "cmc": "tuyendung@cmc.com.vn",
+    "cystack": "careers@cystack.net",
+    "fpt": "tuyendung@fpt.com",
+    "viettel": "tuyendung@viettel.com.vn",
+    "vng": "recruitment@vng.com.vn",
+    "vnpt": "tuyendung@vnpt.vn",
+    "rikkei": "tuyendung@rikkeisoft.com"
+}
+
+# Regex to detect emails in text
+EMAIL_REGEX = re.compile(r'([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)', re.IGNORECASE)
+
+# Ignored emails that should never be targeted as HR recipients
+IGNORED_EMAIL_DOMAINS = [
+    "example.com", "local.test", "localhost", "gmail.com", "yahoo.com", "hotmail.com", "outlook.com"
+]
+IGNORED_EMAIL_PREFIXES = [
+    "noreply", "no-reply", "donotreply", "support", "admin", "abuse", "mailer-daemon"
+]
+
+
+def find_hr_email(company: str = "", raw_jd: str = "", source_url: str = "") -> str:
+    """
+    Automatically detects official HR recruitment email for a job.
+    1. Scans raw_jd text for explicit HR/recruitment emails (highest confidence).
+    2. Matches against verified enterprise employer database.
+    3. If none found, returns empty string to prevent sending to guessed/non-existent addresses.
+    """
+    company_lower = (company or "").lower().strip()
+
+    # 1. Check raw_jd for explicit recruitment emails
+    if raw_jd:
+        found_emails = EMAIL_REGEX.findall(raw_jd)
+        for email in found_emails:
+            clean_email = email.strip().lower()
+            # Exclude candidate's own email and common public/system addresses
+            if "hienngo090800" in clean_email:
+                continue
+            domain = clean_email.split("@")[-1]
+            prefix = clean_email.split("@")[0]
+            if any(domain.endswith(d) for d in IGNORED_EMAIL_DOMAINS) and "hr" not in prefix:
+                continue
+            if any(clean_email.startswith(p) for p in IGNORED_EMAIL_PREFIXES):
+                continue
+
+            # Prioritize recruitment keywords
+            if any(k in prefix for k in ["hr", "tuyendung", "recruit", "career", "job", "apply", "talent", "contact"]):
+                return clean_email
+
+        # If any valid corporate email found in JD
+        for email in found_emails:
+            clean_email = email.strip().lower()
+            if "hienngo090800" in clean_email:
+                continue
+            domain = clean_email.split("@")[-1]
+            if not any(domain.endswith(d) for d in IGNORED_EMAIL_DOMAINS):
+                return clean_email
+
+    # 2. Check verified known HR mailboxes
+    for k, email in KNOWN_HR_MAILBOXES.items():
+        if k in company_lower:
+            return email
+
+    # 3. Do NOT guess random email addresses. Return empty string so user or form link can be used.
+    return ""
+
+
+def find_apply_url(company: str = "", raw_jd: str = "", source_url: str = "") -> str:
+    """
+    Extracts the official application URL or online form link for a job.
+    """
+    # 1. If source_url is directly a web link
+    if source_url and source_url.startswith("http"):
+        return source_url.strip()
+
+    # 2. Scan raw_jd for URLs (e.g. from files like my_jd.txt)
+    if raw_jd:
+        url_matches = re.findall(r'https?://[^\s)"]+', raw_jd)
+        for u in url_matches:
+            if "apply" in u or "job" in u or "tuyen-dung" in u:
+                return u.strip()
+        if url_matches:
+            return url_matches[0].strip()
+
+    return ""
+
+
+def get_hr_contact_info(company: str = "", raw_jd: str = "", source_url: str = "") -> dict:
+    """
+    Returns structured contact information indicating whether an email is verified from JD
+    or if applying via portal/link is recommended.
+    """
+    email = find_hr_email(company, raw_jd, source_url)
+    apply_url = find_apply_url(company, raw_jd, source_url)
+
+    source_type = "NONE"
+    if email:
+        if raw_jd and email in raw_jd.lower():
+            source_type = "JD_EXPLICIT"
+        else:
+            source_type = "VERIFIED_ENTERPRISE"
+
+    channel = "email" if email else "form"
+    note = ""
+    if not email and apply_url:
+        note = "Tin tuyển dụng không có email HR trong JD. Nhận hồ sơ qua Form/Link ứng tuyển gốc."
+    elif email:
+        note = f"Email HR chính thức: {email}"
+
+    return {
+        "email": email,
+        "apply_url": apply_url,
+        "has_email": bool(email),
+        "has_apply_url": bool(apply_url),
+        "channel": channel,
+        "source_type": source_type,
+        "note": note
+    }

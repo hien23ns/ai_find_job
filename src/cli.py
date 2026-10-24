@@ -276,6 +276,26 @@ def cmd_evaluate(args):
         html_path = gen.export_to_html(cv_md, raw_html_path)
         print(f"[+] Đã xuất file HTML độc lập (mở trình duyệt để in PDF): {html_path.name} (tại {target_output_dir.name})")
 
+        # Modern Tech Package Generation (if requested via --template modern_tech or --create-package)
+        chosen_template = getattr(args, "template", "classic")
+        if chosen_template == "modern_tech" or getattr(args, "create_package", False):
+            from src.modern_tech_cv import create_job_application_package
+            is_fixture = bool(args.file and ("fixtures" in str(args.file) or "tests" in str(args.file)))
+            app_base = (LOCAL_DIR / "test_outputs" / "applications") if is_fixture else (OUTPUT_DIR / "applications")
+            pkg_res = create_job_application_package(
+                candidate=candidate,
+                eval_result=eval_result,
+                jd_data=jd_data,
+                template=chosen_template,
+                base_output_dir=app_base
+            )
+            print(f"[+] Đã tạo trọn bộ hồ sơ ứng tuyển Modern Tech: {pkg_res['version_dir']}")
+            print(f"    * Manifest: {pkg_res['manifest_path'].name}")
+            print(f"    * CV PDF (EN): {pkg_res['cv_en_pdf'].name} ({pkg_res['verification_en']['num_pages']} trang)")
+            print(f"    * CV PDF (VI): {pkg_res['cv_vi_pdf'].name} ({pkg_res['verification_vi']['num_pages']} trang)")
+            if pkg_res.get('preview_en'):
+                print(f"    * Preview PNG: {pkg_res['preview_en'].name}")
+
     print("="*70 + "\n")
 
 def cmd_tracker(args):
@@ -355,6 +375,266 @@ def cmd_upstream_verify(args):
     print(f"Kết quả:    {res.get('output', res.get('message', ''))}")
     print("=" * 65)
 
+def cmd_search(args):
+    from src.job_searcher import JobSearcher, load_search_profile
+
+    searcher = JobSearcher()
+    if not searcher.is_bun_available():
+        print("[!] CẢNH BÁO: Không tìm thấy runtime 'bun' trên hệ thống.", file=sys.stderr)
+        print("    Để sử dụng các portal search CLI từ upstream (.agents/skills/):", file=sys.stderr)
+        print("    Vui lòng cài đặt Bun từ https://bun.sh hoặc qua lệnh 'npm install -g bun'.", file=sys.stderr)
+        sys.exit(1)
+
+    # 1. Load candidate profile safely (PII stripped)
+    cand_path = Path(args.candidate) if args.candidate else (
+        PROJECT_ROOT / "data" / "candidates" / "my_profile.json"
+        if (PROJECT_ROOT / "data" / "candidates" / "my_profile.json").exists()
+        else CANDIDATES_DIR / "candidate_mock.json"
+    )
+    safe_profile = load_search_profile(cand_path)
+    print("=" * 70)
+    print(" TỰ ĐỘNG TÌM KIẾM VIỆC LÀM QUA UPSTREAM PORTAL CLIs")
+    print("=" * 70)
+    print(f"Hồ sơ ứng viên:      {cand_path.name}")
+    print(f"Địa điểm ưu tiên:    {safe_profile['preferred_location']}")
+    print(f"Học vấn & Niên khóa: {safe_profile['candidate_summary_non_pii']} (TN {safe_profile['expected_graduation']})")
+    print(f"Kỹ năng mục tiêu:    {', '.join(safe_profile['target_skills'][:6])}...")
+    print(f"Bảo vệ dữ liệu:      {safe_profile['_privacy_guarantee']}")
+    print(f"Giải thích --limit:  Tối đa {args.limit} tin cho MỖI truy vấn tìm kiếm upstream (danh sách kết quả là tổng hợp sau khi lọc trùng)")
+    print("=" * 70)
+
+    # Branch A: Compare specific URLs / IDs
+    if getattr(args, "compare_urls", None):
+        print(f"\n[*] Đang tải chi tiết và đối chiếu đa chiều cho {len(args.compare_urls)} tin tuyển dụng cụ thể...")
+        compare_res = searcher.fetch_and_compare_jobs(
+            job_ids_or_urls=args.compare_urls,
+            candidate_profile_path=cand_path
+        )
+        jobs = compare_res.get("jobs", [])
+        print(f"[+] Hoàn tất tải và đối chiếu {len(jobs)} tin:\n")
+        for idx, j in enumerate(jobs, 1):
+            dims = j.get("comparison_dimensions", {})
+            eval_res = j.get("eval_result", {})
+            print(f"[{idx}] {j.get('title')} - {j.get('company')}")
+            print(f"    - URL:                      {j.get('url')}")
+            print(f"    - Tình trạng nhận hồ sơ:    {'ĐANG NHẬN HỒ SƠ' if j.get('is_active') else 'ĐÃ ĐÓNG / HẾT HẠN'} ({j.get('status_evidence')})")
+            print(f"    - Chính sách học vấn:       {dims.get('education_policy')}")
+            print(f"    - Kinh nghiệm & kỹ năng:    {dims.get('required_experience')}")
+            print(f"    - Yêu cầu tiếng Anh:        {dims.get('english_requirement')}")
+            print(f"    - Lịch làm việc & địa điểm: {dims.get('work_schedule_and_location')}")
+            print(f"    - Bằng chứng phù hợp trong hồ sơ:")
+            if dims.get("profile_evidence"):
+                for ev in dims["profile_evidence"]:
+                    print(f"        * {ev}")
+            else:
+                print("        * Chưa phát hiện bằng chứng phù hợp được xác minh")
+            print(f"    - Điểm phù hợp (Evaluator): {eval_res.get('match_score', 'N/A')}/100 ({eval_res.get('recommendation', '')})")
+            if dims.get("unverified_questions"):
+                print(f"    - Điều kiện cần hỏi nhà tuyển dụng:")
+                for uq in dims["unverified_questions"]:
+                    print(f"        ? {uq}")
+            print()
+    else:
+        # Branch B: Standard search across upstream portals
+        print("\n[*] Đang truy vấn các cổng tuyển dụng upstream (LinkedIn, freehire.me)...")
+        search_res = searcher.search_all_sources(
+            candidate_profile_path=cand_path,
+            max_per_tier=args.limit
+        )
+
+        jobs = search_res.get("jobs", [])
+        print(f"[+] Phiên tìm kiếm:    {search_res.get('session_id')}")
+        print(f"[+] File lưu phiên:    {search_res.get('session_path')}")
+        print(f"[+] Tìm thấy tổng cộng {len(jobs)} tin tuyển dụng duy nhất (sau lọc trùng qua job_key.py):\n")
+
+        current_tier = None
+        for idx, j in enumerate(jobs, 1):
+            tier = j.get("priority_tier", 99)
+            if tier != current_tier:
+                current_tier = tier
+                print(f"\n--- NHÓM {tier}: {j.get('priority_label', '')} ---")
+
+            print(f" [{idx}] {j.get('title')} - {j.get('company')}")
+            print(f"     Địa điểm:    {j.get('location')} | Hình thức: {j.get('employmentType', 'N/A')}")
+            print(f"     Nguồn:       {j.get('search_source')} (Ngày: {j.get('date', 'Mới cập nhật')})")
+            print(f"     URL:         {j.get('url')}")
+            if j.get("unverified_conditions"):
+                print("     Lưu ý chưa xác minh:")
+                for uc in j["unverified_conditions"]:
+                    print(f"      [!] {uc}")
+            print()
+
+    # 2. Stage/Evaluate job if requested
+    target_idx = None
+    if args.stage_id:
+        try:
+            target_idx = int(args.stage_id) - 1
+        except ValueError:
+            for i, j in enumerate(jobs):
+                if j.get("id") == args.stage_id or j.get("canonical_key") == args.stage_id:
+                    target_idx = i
+                    break
+    elif args.auto_evaluate and jobs:
+        # Strictly select only among valid priority tiers (Tier 1-4)
+        for i, j in enumerate(jobs):
+            if j.get("priority_tier") in [1, 2, 3, 4]:
+                target_idx = i
+                break
+        if target_idx is None:
+            print("[!] THÔNG BÁO: Không có tin tuyển dụng nào thuộc các nhóm ưu tiên (Tier 1-4) để tự động chọn.")
+            print("    Hệ thống từ chối tự động chọn tin thuộc nhóm 'Ngoài mục tiêu' hoặc 'Chưa phân loại'.")
+
+    if target_idx is not None and 0 <= target_idx < len(jobs):
+        selected_job = jobs[target_idx]
+        print("=" * 70)
+        print(f" CHUYỂN SANG ĐÁNH GIÁ & TẠO HỒ SƠ CHO TIN ĐƯỢC CHỌN [{target_idx + 1}]")
+        print(f" Vị trí: {selected_job.get('title')} tại {selected_job.get('company')}")
+        print("=" * 70)
+
+        tracker_file = Path(args.tracker_file) if args.tracker_file else None
+        output_dir = Path(args.output_dir) if args.output_dir else None
+
+        stage_res = searcher.evaluate_and_stage_job(
+            job=selected_job,
+            candidate_path=cand_path,
+            tracker_file=tracker_file,
+            output_dir=output_dir,
+            tracker_status=args.tracker_status or "Đã đánh giá"
+        )
+
+        eval_res = stage_res["eval_result"]
+        print(f"[+] Trạng thái Tracker: '{stage_res['tracker_status']}' (ID: {stage_res['job_id']})")
+        print(f"[+] Điểm phù hợp:       {eval_res.get('match_score', 'N/A')}/100")
+        print(f"[+] Khuyến nghị:        {eval_res.get('recommendation')}")
+        print("[+] Danh sách tài liệu đã tạo:")
+        for doc_type, doc_p in stage_res["document_paths"].items():
+            print(f"     - {doc_type:<15}: {doc_p.name} (tại {doc_p.parent.name})")
+        print("=" * 70)
+
+
+def cmd_apply(args):
+    from src.application_sender import execute_application_dispatch
+    
+    # Locate package dir
+    package_dir = None
+    if getattr(args, "package_dir", None):
+        package_dir = Path(args.package_dir)
+    elif getattr(args, "id", None):
+        app_root = OUTPUT_DIR / "applications"
+        if app_root.exists():
+            for c_dir in app_root.iterdir():
+                if c_dir.is_dir() and args.id.lower() in c_dir.name.lower():
+                    versions = sorted([v for v in c_dir.iterdir() if v.is_dir() and v.name.startswith("v")])
+                    if versions:
+                        package_dir = versions[-1]
+                        break
+    else:
+        app_root = OUTPUT_DIR / "applications"
+        if app_root.exists():
+            all_pkgs = []
+            for c_dir in app_root.iterdir():
+                if c_dir.is_dir():
+                    for v in c_dir.iterdir():
+                        if v.is_dir() and (v / "application.json").exists():
+                            all_pkgs.append(v)
+            if all_pkgs:
+                all_pkgs.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+                package_dir = all_pkgs[0]
+
+    if not package_dir or not (package_dir / "application.json").exists():
+        print("[!] Không tìm thấy thư mục hồ sơ ứng tuyển hợp lệ. Vui lòng truyền --package-dir.", file=sys.stderr)
+        sys.exit(1)
+
+    tracker_file = Path(args.tracker_file) if getattr(args, "tracker_file", None) else None
+    action = getattr(args, "action", "preview")
+    option = getattr(args, "option", "b")
+    force = getattr(args, "force", False)
+    confirm_flag = getattr(args, "confirm", False)
+
+    # Enforce interactive confirmation for final dispatch actions if --confirm/--yes not supplied
+    confirmed = True
+    if action in ["mark-sent", "mark_sent", "send-email", "send_email", "mark-form-submitted", "mark_form_submitted"]:
+        if not confirm_flag:
+            try:
+                prompt_text = f"Xác nhận thực hiện '{action}' cho gói hồ sơ {package_dir.name}? [y/N]: "
+                user_choice = input(prompt_text).strip().lower()
+                confirmed = user_choice in ["y", "yes", "co", "c"]
+            except (EOFError, KeyboardInterrupt):
+                confirmed = False
+        else:
+            confirmed = True
+
+    res = execute_application_dispatch(
+        package_dir=package_dir,
+        action=action,
+        option=option,
+        tracker_file=tracker_file,
+        force=force,
+        confirmed=confirmed
+    )
+
+    status = res.get("status")
+    if status == "DUPLICATE_PREVENTED":
+        print("\n" + "="*70)
+        print(" [!] CẢNH BÁO: CHỐNG NỘP TRÙNG (DUPLICATE APPLICATION PREVENTED)")
+        print("="*70)
+        print(f" {res['message']}")
+        print("="*70 + "\n")
+        return
+
+    if status in ["REJECTED_MISSING_CHANNEL", "REJECTED_MISSING_ATTACHMENT", "REJECTED_FILE_INTEGRITY_MISMATCH", "CANCELLED_BY_USER", "TIMEOUT_NO_RETRY", "SEND_FAILED"]:
+        print("\n" + "="*70)
+        print(f" [!] THÔNG BÁO QUY TRÌNH: {status}")
+        print("="*70)
+        print(f" {res['message']}")
+        print("="*70 + "\n")
+        return
+
+    print("\n" + "="*70)
+    print(f" QUY TRÌNH ỨNG TUYỂN (APPLICATION DISPATCH) - {package_dir.name}")
+    print("="*70)
+    
+    if action == "preview":
+        print(f"Công ty:              {res['company']}")
+        print(f"Vị trí:               {res['role']}")
+        print(f"Kênh nộp đơn:         {res['channel'].upper()}")
+        print(f"Người nhận / URL:     {res['recipient']}")
+        print(f"Trạng thái hiện tại:  {res['current_status']}")
+        print(f"Lựa chọn email:       Lựa chọn {res['option_chosen']}")
+        print(f"Tệp thư nháp (.eml):  {res['eml_file']}")
+        print(f"Xem trước (HTML):     {res['preview_html']}")
+        print(f"Tài liệu đính kèm:    {', '.join(res['attachments'])}")
+        print("\n--- ĐIỀU KIỆN CẦN LƯU Ý ---")
+        for u in res['unverified_conditions']:
+            print(f" [!] {u}")
+        print("\n--- HƯỚNG DẪN BƯỚC TIẾP THEO ---")
+        print("1. Để xuất/mở tệp thư nháp .eml đính kèm sẵn CV gửi qua email:")
+        print(f"   python -m src.cli apply --package-dir {package_dir} --action open-draft --option {option}")
+        print("2. Để mở trang web cổng tuyển dụng chính thức (nếu nộp qua form):")
+        print(f"   python -m src.cli apply --package-dir {package_dir} --action open-form")
+        print("3. Sau khi bạn đã thực tế gửi thư và muốn cập nhật Tracker:")
+        print(f"   python -m src.cli apply --package-dir {package_dir} --action mark-sent --confirm")
+        
+    elif action in ["open-draft", "open_draft"]:
+        print(f"[+] {res['message']}")
+        print(f"    * Đường dẫn file .eml: {res['eml_path']}")
+        
+    elif action in ["open-form", "open_form"]:
+        print(f"[+] {res['message']}")
+        if "url" in res:
+            print(f"    * URL: {res['url']}")
+        
+    elif action in ["mark_sent", "mark-sent"]:
+        print(f"[+] {res['message']}")
+        
+    elif action in ["send_email", "send-email"]:
+        print(f"[+] {res['message']}")
+        if "message_id" in res:
+            print(f"    * Message ID: {res['message_id']}")
+        
+    print("="*70 + "\n")
+
+
 def main():
     parser = argparse.ArgumentParser(description="ai-job-search - Nền tảng tìm kiếm, đánh giá và ứng tuyển việc an ninh mạng")
     subparsers = parser.add_subparsers(dest="command")
@@ -373,6 +653,8 @@ def main():
     eval_parser.add_argument("--tracker-file", help="Đường dẫn file tracker tùy chọn (dùng cho test/cách ly)")
     eval_parser.add_argument("--output-dir", help="Thư mục xuất tài liệu (Mặc định: output/; kiểm thử tự động lưu vào .local/test_outputs)")
     eval_parser.add_argument("--generate-docs", action="store_true", help="Tự động tạo CV, Cover Letter/Proposal, Bộ phỏng vấn")
+    eval_parser.add_argument("--template", choices=["classic", "modern_tech"], default="classic", help="Mẫu CV: classic (mặc định) hoặc modern_tech (A4 1 trang công nghệ cao)")
+    eval_parser.add_argument("--create-package", action="store_true", help="Tự động đóng gói trọn bộ hồ sơ ứng tuyển theo từng job tại output/applications/")
 
     # Tracker command
     track_parser = subparsers.add_parser("tracker", help="Quản lý theo dõi ứng tuyển")
@@ -410,10 +692,36 @@ def main():
 
     subparsers.add_parser("upstream-verify", help="Kiểm tra an toàn chuỗi cung ứng upstream qua tools/security_guards.py")
 
+    # Search command (Reusing upstream portal CLIs)
+    search_parser = subparsers.add_parser("search", help="Tìm kiếm việc làm thực tế qua các cổng tuyển dụng upstream")
+    search_parser.add_argument("--candidate", help="Đường dẫn file hồ sơ ứng viên (mặc định: data/candidates/my_profile.json)")
+    search_parser.add_argument("--limit", type=int, default=3, help="Số lượng tin tối đa cho MỖI truy vấn upstream (không phải giới hạn toàn bộ kết quả tổng hợp sau lọc trùng; mặc định: 3)")
+    search_parser.add_argument("--compare-urls", nargs="+", help="Danh sách các URL hoặc ID cần tải về so sánh đối chiếu đa chiều")
+    search_parser.add_argument("--auto-evaluate", action="store_true", help="Tự động đánh giá và tạo hồ sơ cho tin phù hợp nhất (chỉ chọn trong Tier 1-4)")
+    search_parser.add_argument("--stage-id", help="Số thứ tự hoặc ID của tin cần đánh giá và tạo hồ sơ")
+    search_parser.add_argument("--tracker-status", default="Đã đánh giá", choices=["Đã tìm thấy", "Đã đánh giá", "Sẵn sàng rà soát", "Cần xác minh GPA và lịch thực tập"], help="Trạng thái lưu vào Tracker (không ghi Đã nộp)")
+    search_parser.add_argument("--tracker-file", help="File tracker tùy chọn (dùng cho kiểm thử/cách ly)")
+    search_parser.add_argument("--output-dir", help="Thư mục xuất tài liệu ứng tuyển")
+    search_parser.add_argument("--template", choices=["classic", "modern_tech"], default="modern_tech", help="Mẫu thiết kế CV (mặc định: modern_tech)")
+
+    # Apply command
+    apply_parser = subparsers.add_parser("apply", help="Quản lý quy trình ứng tuyển: xem trước email, xuất file .eml, mở form hoặc ghi nhận đã gửi")
+    apply_parser.add_argument("--package-dir", help="Đường dẫn thư mục phiên bản hồ sơ (output/applications/<company>_<role>_<id>/vX/)")
+    apply_parser.add_argument("--id", help="Mã tin tuyển dụng (Job ID) để tìm gói hồ sơ tương ứng")
+    apply_parser.add_argument("--action", choices=["preview", "open-draft", "open-form", "mark-sent", "send-email", "mark-form-submitted"], default="preview", help="Hành động ứng tuyển: preview (xem trước), open-draft (xuất/mở file .eml), open-form (mở URL nộp đơn), mark-sent (ghi nhận đã gửi email), send-email (gửi email an toàn), mark-form-submitted (ghi nhận nộp form)")
+    apply_parser.add_argument("--option", choices=["a", "b"], default="b", help="Lựa chọn email: b (Ứng tuyển trực tiếp - Khuyên dùng) hoặc a (Hỏi điều kiện)")
+    apply_parser.add_argument("--tracker-file", help="File tracker tùy chọn")
+    apply_parser.add_argument("--force", action="store_true", help="Bỏ qua cảnh báo chống nộp trùng nếu đã nộp trước đó")
+    apply_parser.add_argument("--yes", "--confirm", dest="confirm", action="store_true", help="Xác nhận gửi hoặc ghi nhận mà không cần hỏi lại trong terminal")
+
     args = parser.parse_args()
 
     if args.command == "evaluate":
         cmd_evaluate(args)
+    elif args.command == "search":
+        cmd_search(args)
+    elif args.command == "apply":
+        cmd_apply(args)
     elif args.command == "tracker":
         cmd_tracker(args)
     elif args.command == "deduplicate":

@@ -916,5 +916,515 @@ class TestAIJobSearch(unittest.TestCase):
         prod_after = set(prod_output.glob("*.md"))
         self.assertEqual(prod_before, prod_after, "Kiểm thử không được ghi đè vào thư mục output thật!")
 
+    # 38. SEARCH PRIVACY: load_search_profile chỉ lấy tiêu chí cần thiết, loại bỏ hoàn toàn PII
+    def test_38_job_searcher_load_profile_privacy(self):
+        from src.job_searcher import load_search_profile
+        prof = load_search_profile(FIXTURES_DIR / "candidate_mock.json")
+
+        self.assertIn("target_skills", prof)
+        self.assertIn("preferred_location", prof)
+        self.assertIn("expected_graduation", prof)
+
+        # Strictly check that private contact fields are not exposed
+        self.assertNotIn("email", prof)
+        self.assertNotIn("phone", prof)
+        self.assertNotIn("contact", prof)
+        self.assertNotIn("address", prof)
+        self.assertNotIn("name", prof)
+        self.assertEqual(prof["expected_graduation"], 2024)
+
+    # 39. UPSTREAM ORCHESTRATION: JobSearcher gọi đúng CLI upstream và xử lý lỗi Bun an toàn
+    def test_39_job_searcher_upstream_cli_orchestration(self):
+        from src.job_searcher import JobSearcher
+        searcher = JobSearcher()
+
+        # Test Bun availability detection
+        has_bun = searcher.is_bun_available()
+        self.assertIsInstance(has_bun, bool)
+
+        # Test search_linkedin with mock subprocess
+        mock_output = json.dumps({
+            "results": [
+                {
+                    "id": "123456",
+                    "title": "SOC Intern",
+                    "company": "FPT Software",
+                    "location": "Da Nang, Vietnam",
+                    "date": "2026-10-24",
+                    "url": "https://vn.linkedin.com/jobs/view/123456"
+                }
+            ]
+        })
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value = MagicMock(returncode=0, stdout=mock_output)
+            results = searcher.search_linkedin("SOC Intern", "Da Nang, Vietnam", limit=2)
+            self.assertEqual(len(results), 1)
+            self.assertEqual(results[0]["company"], "FPT Software")
+            self.assertEqual(results[0]["search_source"], "LinkedIn (Public Guest API)")
+
+        # Test graceful handling when subprocess fails
+        with patch("subprocess.run", side_effect=Exception("Connection error")):
+            results = searcher.search_linkedin("SOC Intern", "Da Nang, Vietnam")
+            self.assertEqual(results, [])
+
+    # 40. SEARCH AUDIT & DEDUP: Phân loại nhóm ưu tiên, phát hiện điều kiện chưa rõ và khử trùng canonical
+    def test_40_job_searcher_categorization_and_deduplication(self):
+        from src.job_searcher import JobSearcher
+        searcher = JobSearcher()
+
+        # Job in Da Nang
+        j_danang = {
+            "title": "Network Intern",
+            "company": "Company A",
+            "location": "Da Nang, Vietnam",
+            "description": "Yêu cầu thực tập sinh làm việc toàn thời gian (full-time) tại văn phòng Đà Nẵng."
+        }
+        searcher.categorize_and_audit_job(j_danang)
+        self.assertEqual(j_danang["priority_tier"], 1)
+        self.assertIn("Đà Nẵng", j_danang["priority_label"])
+        self.assertTrue(any("toàn thời gian" in uc for uc in j_danang["unverified_conditions"]))
+
+        # Job in Hanoi
+        j_hanoi = {
+            "title": "SOC Intern",
+            "company": "Company B",
+            "location": "Hanoi, Vietnam",
+            "description": "Yêu cầu 1 năm kinh nghiệm phân tích log."
+        }
+        searcher.categorize_and_audit_job(j_hanoi)
+        self.assertEqual(j_hanoi["priority_tier"], 3)
+        self.assertTrue(any("di chuyển" in uc for uc in j_hanoi["unverified_conditions"]))
+        self.assertTrue(any("kinh nghiệm" in uc for uc in j_hanoi["unverified_conditions"]))
+
+        # Canonical key verification
+        self.assertIn("canonical_key", j_danang)
+        self.assertTrue(len(j_danang["canonical_key"]) > 0)
+
+    # 41. STAGING PIPELINE: Đánh giá tin thật và lưu tracker không bao giờ gán 'Đã nộp'
+    def test_41_job_searcher_stage_and_evaluate_pipeline(self):
+        from src.job_searcher import JobSearcher
+        searcher = JobSearcher()
+
+        test_tracker = TEMP_DIR / "search_pipeline_test_tracker.json"
+        if test_tracker.exists():
+            test_tracker.unlink()
+        test_output = LOCAL_DIR / "test_outputs"
+        test_output.mkdir(parents=True, exist_ok=True)
+
+        sample_job = {
+            "id": "test_999999",
+            "title": "Thực tập sinh Quản trị Mạng",
+            "company": "Viettel Network Da Nang",
+            "location": "Da Nang, Vietnam",
+            "url": "https://example.com/jobs/999999",
+            "description": "Tuyển thực tập sinh quản trị mạng tại Đà Nẵng. Yêu cầu nắm vững TCP/IP, Wireshark và Linux. Ưu tiên Python.",
+            "priority_tier": 1,
+            "priority_label": "Đà Nẵng (Ưu tiên tại chỗ)",
+            "unverified_conditions": ["Cần xác nhận lịch làm việc với trường."],
+            "search_source": "LinkedIn (Test)"
+        }
+
+        res = searcher.evaluate_and_stage_job(
+            job=sample_job,
+            candidate_path=FIXTURES_DIR / "candidate_mock.json",
+            tracker_file=test_tracker,
+            output_dir=test_output,
+            tracker_status="Đã đánh giá"
+        )
+
+        # Assert status is strictly 'Đã đánh giá'
+        self.assertEqual(res["tracker_status"], "Đã đánh giá")
+        self.assertNotEqual(res["tracker_status"], "Đã nộp")
+
+        # Verify tracker file content
+        data = json.loads(test_tracker.read_text(encoding="utf-8"))
+        job_record = data["jobs"][res["job_id"]]
+        self.assertEqual(job_record["status"], "Đã đánh giá")
+        self.assertNotEqual(job_record["status"], "Đã nộp")
+
+        # Verify generated document paths
+        self.assertIn("cv_md", res["document_paths"])
+        self.assertIn("cover_letter_md", res["document_paths"])
+        self.assertTrue(res["document_paths"]["cv_md"].exists())
+
+    # 42. REGRESSION: Loại bỏ quảng cáo/marketing/Facebook Ads khỏi các nhóm ưu tiên kỹ thuật
+    def test_42_ads_and_marketing_exclusion_from_priorities(self):
+        from src.job_searcher import JobSearcher
+        searcher = JobSearcher()
+
+        # Job with ads in title
+        job_ads_1 = {
+            "title": "Chuyên viên Facebook Ads & Digital Marketing",
+            "company": "Agency Media",
+            "location": "Da Nang, Vietnam",
+            "description": "Tối ưu hóa chiến dịch Facebook Ads, quản lý ngân sách quảng cáo."
+        }
+        searcher.categorize_and_audit_job(job_ads_1)
+        self.assertEqual(job_ads_1["priority_tier"], 99)
+        self.assertIn("Ngoài mục tiêu: Quảng cáo / Marketing", job_ads_1["priority_label"])
+        self.assertTrue(any("Quảng cáo / Marketing" in uc for uc in job_ads_1["unverified_conditions"]))
+
+        # Job with telemarketing
+        job_ads_2 = {
+            "title": "Telesales / Marketing Specialist",
+            "company": "Sales Corp",
+            "location": "Ho Chi Minh City, Vietnam",
+            "description": "Gọi điện tư vấn khách hàng và chạy ads giới thiệu sản phẩm."
+        }
+        searcher.categorize_and_audit_job(job_ads_2)
+        self.assertEqual(job_ads_2["priority_tier"], 99)
+
+    # 43. REGRESSION: Đưa Senior/Lead/Manager vào nhóm Ngoài mục tiêu (không chọn cho hồ sơ 0 năm KN)
+    def test_43_senior_and_lead_out_of_target(self):
+        from src.job_searcher import JobSearcher
+        searcher = JobSearcher()
+
+        # Senior job in Da Nang
+        job_senior = {
+            "title": "Senior Network Security Engineer",
+            "company": "Tech Corp Da Nang",
+            "location": "Da Nang, Vietnam",
+            "description": "Yêu cầu 5 năm kinh nghiệm quản trị tường lửa và định tuyến BGP."
+        }
+        searcher.categorize_and_audit_job(job_senior)
+        self.assertEqual(job_senior["priority_tier"], 98)
+        self.assertIn("Ngoài mục tiêu: Vị trí Senior / Lead / Manager", job_senior["priority_label"])
+        self.assertTrue(any("Vị trí cấp cao" in uc for uc in job_senior["unverified_conditions"]))
+
+        # Lead role in Hanoi
+        job_lead = {
+            "title": "Lead SOC Architect",
+            "company": "CyberSec Global",
+            "location": "Hanoi, Vietnam",
+            "description": "Lãnh đạo đội ngũ kỹ sư giám sát an toàn thông tin."
+        }
+        searcher.categorize_and_audit_job(job_lead)
+        self.assertEqual(job_lead["priority_tier"], 98)
+
+        # Junior role must NOT be classified as senior
+        job_junior = {
+            "title": "Junior Network Engineer",
+            "company": "Network Co",
+            "location": "Da Nang, Vietnam",
+            "description": "Yêu cầu nắm vững TCP/IP và mô hình OSI."
+        }
+        searcher.categorize_and_audit_job(job_junior)
+        self.assertEqual(job_junior["priority_tier"], 1)
+
+    # 44. REGRESSION: Nhóm Remote đổi tên và kiểm tra bằng chứng hỗ trợ Việt Nam
+    def test_44_remote_vietnam_verification_and_label(self):
+        from src.job_searcher import JobSearcher
+        searcher = JobSearcher()
+
+        # Remote with explicit Vietnam evidence
+        job_remote_vn = {
+            "title": "Security Analyst Intern (Remote)",
+            "company": "Remote Global",
+            "location": "Vietnam (Remote)",
+            "description": "Chấp nhận ứng viên làm việc từ xa 100% tại Việt Nam hoặc khu vực APAC."
+        }
+        searcher.categorize_and_audit_job(job_remote_vn)
+        self.assertEqual(job_remote_vn["priority_tier"], 2)
+        self.assertEqual(job_remote_vn["priority_label"], "Remote — cần xác minh quốc gia làm việc")
+        self.assertTrue(job_remote_vn.get("vietnam_supported"))
+
+        # Remote without Vietnam evidence
+        job_remote_unknown = {
+            "title": "Cloud Security Intern",
+            "company": "US Startup",
+            "location": "Remote",
+            "description": "Work from anywhere in US or Canada Eastern timezones. Flexible hours."
+        }
+        searcher.categorize_and_audit_job(job_remote_unknown)
+        self.assertEqual(job_remote_unknown["priority_tier"], 2)
+        self.assertEqual(job_remote_unknown["priority_label"], "Remote — cần xác minh quốc gia làm việc")
+        self.assertFalse(job_remote_unknown.get("vietnam_supported"))
+        self.assertTrue(any("Chưa có bằng chứng JD hỗ trợ làm việc từ xa từ Việt Nam" in uc for uc in job_remote_unknown["unverified_conditions"]))
+
+        # Remote with bare "APAC" or "toàn quốc" (does NOT prove Vietnam remote eligibility)
+        job_remote_apac = {
+            "title": "Cloud Security Intern",
+            "company": "Regional APAC Tech",
+            "location": "Remote",
+            "description": "Work from anywhere across APAC region or toàn quốc. No specific country listed."
+        }
+        searcher.categorize_and_audit_job(job_remote_apac)
+        self.assertEqual(job_remote_apac["priority_tier"], 2)
+        self.assertFalse(job_remote_apac.get("vietnam_supported"))
+        self.assertTrue(any("Chưa có bằng chứng JD hỗ trợ làm việc từ xa từ Việt Nam" in uc for uc in job_remote_apac["unverified_conditions"]))
+
+    # 45. REGRESSION: Phân biệt Freelance theo hợp đồng/dự án với Chưa phân loại (Freehire không mặc định freelance)
+    def test_45_freelance_contract_vs_unclassified(self):
+        from src.job_searcher import JobSearcher
+        searcher = JobSearcher()
+
+        # Job with project/freelance evidence
+        job_freelance = {
+            "title": "Python Scripting for Network Logs",
+            "company": "Client Project",
+            "location": "Global",
+            "description": "Dự án hợp đồng ngắn hạn (freelance / contract) viết script tự động phân tích log mạng."
+        }
+        searcher.categorize_and_audit_job(job_freelance)
+        self.assertEqual(job_freelance["priority_tier"], 4)
+        self.assertIn("Freelance (Theo dự án / Hợp đồng)", job_freelance["priority_label"])
+
+        # Freehire job without freelance/contract evidence -> must NOT be Tier 4 Freelance!
+        job_freehire_fulltime = {
+            "title": "Senior Cloud Engineer",
+            "company": "Fulltime Enterprise Co",
+            "location": "Singapore",
+            "employmentType": "Full-time",
+            "description": "Permanent full-time role at Singapore headquarters.",
+            "search_portal": "freehire"
+        }
+        searcher.categorize_and_audit_job(job_freehire_fulltime)
+        self.assertNotEqual(job_freehire_fulltime["priority_tier"], 4)
+
+        # Job with unrecognized location and NO freelance evidence -> Chưa phân loại (Tier 5)
+        job_unclassified = {
+            "title": "IT Network Technician",
+            "company": "Unknown Overseas Co",
+            "location": "Port Moresby, Papua New Guinea",
+            "description": "Standard full-time on-site network operations."
+        }
+        searcher.categorize_and_audit_job(job_unclassified)
+        self.assertEqual(job_unclassified["priority_tier"], 5)
+        self.assertIn("Chưa phân loại", job_unclassified["priority_label"])
+        self.assertTrue(any("Chưa xác định được địa điểm" in uc for uc in job_unclassified["unverified_conditions"]))
+
+    # 46. REGRESSION: Phiên tìm kiếm có ID ổn định và file lưu phiên được bảo toàn
+    def test_46_search_session_stable_id_and_persistence(self):
+        from src.job_searcher import JobSearcher, SEARCH_SESSIONS_DIR
+        searcher = JobSearcher()
+
+        sample_jobs = [
+            {"id": "j1", "title": "Job 1", "company": "Co 1", "priority_tier": 1},
+            {"id": "j2", "title": "Job 2", "company": "Co 2", "priority_tier": 2}
+        ]
+        custom_id = "test_session_20261024_001"
+        res = searcher.save_search_session(unique_jobs=sample_jobs, session_id=custom_id)
+
+        self.assertEqual(res["session_id"], custom_id)
+        session_file = Path(res["session_path"])
+        self.assertTrue(session_file.exists())
+
+        # Verify content
+        saved_data = json.loads(session_file.read_text(encoding="utf-8"))
+        self.assertEqual(saved_data["session_id"], custom_id)
+        self.assertEqual(saved_data["total_jobs"], 2)
+
+        # Verify latest session pointer exists
+        latest_file = SEARCH_SESSIONS_DIR / "latest_session.json"
+        self.assertTrue(latest_file.exists())
+
+    # 47. REGRESSION: So sánh đa chiều không dùng SecMon chưa xác minh làm bằng chứng
+    def test_47_compare_jobs_facts_without_unverified_secmon(self):
+        from src.job_searcher import JobSearcher
+        searcher = JobSearcher()
+
+        fake_detail = {
+            "id": "11223344",
+            "title": "Cloud & DevOps Intern",
+            "company": "Hitachi Digital Services",
+            "location": "Da Nang, Vietnam",
+            "description": "Pursuing a Bachelor's degree in IT. Good communication skills in English. Exposure to Linux, Python, and AWS basics.",
+            "employmentType": "Internship",
+            "isActive": True
+        }
+
+        cand_p = PROJECT_ROOT / "data" / "candidates" / "my_profile.json"
+        if not cand_p.exists():
+            cand_p = PROJECT_ROOT / "data" / "candidates" / "candidate_mock.json"
+
+        with patch.object(searcher, "get_linkedin_detail", return_value=fake_detail):
+            comp_res = searcher.fetch_and_compare_jobs(
+                job_ids_or_urls=["https://vn.linkedin.com/jobs/view/11223344"],
+                candidate_profile_path=cand_p
+            )
+            self.assertEqual(comp_res["total_evaluated"], 1)
+            evaluated_job = comp_res["jobs"][0]
+            dims = evaluated_job["comparison_dimensions"]
+
+            # Dimension 1: education
+            self.assertTrue(dims["education_match"])
+            self.assertIn("CHẤP NHẬN SINH VIÊN", dims["education_policy"])
+
+            # Dimension 5: Verify SecMon is NEVER cited as verified skill evidence
+            for ev in dims["profile_evidence"]:
+                self.assertNotIn("SecMon", ev)
+
+    # 48. REGRESSION: Đánh giá tiêu chuẩn GPA không thỏa mãn (2.9 so với yêu cầu 3.0)
+    def test_48_gpa_requirement_evaluation(self):
+        cand = {
+            "name": "Ngô Văn Hiền",
+            "years_of_experience": 0,
+            "education": [
+                {
+                    "institution": "VKU",
+                    "degree": "Kỹ sư",
+                    "year": "2023 - 2028 (dự kiến tốt nghiệp)",
+                    "gpa": "2.9/4.0"
+                }
+            ],
+            "skills": {"programming": ["Python", "Java"]}
+        }
+        evaluator = JobEvaluator(cand)
+        jd_data = {
+            "title": "Cloud & DevOps Intern",
+            "company": "Hitachi Digital Services",
+            "raw_content": "Requirements:\nPursuing a Bachelor's degree in IT.\nGPA of 3.0/4.0 or above.\nGood programming knowledge in Python or Java.",
+            "location": "Da Nang, Vietnam"
+        }
+        res = evaluator.evaluate(jd_data, market="vietnam")
+        self.assertIn("gpa", res["feasibility_status"])
+        self.assertIn("Chưa đáp ứng", res["feasibility_status"]["gpa"])
+        self.assertNotEqual(res["match_score"], 100)
+        self.assertIn("CẦN XÁC MINH GPA", res["recommendation"])
+        self.assertTrue(any("2.9/4.0" in uc for uc in res["unverified_conditions"]))
+
+    # 49. REGRESSION: CV không chứa SecMon chưa xác minh và không chứa ghi chú kiểm toán nội bộ
+    def test_49_generator_omits_secmon_and_internal_reviewer_notes(self):
+        cand = {
+            "name": "Ngô Văn Hiền",
+            "years_of_experience": 0,
+            "education": [{"degree": "Kỹ sư", "major": "ATTT", "institution": "VKU", "year": "2023 - 2028", "gpa": "2.9/4.0"}],
+            "skills": {"programming": ["Python"]},
+            "personal_projects": [
+                {
+                    "name": "Chia sẻ màn hình P2P sử dụng WebRTC",
+                    "description": "Phát triển cơ chế chia sẻ màn hình theo mô hình P2P sử dụng WebRTC. Dự án được liệt kê trong CV; chưa bổ sung số liệu hiệu năng hoặc phạm vi triển khai chưa được xác nhận."
+                },
+                {
+                    "name": "SecMon",
+                    "description": "Dự án do ứng viên cung cấp liên kết. Cần bổ sung mô tả chức năng... chưa dùng làm bằng chứng cho kỹ năng cụ thể."
+                }
+            ]
+        }
+        gen = DocumentGenerator(cand)
+        cv = gen.generate_cv_markdown("Cloud & DevOps Intern")
+        self.assertNotIn("SecMon", cv)
+        self.assertNotIn("chưa bổ sung số liệu", cv)
+        self.assertNotIn("chưa dùng làm bằng chứng", cv)
+        self.assertIn("Chia sẻ màn hình P2P", cv)
+
+    # 50. REGRESSION: HTML export converts bold/italic markdown into HTML tags without leftover asterisks and escapes safely
+    def test_50_html_export_bold_italic_and_safe_escaping(self):
+        cand = {
+            "name": "Ngô Văn Hiền",
+            "contact": {"email": "test@example.com"},
+            "education": [{"degree": "Kỹ sư", "major": "ATTT", "institution": "VKU", "year": "2023 - 2028", "gpa": "2.9/4.0"}],
+            "skills": {"network": ["TCP/IP", "Wireshark"]}
+        }
+        gen = DocumentGenerator(cand)
+        md_text = (
+            "# Ngô Văn Hiền\n"
+            "*test@example.com | 0393492064*\n\n"
+            "**Vị trí mục tiêu / Target Role:** Cloud & DevOps Intern\n\n"
+            "## Kỹ năng chuyên môn (Technical Skills)\n"
+            "- **Network:** Mô hình OSI, TCP/IP, Wireshark, *P2P* Data Transfer\n"
+            "- XSS Test: `<script>alert(1)</script>` & \"quotes\"\n"
+        )
+        test_html_path = TEMP_DIR / "regression_cv.html"
+        gen.export_to_html(md_text, test_html_path)
+        self.assertTrue(test_html_path.exists())
+        html_content = test_html_path.read_text(encoding="utf-8")
+        
+        # Verify markdown bold and italic are converted to HTML tags
+        self.assertIn("<strong>Network:</strong>", html_content)
+        self.assertIn("<em>P2P</em>", html_content)
+        # Verify safe HTML escaping: script tag is escaped, not raw
+        self.assertNotIn("<script>", html_content)
+        self.assertIn("&lt;script&gt;alert(1)&lt;/script&gt;", html_content)
+        # Verify no raw ** or * remains surrounding text
+        self.assertIsNone(re.search(r'\*\*[^*]+\*\*', html_content))
+        self.assertIsNone(re.search(r'(?<!\*)\*[^*]+\*(?!\*)', html_content))
+
+    # 51. REGRESSION: Bản CV tiếng Anh Cloud & DevOps Intern tuân thủ các quy tắc chuẩn hóa
+    def test_51_english_cv_generation_rules(self):
+        cand = {
+            "name": "Ngô Văn Hiền",
+            "is_mock": False,
+            "contact": {
+                "email": "hienngo090800@gmail.com",
+                "phone": "0393492064",
+                "github": "https://github.com/hien23ns",
+                "linkedin": "https://www.linkedin.com/in/ngovanhien",
+                "location": "Đà Nẵng, Việt Nam"
+            },
+            "years_of_experience": 0,
+            "education": [
+                {
+                    "institution": "Vietnam - Korea University of Information and Communication Technology (VKU)",
+                    "degree": "Undergraduate Engineering Program",
+                    "major": "Network and Information Security",
+                    "year": "2023 - 2028 (dự kiến tốt nghiệp)",
+                    "gpa": "2.9/4.0"
+                }
+            ],
+            "skills": {
+                "systems": ["Linux", "Bash"],
+                "programming": ["Python", "Java"],
+                "cloud": ["AWS cơ bản", "AWS IAM cơ bản", "Amazon EC2 cơ bản", "Amazon S3 cơ bản"]
+            },
+            "personal_projects": [
+                {
+                    "name": "Chia sẻ màn hình P2P sử dụng WebRTC",
+                    "technologies": ["WebRTC", "P2P"],
+                    "description": "Phát triển cơ chế chia sẻ màn hình theo mô hình P2P sử dụng WebRTC. Dự án được liệt kê trong CV; chưa bổ sung số liệu hiệu năng hoặc phạm vi triển khai chưa được xác nhận."
+                },
+                {
+                    "name": "SecMon",
+                    "technologies": [],
+                    "description": "Dự án do ứng viên cung cấp liên kết... chưa dùng làm bằng chứng."
+                }
+            ],
+            "work_experience": [],
+            "certifications": [
+                {
+                    "name": "Gemini Certified Student",
+                    "issuer": "",
+                    "year": "2025"
+                },
+                {
+                    "name": "Building a Personal Project to International Standards",
+                    "issuer": "Rikkei Education",
+                    "year": "2025"
+                }
+            ],
+            "languages": {
+                "vietnamese": "Bản ngữ",
+                "english": "Giao tiếp cơ bản, đọc hiểu tài liệu kỹ thuật",
+                "korean": "Chưa có năng lực tiếng Hàn được xác nhận"
+            }
+        }
+        gen = DocumentGenerator(cand)
+        cv_en = gen.generate_cv_markdown("Cloud & DevOps Intern", market="vietnam", language="en")
+        
+        # 1. Niên khóa và GPA (bỏ hẳn mục GPA)
+        self.assertIn("2023 - 2028", cv_en)
+        self.assertNotIn("GPA", cv_en)
+        # 2. Summary tập trung Linux, Python/Java, AWS
+        self.assertIn("Linux", cv_en)
+        self.assertIn("Python", cv_en)
+        self.assertIn("AWS", cv_en)
+        # 3. Không tự ý thêm Docker, Kubernetes, Terraform, CI/CD
+        self.assertNotIn("Docker", cv_en)
+        self.assertNotIn("Kubernetes", cv_en)
+        self.assertNotIn("Terraform", cv_en)
+        self.assertNotIn("CI/CD", cv_en)
+        # 4. Bỏ mục kinh nghiệm rỗng
+        self.assertNotIn("## Work Experience", cv_en)
+        # 5. Bỏ mục tiếng Hàn chưa học
+        self.assertNotIn("Korean", cv_en)
+        # 6. Không đưa SecMon hoặc ghi chú kiểm toán
+        self.assertNotIn("SecMon", cv_en)
+        self.assertNotIn("chưa bổ sung số liệu", cv_en)
+        # 7. Chứng nhận thiếu issuer không có dấu gạch trống
+        self.assertIn("**Gemini Certified Student** (2025)", cv_en)
+        self.assertNotIn("**Gemini Certified Student** - ", cv_en)
+
 if __name__ == "__main__":
     unittest.main()
+
+

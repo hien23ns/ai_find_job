@@ -25,6 +25,7 @@ ALLOWED_FILES = [
     "AGENTS.md",
     "UPSTREAM_INTEGRATION.md",
     "run.ps1",
+    "START_APP.bat",
     ".gitignore",
     ".gitmodules"
 ]
@@ -51,7 +52,10 @@ DENIED_PATTERNS = [
     r"(^|[/\\])\.git([/\\]|$)",
     r"\.pytest_cache",
     r"node_modules",
-    r"output[/\\].*\.(md|html|pdf)$",
+    r"output[/\\].*\.(md|html|pdf|png)$",
+    r"output[/\\]applications",
+    r"data[/\\]private",
+    r"avatar\.png",
     r"review_bundle.*\.zip$",
     r"my_profile\.json$",
     r"my_jd\.txt$",
@@ -160,6 +164,8 @@ def package_bundle(bundle_name: str = "review_bundle_v4.zip") -> Path:
             "my_profile.json",
             "data/my_jd.txt",
             "my_jd.txt",
+            "data/private",
+            "avatar.png",
             ".local",
         ]
         for forbidden in forbidden_substrings:
@@ -177,5 +183,5 @@ def package_bundle(bundle_name: str = "review_bundle_v4.zip") -> Path:
     return bundle_path
 
 if __name__ == "__main__":
-    target = sys.argv[1] if len(sys.argv) > 1 else "review_bundle_v4.zip"
+    target = sys.argv[1] if len(sys.argv) > 1 else "review_bundle_latest.zip"
     package_bundle(target)
