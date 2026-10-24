@@ -384,8 +384,11 @@ function renderJobsTable(jobs, selector) {
       ? `<button class="btn btn-success btn-sm" style="background:#15803d; color:#fff; font-weight:700; margin-left:4px;" onclick="triggerAutoApplyEmail('${j.id}')">🚀 Gửi Email Apply</button>`
       : `<button class="btn btn-primary btn-sm" style="background:#2563eb; color:#fff; font-weight:700; margin-left:4px;" onclick="openFormHelperModal('${j.id}')">📝 Điền & Nộp Form</button>`;
 
+    const isLiveJob = (j.id && j.id.startsWith("job_live_")) || (j.notes && j.notes.includes("Tin tuyển dụng thực tế"));
+    const liveTag = isLiveJob ? `<span class="badge badge-green" style="background:#ecfdf5; color:#047857; border:1px solid #6ee7b7; font-size:10.5px; margin-left:4px;" title="Tin tuyển dụng thực tế đang mở tuyển trên cổng trực tuyến">🟢 Đang tuyển</span>` : "";
+
     tr.innerHTML = `
-      <td style="font-weight:600;">${escapeHtml(j.company)}</td>
+      <td style="font-weight:600;">${escapeHtml(j.company)} ${liveTag}</td>
       <td>${escapeHtml(j.title)}</td>
       <td>${channelBadge}</td>
       <td><span class="badge ${j.match_score >= 80 ? 'badge-green' : 'badge-amber'}">${j.match_score}/100</span></td>
@@ -506,12 +509,14 @@ async function markFormAsSubmitted(jobId) {
 
 async function runJobSearch() {
   const btn = document.getElementById("btn-run-search");
-  btn.innerText = "Đang tìm kiếm...";
+  btn.innerText = "🔍 Đang quét tin thật (LinkedIn & Portals)...";
   btn.disabled = true;
 
-  const keywords = document.getElementById("search-keywords").value;
-  const market = document.getElementById("search-market").value;
-  const limit = document.getElementById("search-limit").value;
+  const keywords = document.getElementById("search-keywords").value || "Cyber Security Intern";
+  const market = document.getElementById("search-market").value || "vietnam";
+  const limit = document.getElementById("search-limit").value || "5";
+
+  showToast(`🔍 Đang quét và kiểm tra các vị trí thực tế đang mở tuyển cho '${keywords}'...`, "info");
 
   try {
     const res = await fetch("/api/jobs/search", {
@@ -520,8 +525,10 @@ async function runJobSearch() {
       body: jsonStringifySafe({ keywords, market, limit })
     });
     const data = await res.json();
-    showToast(`Tìm thấy ${data.total_found} tin tuyển dụng. Đã lưu ${data.imported_count} việc mới.`, "success");
-    loadJobsList();
+    const liveNote = data.is_live ? " [🟢 Tin thật đang mở tuyển]" : "";
+    showToast(`🎉 Tìm thấy ${data.total_found} tin tuyển dụng thực tế${liveNote}. Đã lưu ${data.imported_count} việc vào danh sách.`, "success");
+    await loadJobsList();
+    navToTab("jobs");
   } catch (e) {
     showToast("Lỗi trong quá trình tìm kiếm việc làm", "error");
   } finally {
@@ -584,6 +591,7 @@ async function openJobDetail(jobId) {
         <span class="badge ${getStatusBadgeClass(j.status)}" style="font-size:12px;">${escapeHtml(j.status)}</span>
         <span class="badge badge-blue" style="margin-left:6px;">Điểm Match: ${j.match_score}/100</span>
         <span class="badge badge-gray" style="margin-left:6px;">Thị trường: ${escapeHtml(j.market)}</span>
+        ${(j.id && j.id.startsWith("job_live_")) || (j.notes && j.notes.includes("Tin tuyển dụng thực tế")) ? '<span class="badge badge-green" style="margin-left:6px; background:#dcfce7; color:#15803d; border:1px solid #86efac;">🟢 Đang mở tuyển thật (Live Active)</span>' : ''}
       </div>
       ${hrInfoHtml}
       <p style="font-size:12.5px; color:#475569; margin-bottom:14px;"><strong>Nguồn tuyển dụng:</strong> <a href="${escapeHtml(j.source)}" target="_blank" style="color:#0284c7;">${escapeHtml(j.source)}</a></p>

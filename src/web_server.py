@@ -304,45 +304,54 @@ async def get_job_detail(job_id: str):
 @app.post("/api/jobs/search")
 async def execute_job_search(request: Request):
     payload = await request.json()
-    keywords = payload.get("keywords", "cloud devops intern")
+    keywords = (payload.get("keywords") or "Cyber Security Intern").strip()
     market = payload.get("market", "vietnam")
-    limit = int(payload.get("limit", 3))
+    limit = int(payload.get("limit", 5))
 
     db = DatabaseManager()
-
-    # Search across upstream portals
     searcher = JobSearcher()
-    session_data = searcher.search_all_sources(
-        candidate_profile_path=CANDIDATE_FILE,
-        max_per_tier=limit
-    )
+
+    location = "Vietnam"
+    if market == "korea":
+        location = "South Korea"
+    elif market == "freelance":
+        location = "Remote"
+
+    # 1. Search live active postings in real time (verifying isActive == True)
+    live_jobs = []
+    try:
+        live_jobs = searcher.search_live_active_jobs(
+            query=keywords,
+            location=location,
+            limit=limit,
+            market=market,
+            candidate_profile_path=CANDIDATE_FILE
+        )
+    except Exception as e:
+        print(f"Error during live search: {e}")
 
     imported_count = 0
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    for j in session_data.get("jobs", []):
-        j_id = j.get("id") or f"job_{secrets.token_hex(3)}"
-        company = j.get("company", "Công ty chưa rõ")
-        title = j.get("title", "Vị trí tuyển dụng")
 
-        # Anti-duplicate check
+    # 2. Save live active jobs into database
+    for j in live_jobs:
+        j_id = j.get("id") or f"job_live_{secrets.token_hex(4)}"
+        company = j.get("company", "Công ty chưa rõ")
+        title = j.get("title", keywords)
+
         existing = db.get_job(j_id)
         if existing:
             continue
-
-        # Safeguard Hitachi
-        status = "Chưa nộp"
-        if "hitachi" in company.lower() or "4481162663" in str(j.get("url", "")):
-            status = "Đã nộp qua form"
 
         db.save_job({
             "id": j_id,
             "title": title,
             "company": company,
             "market": market,
-            "source": j.get("url", "Tìm kiếm tự động"),
-            "match_score": int(j.get("match_score", 70)),
-            "status": status,
-            "notes": f"Nhóm phân loại: {j.get('priority_label', '')}",
+            "source": j.get("url", ""),
+            "match_score": int(j.get("match_score", 80)),
+            "status": "Chưa nộp",
+            "notes": j.get("notes", "🟢 Tin tuyển dụng thực tế (Đang mở tuyển)"),
             "canonical_key": j.get("canonical_key", f"{company}_{title}".lower().replace(" ", "_")),
             "raw_jd": j.get("description", ""),
             "created_at": now,
@@ -350,10 +359,47 @@ async def execute_job_search(request: Request):
         })
         imported_count += 1
 
+    # 3. Fallback to all sources if live search returned nothing
+    if len(live_jobs) == 0:
+        session_data = searcher.search_all_sources(
+            candidate_profile_path=CANDIDATE_FILE,
+            max_per_tier=limit
+        )
+        for j in session_data.get("jobs", []):
+            j_id = j.get("id") or f"job_{secrets.token_hex(3)}"
+            company = j.get("company", "Công ty chưa rõ")
+            title = j.get("title", "Vị trí tuyển dụng")
+
+            existing = db.get_job(j_id)
+            if existing:
+                continue
+
+            status = "Chưa nộp"
+            if "hitachi" in company.lower() or "4481162663" in str(j.get("url", "")):
+                status = "Đã nộp qua form"
+
+            db.save_job({
+                "id": j_id,
+                "title": title,
+                "company": company,
+                "market": market,
+                "source": j.get("url", "Tìm kiếm tự động"),
+                "match_score": int(j.get("match_score", 75)),
+                "status": status,
+                "notes": f"Nhóm phân loại: {j.get('priority_label', '')}",
+                "canonical_key": j.get("canonical_key", f"{company}_{title}".lower().replace(" ", "_")),
+                "raw_jd": j.get("description", ""),
+                "created_at": now,
+                "updated_at": now
+            })
+            imported_count += 1
+
+    total_found = len(live_jobs) if live_jobs else imported_count
     return {
         "imported_count": imported_count,
-        "total_found": session_data.get("total_found", 0),
-        "source_summary": session_data.get("source_status", {})
+        "total_found": total_found,
+        "is_live": bool(live_jobs),
+        "message": f"Tìm thấy {total_found} tin tuyển dụng thực tế đang mở tuyển!"
     }
 
 
