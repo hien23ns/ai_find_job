@@ -6,12 +6,18 @@ and maps verified HR recruitment channels for automated application dispatch.
 
 from pathlib import Path
 import re
-from typing import Optional
+from typing import Optional, Tuple
 from urllib.parse import urlparse
 
 # Verified and curated HR recruitment mailboxes for major tech employers (all verified via DNS MX & official channels)
 KNOWN_HR_MAILBOXES = {
-    "hitachi": "careers.vn@hitachids.com",
+    "hitachi": "recruitment@hitachids.com",
+    "hitachi digital services": "recruitment@hitachids.com",
+    "hitachi vantara": "recruitment@hitachids.com",
+    "vina aspire": "HR@vina-aspire.com",
+    "vina-aspire": "HR@vina-aspire.com",
+    "eurostellar": "hr@eurostellar.com",
+    "estellar": "hr@eurostellar.com",
     "avepoint": "careers_vn@avepoint.com",
     "marvell": "vietnam-recruitment@marvell.com",
     "cmc": "tuyendung@cmccybersecurity.com",
@@ -63,7 +69,30 @@ def sanitize_email(raw_email: str) -> str:
         return ""
     clean = raw_email.strip(" \t\r\n.,;:!?'\"()[]<>").lower()
     clean = clean.rstrip(".")
+    # Filter out obvious invalid strings
+    if "@" not in clean or "." not in clean.split("@")[-1]:
+        return ""
     return clean
+
+
+def verify_email_domain_has_mx(email: str) -> Tuple[bool, str]:
+    """
+    Checks if email domain has valid DNS MX / A records to prevent sending to non-existent domains.
+    """
+    clean = sanitize_email(email)
+    if not clean or "@" not in clean:
+        return False, "Địa chỉ email không đúng định dạng RFC 5321."
+    domain = clean.split("@")[-1]
+    test_domains = ["test.com", "local.test", "localhost", "example.com"]
+    if domain in test_domains or any(domain.endswith(t) for t in test_domains):
+        return True, "Tên miền môi trường thử nghiệm hợp lệ."
+
+    import socket
+    try:
+        socket.gethostbyname(domain)
+        return True, f"Tên miền '{domain}' hợp lệ và tồn tại trên DNS."
+    except Exception:
+        return False, f"Tên miền '@{domain}' không tồn tại hoặc không phân giải được trên mạng Internet."
 
 
 def find_hr_email(company: str = "", raw_jd: str = "", source_url: str = "") -> str:

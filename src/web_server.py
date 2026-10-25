@@ -36,7 +36,7 @@ from src.email_sender import (
 )
 from src.evaluator import JobEvaluator
 from src.form_automation import FormAutomationManager, FormAutomationResult
-from src.hr_finder import find_hr_email, find_apply_url, sanitize_email
+from src.hr_finder import find_hr_email, find_apply_url, sanitize_email, verify_email_domain_has_mx
 from src.job_searcher import JobSearcher
 from src.modern_tech_cv import create_job_application_package
 from src.security import ensure_within_project
@@ -375,8 +375,6 @@ async def execute_job_search(request: Request):
                 continue
 
             status = "Chưa nộp"
-            if "hitachi" in company.lower() or "4481162663" in str(j.get("url", "")):
-                status = "Đã nộp qua form"
 
             db.save_job({
                 "id": j_id,
@@ -442,10 +440,7 @@ async def prepare_package(job_id: str):
         channel = "email"
         recipient = auto_hr_email or ""
 
-    # Safeguard Hitachi
-    initial_status = "NEEDS_REVIEW"
-    if "hitachi" in job["company"].lower() or "4481162663" in str(job.get("source", "")):
-        initial_status = "SUBMITTED"
+    initial_status = "READY" if channel == "email" else "NEEDS_REVIEW"
 
     app_data = {
         "id": app_id,
@@ -739,6 +734,14 @@ async def direct_send_email(app_id: str, request: Request):
     if not to_email or "@" not in to_email or "." not in to_email.split("@")[-1]:
         raise HTTPException(status_code=400, detail="Vui lòng nhập địa chỉ email người nhận hợp lệ (ví dụ: hr@company.com).")
 
+    # Domain MX safeguard: verify email domain resolves before sending
+    is_valid_domain, domain_msg = verify_email_domain_has_mx(to_email)
+    if not is_valid_domain:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Không thể gửi email tới '{to_email}': {domain_msg}. Vui lòng kiểm tra lại địa chỉ email hoặc chọn phương thức nộp qua Form."
+        )
+
     pkg_dir = Path(app_record.get("package_dir", ""))
     ensure_within_project(pkg_dir)
 
@@ -846,7 +849,15 @@ async def auto_apply_email_by_job(job_id: str, request: Request):
         url_hint = f" ({apply_url})" if apply_url else ""
         raise HTTPException(
             status_code=400,
-            detail=f"Tin tuyển dụng của '{job.get('company')}' không có email HR trực tiếp trong JD mà tiếp nhận hồ sơ qua link ứng tuyển{url_hint}. Vui lòng bấm '⚡ Tự điền Form Apply' hoặc nhập email HR chính xác vào ô Người nhận nếu bạn có."
+            detail=f"Tin tuyển dụng của '{job.get('company')}' không có email HR trực tiếp trong JD mà tiếp nhận hồ sơ qua link ứng tuyển{url_hint}. Vui lòng bấm '📝 Điền & Nộp Form' hoặc nhập email HR chính xác vào ô Người nhận nếu bạn có."
+        )
+
+    # Domain MX safeguard: verify email domain resolves before sending
+    is_valid_domain, domain_msg = verify_email_domain_has_mx(to_email)
+    if not is_valid_domain:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Email HR '{to_email}' không hợp lệ hoặc không có máy chủ nhận thư: {domain_msg}. Vui lòng kiểm tra lại địa chỉ email hoặc chọn nộp qua Form."
         )
 
     app_record["recipient"] = to_email

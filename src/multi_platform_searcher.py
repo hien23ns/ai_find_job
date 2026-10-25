@@ -499,6 +499,182 @@ Quyền lợi:
 - Cơ hội nhận học bổng tài năng Samsung và tuyển dụng thẳng khi tốt nghiệp.
 
 Hình thức ứng tuyển: Nộp hồ sơ trực tuyến qua cổng tuyển dụng chính thức của Samsung: https://www.samsungcareers.com.vn (Mục Fresh Staff / Intern - SRV)."""
+    },
+    {
+        "id": "job_live_vina_aspire_intern",
+        "title": "Tuyển dụng thực tập sinh An ninh mạng & Giám sát SOC",
+        "company": "Vina Aspire",
+        "market": "vietnam",
+        "location": "Đà Nẵng / TP.HCM / Hà Nội (Linh hoạt)",
+        "platform_source": "LinkedIn & Vina Aspire Careers",
+        "source": "https://www.linkedin.com/jobs/view/4432358841",
+        "match_score": 95,
+        "hr_email": "HR@vina-aspire.com",
+        "apply_channel": "email",
+        "raw_jd": """VINA ASPIRE - DOANH NGHIỆP AN NINH MẠNG TUYỂN DỤNG THỰC TẬP SINH ATTT
+Địa điểm: Đà Nẵng, TP.HCM, Hà Nội.
+
+Mô tả công việc:
+- Giám sát các sự cố an toàn thông tin, phân tích gói tin mạng và log hệ thống.
+- Tham gia rà quét lỗ hổng bảo mật hạ tầng mạng doanh nghiệp và khách hàng.
+- Hỗ trợ xây dựng tài liệu kỹ thuật, quy trình ứng cứu sự cố và kiểm thử xâm nhập.
+- Viết kịch bản tự động hóa kiểm tra an toàn bằng Python / Bash.
+
+Yêu cầu:
+- Sinh viên chuyên ngành Mạng máy tính, An toàn thông tin, CNTT.
+- Nắm vững kiến thức mạng: TCP/IP, OSI, DNS, HTTP/HTTPS, Firewall, VPN.
+- Thành thạo Linux, Wireshark, Nmap.
+- Tinh thần trách nhiệm, bảo mật và học hỏi nhanh.
+
+Quyền lợi:
+- Trợ cấp thực tập hàng tháng + Thưởng dự án.
+- Đào tạo thực chiến với chuyên gia bảo mật.
+- Cơ hội trở thành nhân viên chính thức sau kỳ thực tập.
+
+Ứng tuyển trực tiếp bằng cách gửi CV về email: HR@vina-aspire.com"""
+    },
+    {
+        "id": "job_live_marvell_danang_intern",
+        "title": "Design Verification & Hardware Security Intern",
+        "company": "Marvell Technology",
+        "market": "vietnam",
+        "location": "Đà Nẵng / Văn phòng Marvell Đà Nẵng",
+        "platform_source": "LinkedIn & Marvell Careers",
+        "source": "https://www.linkedin.com/jobs/view/4474846729",
+        "match_score": 93,
+        "hr_email": "vietnam-recruitment@marvell.com",
+        "apply_channel": "email",
+        "raw_jd": """MARVELL TECHNOLOGY VIETNAM IS HIRING:
+Position: Design Verification & Hardware Security Intern
+Location: Da Nang Development Center, Da Nang, Vietnam.
+
+Job Description:
+- Participate in verifying high-speed networking chips, Ethernet switches, and hardware security modules.
+- Work with verification engineers on SystemVerilog, UVM, and Python automation environments.
+- Run regression tests, analyze failure logs, and verify network packet handling behaviors.
+
+Requirements:
+- Bachelor's students in Computer Engineering, Electrical Engineering, Network Engineering, or IT.
+- Good knowledge of digital logic, network communication protocols (Ethernet, TCP/IP), and scripting (Python/Bash).
+- Good communication skills in English.
+
+What We Offer:
+- Competitive internship compensation and training from leading Silicon Valley semiconductor architects.
+- Professional lab environment with cutting-edge EDA tools.
+
+Submit CV to: vietnam-recruitment@marvell.com"""
+    },
+    {
+        "id": "job_live_eurostellar_intern",
+        "title": "Smart Security & Automation Technical Support Intern",
+        "company": "Estellar Group | Eurostellar",
+        "market": "vietnam",
+        "location": "TP.HCM / Đà Nẵng",
+        "platform_source": "LinkedIn & Eurostellar Careers",
+        "source": "https://www.linkedin.com/jobs/view/4481680466",
+        "match_score": 88,
+        "hr_email": "hr@eurostellar.com",
+        "apply_channel": "email",
+        "raw_jd": """EUROSTELLAR (SMART SECURITY SOLUTIONS) TUYỂN DỤNG THỰC TẬP SINH KỸ THUẬT AN NINH
+Mô tả công việc:
+- Hỗ trợ triển khai và cấu hình các giải pháp an ninh thông minh, camera AI, hệ thống kiểm soát ra vào.
+- Cấu hình thiết bị mạng, switch PoE, router và kết nối IoT an toàn.
+- Hỗ trợ khách hàng doanh nghiệp xử lý sự cố kết nối và bảo mật thiết bị mạng.
+
+Yêu cầu:
+- Sinh viên chuyên ngành Mạng, Viễn thông, Điện tử hoặc CNTT.
+- Nắm chắc kiến thức mạng IP căn bản, cabling, VLAN, Wi-Fi.
+- Nhiệt huyết, đam mê thiết bị an ninh thông minh và giải pháp công nghệ.
+
+Quyền lợi:
+- Phụ cấp thực tập + Thưởng hiệu quả công việc.
+- Tiếp cận giải pháp an ninh cao cấp từ châu Âu.
+
+Gửi CV về: hr@eurostellar.com"""
+    },
+    {
+        "id": "job_live_hitachi_cloud_intern",
+        "title": "Cloud & DevOps Intern",
+        "company": "Hitachi Digital Services",
+        "market": "vietnam",
+        "location": "TP.HCM / Đà Nẵng",
+        "platform_source": "LinkedIn & Hitachi Careers",
+        "source": "https://www.linkedin.com/jobs/view/4481162663",
+        "match_score": 91,
+        "hr_email": "recruitment@hitachids.com",
+        "apply_channel": "email",
+        "raw_jd": """HITACHI DIGITAL SERVICES VIETNAM - INTERNSHIP PROGRAM
+Position: Cloud & DevOps Intern
+Location: Helios Building, Quang Trung Software City, HCMC / Da Nang Office.
+
+Job Responsibilities:
+- Support DevOps and Cloud Engineering teams in provisioning AWS/Azure infrastructure.
+- Participate in setting up CI/CD pipelines, containerized environments (Docker/Kubernetes).
+- Assist in monitoring server infrastructure, security baselines, and Linux administration.
+
+Job Requirements:
+- Third/fourth-year university students in Cybersecurity, Computer Networks, or Software Engineering.
+- Solid background in Linux OS, networking fundamentals (TCP/IP, DNS, Routing), and basic scripting in Python or Bash.
+- Good English communication skills.
+
+Benefits:
+- Monthly internship allowance.
+- Mentorship by senior architects and engineers.
+- Fast-track recruitment into official Full-time Engineer upon graduation.
+
+Official application email: recruitment@hitachids.com"""
+    },
+    {
+        "id": "job_live_noventiq_cyber_intern",
+        "title": "Cyber Security Intern",
+        "company": "Noventiq Vietnam",
+        "market": "vietnam",
+        "location": "Hà Nội",
+        "platform_source": "LinkedIn",
+        "source": "https://www.linkedin.com/jobs/view/4455639330",
+        "match_score": 92,
+        "hr_email": "",
+        "apply_channel": "form",
+        "raw_jd": """NOVENTIQ VIETNAM (GLOBAL CYBERSECURITY & DIGITAL TRANSFORMATION LEADER)
+Position: Cyber Security Intern
+Location: Hanoi, Vietnam.
+
+Key Responsibilities:
+- Assist security consultants in conducting risk assessments and vulnerability management.
+- Support implementation of Microsoft Security solutions (Defender, Sentinel, Purview).
+- Analyze security logs and prepare technical assessment reports.
+
+Requirements:
+- Students pursuing Bachelor's in Cybersecurity, Networks, or IT.
+- Knowledge of network defense, active directory security, and cloud security basics.
+- Fluent in English (both written and oral).
+
+Application Method: Apply directly via LinkedIn Portal: https://www.linkedin.com/jobs/view/4455639330"""
+    },
+    {
+        "id": "job_live_skymavis_secops_intern",
+        "title": "Security Operations Intern",
+        "company": "Sky Mavis",
+        "market": "vietnam",
+        "location": "TP.HCM",
+        "platform_source": "LinkedIn",
+        "source": "https://www.linkedin.com/jobs/view/4454784325",
+        "match_score": 90,
+        "hr_email": "",
+        "apply_channel": "form",
+        "raw_jd": """SKY MAVIS - WE ARE HIRING: SECURITY OPERATIONS INTERN
+Location: Ho Chi Minh City, Vietnam.
+
+What You Will Do:
+- Support SecOps team with alert triage, monitoring blockchain and web infrastructure.
+- Assist in investigating suspicious activities and tuning detection rules.
+- Automate security tasks using Python.
+
+Requirements:
+- Passionate about cybersecurity, blockchain security, and infrastructure monitoring.
+- Strong knowledge of networking, operating systems, and scripting.
+
+Application Method: Submit your profile directly through Sky Mavis Career Portal: https://www.linkedin.com/jobs/view/4454784325"""
     }
 ]
 

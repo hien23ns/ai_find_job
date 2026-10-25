@@ -348,10 +348,28 @@ class SmtpEmailProvider(BaseEmailProvider):
                 message_id=msg_id,
                 recipient=to_email
             )
+        except smtplib.SMTPRecipientsRefused as e:
+            # Explicitly handles non-existent or rejected mailboxes
+            refused_details = []
+            for rcpt, (code, msg_bytes) in e.recipients.items():
+                msg_str = msg_bytes.decode('utf-8', errors='ignore') if isinstance(msg_bytes, bytes) else str(msg_bytes)
+                refused_details.append(f"{rcpt} (Mã lỗi {code}: {msg_str.strip()})")
+            err_summary = "; ".join(refused_details)
+            return EmailDispatchResult(
+                status="FAILED",
+                message=f"Địa chỉ email người nhận bị máy chủ từ chối tiếp nhận (Hộp thư không tồn tại hoặc bị chặn nhận thư ngoài): {err_summary}. Vui lòng chuyển sang nộp qua Form ứng tuyển hoặc kiểm tra lại địa chỉ HR chính xác.",
+                recipient=to_email
+            )
+        except smtplib.SMTPSenderRefused as e:
+            return EmailDispatchResult(
+                status="FAILED",
+                message=f"Địa chỉ email người gửi bị từ chối: {str(e)}",
+                recipient=to_email
+            )
         except smtplib.SMTPAuthenticationError as e:
             return EmailDispatchResult(
                 status="AUTH_ERROR",
-                message=f"Lỗi xác thực SMTP: Không thể đăng nhập ({e.smtp_error.decode('utf-8', errors='ignore')})."
+                message=f"Lỗi xác thực SMTP: Tên đăng nhập hoặc mật khẩu ứng dụng Gmail không chính xác ({e.smtp_error.decode('utf-8', errors='ignore')})."
             )
         except Exception as e:
             return EmailDispatchResult(

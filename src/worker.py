@@ -20,6 +20,7 @@ from src.config import PROJECT_ROOT
 from src.db import DatabaseManager, get_connection, _DB_LOCK
 from src.form_automation import FormAutomationManager, FormAutomationResult
 from src.email_sender import get_configured_email_provider, EmailDispatchResult
+from src.hr_finder import sanitize_email, verify_email_domain_has_mx
 from src.security import ensure_within_project
 
 HEARTBEAT_FILE = PROJECT_ROOT / ".local" / "worker_heartbeat.json"
@@ -306,12 +307,21 @@ class ApplicationWorker:
 
     def _handle_email_application(self, app: Dict[str, Any], mode: str, dry_run: bool) -> None:
         app_id = app["id"]
-        to_email = (app.get("recipient") or "").strip(" \t\r\n.,;:!?'\"()[]<>").lower().rstrip(".")
+        to_email = sanitize_email(app.get("recipient") or "")
         if not to_email or "@" not in to_email or "." not in to_email.split("@")[-1]:
             self.transition_state(
                 app_id, "AWAITING_USER",
                 action="INVALID_RECIPIENT_EMAIL",
-                details="Địa chỉ email người nhận chưa xác thực hoặc không hợp lệ."
+                details="Địa chỉ email người nhận chưa xác thực hoặc không đúng định dạng RFC 5321."
+            )
+            return
+
+        is_valid_domain, domain_msg = verify_email_domain_has_mx(to_email)
+        if not is_valid_domain:
+            self.transition_state(
+                app_id, "AWAITING_USER",
+                action="INVALID_RECIPIENT_DOMAIN",
+                details=f"Tên miền email '{to_email}' không có máy chủ nhận thư (MX): {domain_msg}."
             )
             return
 

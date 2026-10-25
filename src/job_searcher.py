@@ -410,10 +410,13 @@ class JobSearcher:
                 "target_query": query
             })
 
-            if len(active_jobs) >= limit:
-                break
+        # Prioritize jobs with verified HR email at the top, followed by highest match score
+        active_jobs.sort(key=lambda x: (
+            1 if (x.get("hr_email") and "@" in x["hr_email"]) else 0,
+            x.get("match_score", 0)
+        ), reverse=True)
 
-        return active_jobs
+        return active_jobs[:limit]
 
     def search_freehire(
         self,

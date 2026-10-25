@@ -587,15 +587,20 @@ class JobEvaluator:
 
         return hard_reqs, disqualifiers, unclear_items, clarification_questions, hard_score, hard_explanation, feasibility_status
 
-    def evaluate(self, jd_data: Dict[str, Any], market: str = "vietnam") -> Dict[str, Any]:
+    def evaluate(self, jd_data: Any, market: str = "vietnam") -> Dict[str, Any]:
         """
         Evaluate a single JD against candidate profile and return structured assessment.
         """
         if market not in MARKETS:
             market = "vietnam"
 
+        if isinstance(jd_data, str):
+            jd_data = {"raw_content": jd_data}
+        elif not isinstance(jd_data, dict):
+            jd_data = {"raw_content": str(jd_data or "")}
+
         market_cfg = MARKETS[market]
-        jd_content = jd_data.get("raw_content", "") or jd_data.get("content", "")
+        jd_content = jd_data.get("raw_content", "") or jd_data.get("content", "") or jd_data.get("description", "") or jd_data.get("text", "")
         jd_title = jd_data.get("title", "Chưa rõ")
         jd_source = jd_data.get("source", "Thủ công")
         collection_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
