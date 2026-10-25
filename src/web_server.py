@@ -218,6 +218,9 @@ async def list_jobs(
         search_query=q
     )
     enriched = []
+    app_records = db.list_applications()
+    app_job_ids = {a.get("job_id") for a in app_records if a.get("job_id") and a.get("package_dir")}
+
     for j in raw_jobs:
         hr_email = sanitize_email(find_hr_email(company=j.get("company", ""), raw_jd=j.get("raw_jd", ""), source_url=j.get("source", "")))
         apply_url = find_apply_url(company=j.get("company", ""), raw_jd=j.get("raw_jd", ""), source_url=j.get("source", ""))
@@ -229,6 +232,7 @@ async def list_jobs(
         j_copy["has_hr_email"] = has_email
         j_copy["apply_url"] = apply_url
         j_copy["preferred_channel"] = "email" if has_email else "form"
+        j_copy["has_package"] = j.get("id") in app_job_ids
         enriched.append(j_copy)
 
     # Sort: Prioritize jobs with verified HR email first, then match_score descending, then updated_at
@@ -454,6 +458,9 @@ async def execute_job_search(request: Request):
         company = j.get("company", "Công ty chưa rõ")
         title = j.get("title", effective_keywords)
         desc = j.get("description") or j.get("raw_jd") or ""
+        j_cat = j.get("category") or (category if category != "all" else None)
+        j["id"] = j_id
+        j["category"] = j_cat
 
         db.save_job({
             "id": j_id,
@@ -466,7 +473,7 @@ async def execute_job_search(request: Request):
             "notes": f"🟢 Tin tuyển dụng thực tế đang tuyển | Nguồn: {j.get('source_platform', 'Đa nền tảng')}",
             "canonical_key": j.get("canonical_key", f"{company}_{title}".lower().replace(" ", "_")),
             "raw_jd": desc,
-            "category": j.get("category"),
+            "category": j_cat,
             "location": j.get("location"),
             "work_mode": j.get("work_mode"),
             "employment_type": j.get("employment_type"),
@@ -479,7 +486,8 @@ async def execute_job_search(request: Request):
         "imported_count": imported_count,
         "total_found": len(unique_to_import),
         "is_live": True,
-        "message": f"🎉 Đã quét đa nền tảng (LinkedIn, TopCV, ITviec, Enterprise)! Tìm thấy {len(unique_to_import)} tin tuyển dụng thực tế không trùng lặp."
+        "message": f"🎉 Đã quét đa nền tảng (LinkedIn, TopCV, ITviec, Enterprise)! Tìm thấy {len(unique_to_import)} tin tuyển dụng thực tế không trùng lặp.",
+        "jobs": unique_to_import
     }
 
 
@@ -497,8 +505,8 @@ async def prepare_package(job_id: str):
     pkg_res = await asyncio.to_thread(
         create_job_application_package,
         candidate=candidate_data,
-        eval_result={"match_score": job.get("match_score", 85), "hard_requirements": []},
-        jd_data={"company": job["company"], "title": job["title"], "text": job.get("raw_jd", ""), "id": job_id}
+        eval_result={"match_score": job.get("match_score", 85), "hard_requirements": [], "category": job.get("category")},
+        jd_data={"company": job["company"], "title": job["title"], "text": job.get("raw_jd", ""), "id": job_id, "category": job.get("category")}
     )
 
     pkg_dir = pkg_res.get("version_dir") or pkg_res.get("package_dir")
@@ -561,6 +569,29 @@ async def prepare_package(job_id: str):
         "package_dir": str(pkg_dir),
         "auto_hr_email": auto_hr_email,
         "auto_apply_url": auto_apply_url
+    }
+
+
+@app.post("/api/jobs/batch-prepare-packages")
+async def batch_prepare_packages(request: Request):
+    payload = await request.json()
+    job_ids = payload.get("job_ids", [])
+    if not job_ids:
+        raise HTTPException(status_code=400, detail="Danh sách job_ids không được để trống")
+
+    results = []
+    for jid in job_ids:
+        try:
+            res = await prepare_package(jid)
+            results.append({"job_id": jid, "status": "success", "package": res})
+        except Exception as e:
+            results.append({"job_id": jid, "status": "error", "error": str(e)})
+
+    return {
+        "status": "success",
+        "total_requested": len(job_ids),
+        "success_count": sum(1 for r in results if r["status"] == "success"),
+        "results": results
     }
 
 

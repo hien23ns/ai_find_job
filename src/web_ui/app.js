@@ -163,6 +163,24 @@ function setupEventHandlers() {
       }
     });
   }
+
+  // Live real-time keywords filter with debounce and Enter trigger
+  const kwInput = document.getElementById("search-keywords");
+  if (kwInput) {
+    let kwDebounceTimer = null;
+    kwInput.addEventListener("input", () => {
+      clearTimeout(kwDebounceTimer);
+      kwDebounceTimer = setTimeout(() => {
+        applyFilters();
+      }, 200);
+    });
+    kwInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        runJobSearch();
+      }
+    });
+  }
 }
 
 // 1. Dashboard
@@ -337,14 +355,21 @@ async function saveProfileData() {
 let cachedJobsList = [];
 let currentJobFilter = "all";
 let currentFormJobId = null;
+let newlyFoundJobIds = new Set();
 
 function getCategoryBadge(cat) {
   if (!cat) return "";
   const map = {
     design: '<span class="badge badge-design">🎨 Thiết kế</span>',
     marketing: '<span class="badge badge-marketing">📢 Marketing</span>',
-    security: '<span class="badge badge-security">🛡️ An ninh mạng</span>',
+    data_ai: '<span class="badge badge-data_ai">📊 Dữ liệu & AI</span>',
     it: '<span class="badge badge-it">💻 CNTT & PM</span>',
+    security: '<span class="badge badge-security">🛡️ An ninh mạng</span>',
+    hr_admin: '<span class="badge badge-hr_admin">👥 Nhân sự & HR</span>',
+    finance: '<span class="badge badge-finance">💰 Tài chính & Kế toán</span>',
+    translation: '<span class="badge badge-translation">🌐 Dịch thuật & Comtor</span>',
+    logistics: '<span class="badge badge-logistics">📦 Logistics & Kho vận</span>',
+    content_media: '<span class="badge badge-content_media">🎬 Media & TikTok</span>',
     sales: '<span class="badge badge-sales">💼 Sales & BD</span>'
   };
   return map[cat] || `<span class="badge badge-gray">${escapeHtml(cat)}</span>`;
@@ -410,8 +435,14 @@ function selectQuickCategory(cat) {
   if (kwInput) {
     if (cat === "design") kwInput.value = "UI/UX Graphic Designer";
     else if (cat === "marketing") kwInput.value = "Digital Marketing Content";
+    else if (cat === "data_ai") kwInput.value = "Data Analyst BA AI";
     else if (cat === "it") kwInput.value = "Software Developer CNTT";
     else if (cat === "security") kwInput.value = "Cyber Security SOC";
+    else if (cat === "hr_admin") kwInput.value = "HR Tuyển dụng Nhân sự";
+    else if (cat === "finance") kwInput.value = "Kế toán Tài chính";
+    else if (cat === "translation") kwInput.value = "Biên phiên dịch Comtor";
+    else if (cat === "logistics") kwInput.value = "Logistics Xuất nhập khẩu";
+    else if (cat === "content_media") kwInput.value = "Video Editor Media TikTok";
     else if (cat === "sales") kwInput.value = "Sales Business Development";
     else if (cat === "all") kwInput.value = "";
   }
@@ -439,11 +470,24 @@ function applyFilters() {
   const locFilter = document.getElementById("search-location")?.value || "all";
   const modeFilter = document.getElementById("search-work-mode")?.value || "all";
   const typeFilter = document.getElementById("search-employment-type")?.value || "all";
+  const kwVal = (document.getElementById("search-keywords")?.value || "").trim().toLowerCase();
+  const kwTerms = kwVal ? kwVal.split(/\s+/).filter(Boolean) : [];
   const chipFilter = currentJobFilter;
 
   let filtered = cachedJobsList.filter(j => {
+    const isNewlyFound = newlyFoundJobIds.has(j.id);
+
+    // 0. Keyword live search matching
+    if (kwTerms.length > 0) {
+      const searchTarget = `${j.company || ""} ${j.title || ""} ${j.category || ""} ${j.location || ""} ${j.notes || ""} ${j.raw_jd || ""}`.toLowerCase();
+      const matches = kwTerms.some(term => searchTarget.includes(term));
+      if (!matches && !isNewlyFound) return false;
+    }
+
     // 1. Category filter
-    if (catFilter !== "all" && j.category && j.category !== catFilter) return false;
+    if (catFilter !== "all" && j.category && j.category !== catFilter) {
+      if (!isNewlyFound) return false;
+    }
 
     // 2. Location filter
     if (locFilter !== "all") {
@@ -458,15 +502,28 @@ function applyFilters() {
     if (typeFilter !== "all" && j.employment_type && j.employment_type !== typeFilter) return false;
 
     // 5. Quick Filter Chip
+    if (chipFilter === "new_search" && !isNewlyFound) return false;
+    if (chipFilter === "has_package" && !j.has_package) return false;
     if (chipFilter === "email" && !j.has_hr_email) return false;
     if (chipFilter === "form" && j.has_hr_email) return false;
     if (chipFilter === "remote" && j.work_mode !== "remote" && j.location !== "remote") return false;
     if (chipFilter === "parttime" && j.employment_type !== "parttime") return false;
     if (chipFilter === "design" && j.category !== "design") return false;
     if (chipFilter === "marketing" && j.category !== "marketing") return false;
+    if (chipFilter === "data_ai" && j.category !== "data_ai") return false;
+    if (chipFilter === "hr_admin" && j.category !== "hr_admin") return false;
+    if (chipFilter === "finance" && j.category !== "finance") return false;
     if (chipFilter === "danang" && j.location !== "danang") return false;
 
     return true;
+  });
+
+  // Sort newly found jobs to the very top so the user immediately sees search results
+  filtered.sort((a, b) => {
+    const aNew = newlyFoundJobIds.has(a.id) ? 1 : 0;
+    const bNew = newlyFoundJobIds.has(b.id) ? 1 : 0;
+    if (aNew !== bNew) return bNew - aNew;
+    return (b.match_score || 0) - (a.match_score || 0);
   });
 
   const countEl = document.getElementById("search-total-count");
@@ -495,22 +552,28 @@ function renderJobsTable(jobs, selector) {
 
     const isLiveJob = (j.id && j.id.startsWith("job_live_")) || (j.notes && j.notes.includes("Tin tuyển dụng thực tế"));
     const liveTag = isLiveJob ? `<span class="badge badge-green" style="background:#ecfdf5; color:#047857; border:1px solid #6ee7b7; font-size:10px; margin-left:4px;" title="Tin tuyển dụng thực tế đang mở tuyển trên cổng">🟢 Đang tuyển</span>` : "";
+    const newTag = newlyFoundJobIds.has(j.id) ? `<span class="badge badge-new" style="font-size:10px; margin-left:4px;">✨ Mới tìm</span>` : "";
+    const pkgTag = j.has_package ? `<span class="badge badge-pkg-done" style="font-size:10px; margin-left:4px;">✓ Đã tạo CV</span>` : "";
 
     const catBadge = getCategoryBadge(j.category);
     const locBadge = getLocationBadge(j.location);
     const modeBadge = getWorkModeBadge(j.work_mode);
     const typeBadge = getEmploymentTypeBadge(j.employment_type);
 
+    const cvActionBtn = j.has_package
+      ? `<button class="btn btn-primary btn-sm" style="background:#0284c7; color:#fff; font-weight:700; margin-left:4px;" onclick="openPackageTabForJob('${j.id}')">📄 Xem CV</button>`
+      : `<button class="btn btn-sm" id="btn-create-pkg-${j.id}" style="background:#4338ca; color:#fff; font-weight:700; margin-left:4px;" onclick="createPackageForJobRow('${j.id}')">⚡ Tạo CV theo Job</button>`;
+
     tr.innerHTML = `
       <td>
         <div style="font-weight:700; color:#0f172a; display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
-          ${escapeHtml(j.company)} ${liveTag}
+          ${escapeHtml(j.company)} ${liveTag} ${newTag}
         </div>
         <div style="margin-top:4px;">${locBadge}</div>
       </td>
       <td>
         <div style="font-weight:600; color:#1e293b; margin-bottom:4px;">${escapeHtml(j.title)}</div>
-        <div>${catBadge}</div>
+        <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">${catBadge} ${pkgTag}</div>
       </td>
       <td>
         <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
@@ -523,7 +586,7 @@ function renderJobsTable(jobs, selector) {
       <td><span class="badge ${getStatusBadgeClass(j.status)}">${escapeHtml(j.status)}</span></td>
       <td style="white-space:nowrap;">
         <button class="btn btn-secondary btn-sm" onclick="openJobDetail('${j.id}')">JD</button>
-        <button class="btn btn-primary btn-sm" style="margin-left:4px;" onclick="openPackageTabForJob('${j.id}')">Hồ sơ</button>
+        ${cvActionBtn}
         ${applyActionBtn}
       </td>
     `;
@@ -657,14 +720,100 @@ async function runJobSearch() {
       body: jsonStringifySafe({ keywords, category, location, work_mode, employment_type, market, limit })
     });
     const data = await res.json();
+
+    // Store newly found jobs so they are highlighted with '✨ Mới tìm' and kept visible
+    newlyFoundJobIds.clear();
+    if (data.jobs && Array.isArray(data.jobs)) {
+      data.jobs.forEach(j => newlyFoundJobIds.add(j.id));
+    }
+
+    // Reset chip filter to "all" so new jobs are immediately visible to user
+    currentJobFilter = "all";
+    document.querySelectorAll(".quick-filter-chip").forEach(b => b.classList.remove("active"));
+    const allChip = document.getElementById("btn-filter-all");
+    if (allChip) allChip.classList.add("active");
+
     const liveNote = data.is_live ? " [🟢 Tin thật đang mở tuyển]" : "";
-    showToast(`🎉 Tìm thấy ${data.total_found} tin tuyển dụng thực tế${liveNote}. Đã lưu ${data.imported_count} việc vào danh sách.`, "success");
+    showToast(`🎉 Tìm thấy ${data.total_found} tin tuyển dụng thực tế${liveNote}. Hiển thị ngay trên bảng bên dưới.`, "success");
     await loadJobsList();
   } catch (e) {
     showToast("Lỗi trong quá trình tìm kiếm việc làm", "error");
   } finally {
     btn.innerHTML = `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg> Tìm kiếm việc ngay`;
     btn.disabled = false;
+  }
+}
+
+async function createPackageForJobRow(jobId) {
+  const btn = document.getElementById(`btn-create-pkg-${jobId}`);
+  if (btn) {
+    btn.innerText = "⏳ Đang tạo...";
+    btn.disabled = true;
+  }
+  showToast("⚡ Đang tạo hồ sơ CV Modern Tech & Thư ứng tuyển chuẩn xác theo job...", "info");
+  try {
+    const res = await fetch(`/api/jobs/${jobId}/prepare-package`, {
+      method: "POST",
+      headers: getFetchHeaders()
+    });
+    if (res.ok) {
+      showToast("🎉 Đã tạo hồ sơ CV theo đúng JD công việc thành công!", "success");
+      const jobInCache = cachedJobsList.find(j => j.id === jobId);
+      if (jobInCache) jobInCache.has_package = true;
+      applyFilters();
+    } else {
+      const err = await res.json();
+      showToast(err.detail || "Không thể tạo hồ sơ", "error");
+      if (btn) {
+        btn.innerText = "⚡ Tạo CV theo Job";
+        btn.disabled = false;
+      }
+    }
+  } catch (e) {
+    showToast("Lỗi kết nối khi tạo hồ sơ", "error");
+    if (btn) {
+      btn.innerText = "⚡ Tạo CV theo Job";
+      btn.disabled = false;
+    }
+  }
+}
+
+async function batchCreatePackages() {
+  const targets = cachedJobsList.filter(j => !j.has_package);
+  if (targets.length === 0) {
+    showToast("Tất cả công việc trong danh sách đều đã được tạo hồ sơ CV!", "info");
+    return;
+  }
+
+  const btn = document.getElementById("btn-batch-create-cv");
+  if (btn) {
+    btn.innerText = `⏳ Đang tạo ${targets.length} bộ hồ sơ...`;
+    btn.disabled = true;
+  }
+  showToast(`⚡ Đang tự động tạo bộ CV cá nhân hóa chuẩn xác cho ${targets.length} công việc...`, "info");
+
+  try {
+    const jobIds = targets.map(j => j.id);
+    const res = await fetch("/api/jobs/batch-prepare-packages", {
+      method: "POST",
+      headers: getFetchHeaders(),
+      body: jsonStringifySafe({ job_ids: jobIds })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast(`🎉 Đã tạo thành công ${data.success_count || targets.length} bộ hồ sơ CV theo từng job!`, "success");
+      targets.forEach(j => j.has_package = true);
+      applyFilters();
+    } else {
+      showToast(data.detail || "Lỗi khi tạo hàng loạt hồ sơ", "error");
+    }
+  } catch (e) {
+    showToast("Lỗi kết nối khi tạo hàng loạt hồ sơ", "error");
+  } finally {
+    if (btn) {
+      btn.innerText = "⚡ Tự động tạo CV cho tất cả việc này";
+      btn.disabled = false;
+    }
   }
 }
 

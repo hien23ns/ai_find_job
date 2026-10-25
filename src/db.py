@@ -191,19 +191,44 @@ def infer_job_attributes(
     d_lower = (raw_jd or "").lower()
     combined = f"{t_lower} {l_lower} {d_lower}"
 
-    # 1. Category (design, marketing, security, tech, sales, general)
+    # 1. Category (design, marketing, data_ai, security, it, sales, hr_admin, finance, translation, logistics, content_media)
     category = explicit.get("category")
     if not category or category in ["all", "general", ""]:
         if any(k in t_lower or k in d_lower for k in [
+            "data analyst", "phân tích dữ liệu", "business analyst", "ba intern", "data engineer",
+            "machine learning", "trí tuệ nhân tạo", "ai engineer", "deep learning", "power bi", "tableau", "bi intern"
+        ]):
+            category = "data_ai"
+        elif any(k in t_lower or k in d_lower for k in [
             "ui/ux", "ui-ux", "ux/ui", "graphic design", "thiết kế đồ họa", "thiết kế",
-            "figma", "photoshop", "illustrator", "creative", "product design", "2d", "3d", "motion"
+            "figma", "photoshop", "illustrator", "creative", "product design", "2d", "3d", "motion", "designer"
         ]):
             category = "design"
+        elif any(k in t_lower or k in d_lower for k in [
+            "video editor", "quay dựng", "dựng phim", "media", "tiktok", "tiktoker", "quay phim", "premiere", "after effects"
+        ]):
+            category = "content_media"
         elif any(k in t_lower or k in d_lower for k in [
             "marketing", "truyền thông", "seo", "content", "copywriter", "facebook ads",
             "google ads", "social media", "performance marketing", "growth", "quảng cáo"
         ]):
             category = "marketing"
+        elif any(k in t_lower or k in d_lower for k in [
+            "nhân sự", "tuyển dụng", "talent acquisition", "hr intern", "human resources", "hành chính", "admin", "trợ lý", "headhunter"
+        ]):
+            category = "hr_admin"
+        elif any(k in t_lower or k in d_lower for k in [
+            "kế toán", "tài chính", "accounting", "finance", "kiểm toán", "thu ngân", "auditor", "công nợ"
+        ]):
+            category = "finance"
+        elif any(k in t_lower or k in d_lower for k in [
+            "biên dịch", "phiên dịch", "dịch thuật", "translator", "interpreter", "tiếng hàn", "tiếng nhật", "tiếng trung", "localization"
+        ]):
+            category = "translation"
+        elif any(k in t_lower or k in d_lower for k in [
+            "xuất nhập khẩu", "logistics", "supply chain", "chuỗi cung ứng", "kho vận", "mua hàng", "procurement", "vận chuyển"
+        ]):
+            category = "logistics"
         elif any(k in t_lower or k in d_lower for k in [
             "security", "an ninh mạng", "an toàn thông tin", "soc", "network", "mạng",
             "cloud", "devops", "pentest", "siem", "firewall", "hạ tầng"
@@ -211,15 +236,15 @@ def infer_job_attributes(
             category = "security"
         elif any(k in t_lower or k in d_lower for k in [
             "developer", "lập trình", "software", "backend", "frontend", "fullstack",
-            "python", "java", "react", "flutter", "data", "engineer", "kỹ sư phần mềm"
+            "python", "java", "react", "flutter", "engineer", "kỹ sư phần mềm", "coder", "programmer", "it helpdesk"
         ]):
-            category = "tech"
+            category = "it"
         elif any(k in t_lower or k in d_lower for k in [
-            "sales", "kinh doanh", "bán hàng", "business development", "account executive"
+            "sales", "kinh doanh", "bán hàng", "business development", "account executive", "cskh", "telesales", "tư vấn", "chăm sóc khách hàng"
         ]):
             category = "sales"
         else:
-            category = "tech"
+            category = "it"
 
     # 2. Detailed Location
     loc_val = explicit.get("location")
@@ -538,8 +563,11 @@ class DatabaseManager:
                 query += " AND status = ?"
                 params.append(status)
             if category and category != "all":
-                query += " AND category = ?"
-                params.append(category)
+                if category == "it":
+                    query += " AND (category = 'it' OR category = 'tech')"
+                else:
+                    query += " AND category = ?"
+                    params.append(category)
             if location and location != "all":
                 loc_map = {
                     "danang": ["%đà nẵng%", "%danang%", "%da nang%"],

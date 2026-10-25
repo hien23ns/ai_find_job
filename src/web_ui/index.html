@@ -242,8 +242,14 @@
                 <button type="button" class="category-pill active" data-category="all" onclick="selectQuickCategory('all')">🌐 Tất cả lĩnh vực</button>
                 <button type="button" class="category-pill" data-category="design" onclick="selectQuickCategory('design')">🎨 Thiết kế (UI/UX, Graphic, 2D/3D)</button>
                 <button type="button" class="category-pill" data-category="marketing" onclick="selectQuickCategory('marketing')">📢 Marketing & Content Creator</button>
-                <button type="button" class="category-pill" data-category="security" onclick="selectQuickCategory('security')">🛡️ An ninh mạng & Bảo mật (SOC/Infosec)</button>
+                <button type="button" class="category-pill" data-category="data_ai" onclick="selectQuickCategory('data_ai')">📊 Dữ liệu & AI (Data / BA / Machine Learning)</button>
                 <button type="button" class="category-pill" data-category="it" onclick="selectQuickCategory('it')">💻 Công nghệ thông tin & Phần mềm</button>
+                <button type="button" class="category-pill" data-category="security" onclick="selectQuickCategory('security')">🛡️ An ninh mạng & Bảo mật (SOC/Infosec)</button>
+                <button type="button" class="category-pill" data-category="hr_admin" onclick="selectQuickCategory('hr_admin')">👥 Nhân sự & Tuyển dụng (HR / Recruiter)</button>
+                <button type="button" class="category-pill" data-category="finance" onclick="selectQuickCategory('finance')">💰 Tài chính & Kế toán</button>
+                <button type="button" class="category-pill" data-category="translation" onclick="selectQuickCategory('translation')">🌐 Dịch thuật & Comtor</button>
+                <button type="button" class="category-pill" data-category="logistics" onclick="selectQuickCategory('logistics')">📦 Logistics & Kho vận</button>
+                <button type="button" class="category-pill" data-category="content_media" onclick="selectQuickCategory('content_media')">🎬 Media & Video TikTok</button>
                 <button type="button" class="category-pill" data-category="sales" onclick="selectQuickCategory('sales')">💼 Kinh doanh & Sales</button>
               </div>
             </div>
@@ -251,8 +257,8 @@
             <!-- 2. Hàng bộ lọc đa chiều (Category, Keywords, Location, Work Mode, Employment Type, Market) -->
             <div style="display:grid; grid-template-columns: 2fr 1.2fr 1.2fr; gap:14px; margin-bottom:12px;">
               <div class="form-group" style="margin-bottom:0;">
-                <label class="form-label">Từ khóa vị trí / kỹ năng</label>
-                <input type="text" class="form-control" id="search-keywords" placeholder="VD: UI/UX, Graphic Designer, Digital Marketing, Thực tập sinh...">
+                <label class="form-label">Từ khóa vị trí / kỹ năng (Tự động lọc ngay khi nhập)</label>
+                <input type="text" class="form-control" id="search-keywords" placeholder="VD: UI/UX, Graphic Designer, Digital Marketing, Data Analyst, Kế toán, Thực tập sinh...">
               </div>
               <div class="form-group" style="margin-bottom:0;">
                 <label class="form-label">Lĩnh vực chuyên môn</label>
@@ -260,8 +266,14 @@
                   <option value="all">🌐 Tất cả lĩnh vực</option>
                   <option value="design">🎨 Thiết kế (UI/UX, Graphic Design, 2D/3D)</option>
                   <option value="marketing">📢 Marketing, Content & Truyền thông</option>
-                  <option value="security">🛡️ An toàn thông tin & An ninh mạng</option>
+                  <option value="data_ai">📊 Dữ liệu & AI (Data Analyst, Business Analyst, AI)</option>
                   <option value="it">💻 Công nghệ thông tin / Lập trình</option>
+                  <option value="security">🛡️ An toàn thông tin & An ninh mạng</option>
+                  <option value="hr_admin">👥 Nhân sự & Tuyển dụng (HR, IT Recruiter, Admin)</option>
+                  <option value="finance">💰 Tài chính & Kế toán (Accounting, Finance)</option>
+                  <option value="translation">🌐 Dịch thuật & Biên phiên dịch (Comtor, Translator)</option>
+                  <option value="logistics">📦 Logistics & Quản trị chuỗi cung ứng</option>
+                  <option value="content_media">🎬 Truyền thông số & Video Creator</option>
                   <option value="sales">💼 Kinh doanh / Sales / CSKH</option>
                 </select>
               </div>
@@ -318,13 +330,23 @@
 
         <div class="card">
           <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-            <div class="card-title">Kết quả việc làm tìm thấy (<span id="search-total-count">0</span> việc)</div>
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+              <div class="card-title" style="margin-bottom:0;">Kết quả việc làm tìm thấy (<span id="search-total-count">0</span> việc)</div>
+              <button class="btn btn-primary btn-sm" id="btn-batch-create-cv" onclick="batchCreatePackages()" style="background:#4338ca; color:#fff; font-weight:700; border:none; padding:6px 14px; border-radius:6px; cursor:pointer;">
+                ⚡ Tự động tạo CV cho tất cả việc này
+              </button>
+            </div>
             <div style="display:flex; gap:6px; flex-wrap:wrap;" id="filter-chips-container">
               <button class="quick-filter-chip active" id="btn-filter-all" onclick="filterJobsList('all')">🔘 Tất cả</button>
+              <button class="quick-filter-chip" id="btn-filter-new_search" onclick="filterJobsList('new_search')" style="background:#ecfdf5; border-color:#6ee7b7; color:#065f46; font-weight:700;">✨ Mới tìm thấy</button>
+              <button class="quick-filter-chip" id="btn-filter-has_package" onclick="filterJobsList('has_package')" style="background:#e0e7ff; border-color:#a5b4fc; color:#4338ca; font-weight:700;">📄 Đã tạo CV</button>
               <button class="quick-filter-chip" id="btn-filter-remote" onclick="filterJobsList('remote')" style="background:#f0fdf4; border-color:#86efac; color:#15803d;">🏠 Remote (Làm từ xa)</button>
               <button class="quick-filter-chip" id="btn-filter-parttime" onclick="filterJobsList('parttime')" style="background:#fffbeb; border-color:#fde68a; color:#b45309;">⏳ Part-time (Bán thời gian)</button>
               <button class="quick-filter-chip" id="btn-filter-design" onclick="filterJobsList('design')" style="background:#fdf2f8; border-color:#fbcfe8; color:#be185d;">🎨 Thiết kế</button>
               <button class="quick-filter-chip" id="btn-filter-marketing" onclick="filterJobsList('marketing')" style="background:#fff7ed; border-color:#fed7aa; color:#c2410c;">📢 Marketing</button>
+              <button class="quick-filter-chip" id="btn-filter-data_ai" onclick="filterJobsList('data_ai')" style="background:#f0fdfa; border-color:#99f6e4; color:#0f766e;">📊 Dữ liệu & AI</button>
+              <button class="quick-filter-chip" id="btn-filter-hr_admin" onclick="filterJobsList('hr_admin')" style="background:#faf5ff; border-color:#e9d5ff; color:#7e22ce;">👥 Nhân sự / HR</button>
+              <button class="quick-filter-chip" id="btn-filter-finance" onclick="filterJobsList('finance')" style="background:#fefce8; border-color:#fde047; color:#854d0e;">💰 Tài chính / Kế toán</button>
               <button class="quick-filter-chip" id="btn-filter-danang" onclick="filterJobsList('danang')" style="background:#eff6ff; border-color:#bfdbfe; color:#1d4ed8;">📍 Đà Nẵng</button>
               <button class="quick-filter-chip" id="btn-filter-email" onclick="filterJobsList('email')" style="background:#ecfdf5; border-color:#a7f3d0; color:#047857; font-weight:700;">✉️ Có Email HR (Gửi 1-click)</button>
               <button class="quick-filter-chip" id="btn-filter-form" onclick="filterJobsList('form')" style="background:#fefce8; border-color:#fde047; color:#854d0e;">🌐 Form/Link</button>

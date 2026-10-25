@@ -1221,6 +1221,370 @@ Scope of Work:
 - Flexible working hours, output-based compensation.
 
 Apply with writing samples: editorial@freehire.org"""
+    },
+    {
+        "id": "job_viettel_data_ai_intern",
+        "title": "Thực tập sinh Phân tích Dữ liệu & AI (Data Analyst / ML Intern)",
+        "company": "Viettel AI Lab",
+        "market": "vietnam",
+        "location": "Hà Nội",
+        "category": "data_ai",
+        "work_mode": "hybrid",
+        "employment_type": "internship",
+        "platform_source": "Viettel Careers & TopCV",
+        "source": "https://viettel.vn/careers/data-ai-intern",
+        "match_score": 93,
+        "hr_email": "tuyendung@viettel.com.vn",
+        "apply_channel": "email",
+        "raw_jd": """VIETTEL AI LAB - TUYỂN DỤNG DATA ANALYST & AI INTERN
+Địa điểm: Keangnam Landmark 72, Nam Từ Liêm, Hà Nội.
+Hình thức: Thực tập sinh (Hỗ trợ làm việc linh hoạt kết hợp từ xa).
+
+Trách nhiệm:
+- Thu thập, làm sạch và xử lý dữ liệu lớn phục vụ các mô hình Machine Learning & Data Analytics.
+- Viết script Python (Pandas, NumPy) và truy vấn SQL trích xuất dữ liệu từ Data Warehouse.
+- Trực quan hóa dữ liệu qua dashboard (Power BI, Tableau) và phân tích chỉ số kinh doanh.
+
+Yêu cầu:
+- Sinh viên ngành CNTT, Toán tin, Khoa học dữ liệu, An toàn thông tin.
+- Thành thạo ngôn ngữ Python và truy vấn SQL.
+- Tư duy logic, phân tích dữ liệu tốt.
+
+Quyền lợi:
+- Phụ cấp thực tập từ 5.000.000 - 8.000.000 VNĐ/tháng.
+- Làm việc cùng các chuyên gia hàng đầu về AI tại Viettel.
+
+Ứng tuyển: Gửi CV về email tuyendung@viettel.com.vn với tiêu đề: [Viettel_AI] Data Analyst Intern - Họ Tên."""
+    },
+    {
+        "id": "job_vnpay_ba_fintech",
+        "title": "Thực tập sinh Phân tích Nghiệp vụ (Business Analyst - BA Fintech)",
+        "company": "VNPAY",
+        "market": "vietnam",
+        "location": "Hà Nội / Đà Nẵng",
+        "category": "data_ai",
+        "work_mode": "onsite",
+        "employment_type": "internship",
+        "platform_source": "ITviec & VNPAY Careers",
+        "source": "https://vnpay.vn/careers/ba-intern",
+        "match_score": 91,
+        "hr_email": "tuyendung@vnpay.vn",
+        "apply_channel": "email",
+        "raw_jd": """VNPAY TUYỂN DỤNG THỰC TẬP SINH BUSINESS ANALYST (FINTECH)
+Địa điểm: Tòa nhà VNPAY, Hà Nội & Chi nhánh Đà Nẵng.
+Hình thức: Thực tập sinh toàn thời gian hoặc tối thiểu 4 ngày/tuần.
+
+Mô tả công việc:
+- Khảo sát và phân tích yêu cầu nghiệp vụ các giải pháp thanh toán điện tử VNPAY-QR, Ví điện tử.
+- Viết tài liệu đặc tả yêu cầu hệ thống (BRD, SRS, Use Case, User Story).
+- Phối hợp cùng UI/UX Designer và đội ngũ Developers để đảm bảo sản phẩm đúng luồng người dùng.
+
+Yêu cầu:
+- Sinh viên năm cuối hoặc mới tốt nghiệp các trường ĐH (VKU, Bách Khoa, Kinh Tế...).
+- Khả năng diễn đạt logic, kỹ năng viết tài liệu và làm việc nhóm.
+- Biết sử dụng công cụ vẽ luồng (Figma, Draw.io, Visio) là lợi thế.
+
+Quyền lợi:
+- Trợ cấp thực tập cạnh tranh + Cơ hội lên nhân viên chính thức sau 3 tháng.
+- Môi trường thanh toán số hàng đầu Việt Nam.
+
+Gửi hồ sơ về: tuyendung@vnpay.vn với tiêu đề: [VNPAY] BA Intern - Họ Tên."""
+    },
+    {
+        "id": "job_fpt_data_powerbi_danang",
+        "title": "Data Analyst Fresher / Intern (Power BI & SQL Analytics)",
+        "company": "FPT Software",
+        "market": "vietnam",
+        "location": "Đà Nẵng",
+        "category": "data_ai",
+        "work_mode": "onsite",
+        "employment_type": "internship",
+        "platform_source": "FPT Software Careers & ITviec",
+        "source": "https://career.fpt-software.com/job/data-analyst-danang",
+        "match_score": 94,
+        "hr_email": "recruitment@fpt.com",
+        "apply_channel": "email",
+        "raw_jd": """FPT SOFTWARE ĐÀ NẴNG - TUYỂN THỰC TẬP SINH PHÂN TÍCH DỮ LIỆU (DATA ANALYST)
+Địa điểm: FPT Complex, Ngũ Hành Sơn, Đà Nẵng.
+Hình thức: Thực tập sinh (Linh hoạt lịch học cho sinh viên VKU, Bách Khoa).
+
+Nội dung:
+- Tham gia các dự án phân tích dữ liệu cho khách hàng quốc tế.
+- Xây dựng dashboard báo cáo tương tác trên Power BI / Tableau.
+- Tối ưu hóa câu lệnh SQL và tiền xử lý dữ liệu với Python.
+
+Yêu cầu:
+- Sinh viên chuyên ngành CNTT, An toàn thông tin, Hệ thống thông tin.
+- Nắm vững SQL (Join, Subquery, Window function).
+- Tiếng Anh giao tiếp hoặc đọc viết tốt.
+
+Quyền lợi:
+- Phụ cấp hàng tháng + Xe đưa đón công ty.
+- Được Senior Data Lead đào tạo thực chiến 1-1.
+
+Ứng tuyển ngay: recruitment@fpt.com."""
+    },
+    {
+        "id": "job_sun_hr_intern_danang",
+        "title": "Thực tập sinh Nhân sự & Tuyển dụng IT (IT Talent Acquisition Intern)",
+        "company": "Sun* (Sun Asterisk)",
+        "market": "vietnam",
+        "location": "Đà Nẵng",
+        "category": "hr_admin",
+        "work_mode": "hybrid",
+        "employment_type": "internship",
+        "platform_source": "TopCV & Sun* Careers",
+        "source": "https://sun-asterisk.vn/careers/hr-intern-danang",
+        "match_score": 90,
+        "hr_email": "hr@sun-asterisk.com",
+        "apply_channel": "email",
+        "raw_jd": """SUN* ĐÀ NẴNG - TUYỂN DỤNG THỰC TẬP SINH NHÂN SỰ & TUYỂN DỤNG (HR INTERN)
+Địa điểm: Tòa nhà Phi Long Technology, Hải Châu, Đà Nẵng.
+Hình thức: Thực tập sinh (Hybrid / Linh hoạt kết hợp làm việc tại nhà).
+
+Mô tả công việc:
+- Hỗ trợ tìm kiếm, sàng lọc hồ sơ ứng viên công nghệ (Dev, Tester, UI/UX, Security).
+- Liên hệ ứng viên, sắp xếp lịch phỏng vấn và hỗ trợ đón tiếp ứng viên.
+- Tham gia tổ chức các sự kiện văn hóa nội bộ, Tech Talk và ngày hội việc làm sinh viên.
+
+Yêu cầu:
+- Sinh viên năm 3, năm 4 yêu thích lĩnh vực nhân sự công nghệ.
+- Kỹ năng giao tiếp tốt, nhanh nhẹn, tinh thần trách nhiệm.
+- Thành thạo tin học văn phòng, tiếng Anh giao tiếp cơ bản.
+
+Quyền lợi:
+- Hỗ trợ lương thực tập + Môi trường làm việc năng động, chuẩn Agile.
+- Đóng dấu mộc thực tập tốt nghiệp.
+
+Gửi CV về: hr@sun-asterisk.com với tiêu đề: [Sun_DN] HR Intern - Họ Tên."""
+    },
+    {
+        "id": "job_vng_hr_talent",
+        "title": "Human Resources & Talent Acquisition Intern (Campus Recruitment)",
+        "company": "VNG Corporation",
+        "market": "vietnam",
+        "location": "TP. Hồ Chí Minh",
+        "category": "hr_admin",
+        "work_mode": "hybrid",
+        "employment_type": "internship",
+        "platform_source": "VNG Careers",
+        "source": "https://careers.vng.com.vn/job/hr-intern",
+        "match_score": 89,
+        "hr_email": "recruitment@vng.com.vn",
+        "apply_channel": "email",
+        "raw_jd": """VNG CAMPUS: HR & TALENT ACQUISITION INTERNSHIP
+Địa điểm: VNG Campus, Quận 7, TP.HCM (Hỗ trợ ứng viên từ xa / hybrid).
+Hình thức: Thực tập sinh 3-6 tháng.
+
+Trách nhiệm:
+- Hỗ trợ triển khai các chương trình tuyển dụng sinh viên VNG Tech Fresher & Campus Tour.
+- Quản lý cơ sở dữ liệu ứng viên trên hệ thống ATS nội bộ.
+- Phối hợp truyền thông thương hiệu tuyển dụng (Employer Branding) trên LinkedIn, Facebook.
+
+Yêu cầu:
+- Sinh viên các trường đại học toàn quốc.
+- Kỹ năng viết tốt, chủ động, sáng tạo.
+- Tiếng Anh giao tiếp tốt.
+
+Quyền lợi:
+- Phụ cấp thực tập hấp dẫn + Tiện ích chuẩn quốc tế tại VNG Campus.
+
+Nộp CV: recruitment@vng.com.vn."""
+    },
+    {
+        "id": "job_techcombank_finance_intern",
+        "title": "Thực tập sinh Kế toán Quản trị & Tài chính Doanh nghiệp (Finance Intern)",
+        "company": "Techcombank",
+        "market": "vietnam",
+        "location": "Hà Nội / Toàn quốc",
+        "category": "finance",
+        "work_mode": "hybrid",
+        "employment_type": "internship",
+        "platform_source": "VietnamWorks & Techcombank Portal",
+        "source": "https://techcombank.com/careers/finance-intern",
+        "match_score": 90,
+        "hr_email": "tuyendung@techcombank.com.vn",
+        "apply_channel": "email",
+        "raw_jd": """TECHCOMBANK - CHƯƠNG TRÌNH THỰC TẬP SINH TÀI CHÍNH & KẾ TOÁN
+Địa điểm: Hội sở Techcombank, Hà Nội hoặc các chi nhánh toàn quốc.
+Hình thức: Thực tập sinh.
+
+Công việc:
+- Hỗ trợ đối chiếu số liệu, rà soát chứng từ kế toán và đối soát báo cáo doanh thu.
+- Hỗ trợ lập báo cáo phân tích tài chính định kỳ.
+- Học tập và làm quen với quy trình ngân hàng số hiện đại.
+
+Yêu cầu:
+- Sinh viên chuyên ngành Kế toán, Tài chính, Ngân hàng, Kinh tế, CNTT.
+- Cẩn thận, trung thực, thành thạo Excel.
+
+Quyền lợi:
+- Trợ cấp thực tập + Chứng nhận đào tạo từ ngân hàng tư nhân hàng đầu.
+
+Gửi hồ sơ về: tuyendung@techcombank.com.vn."""
+    },
+    {
+        "id": "job_shopee_finance_parttime",
+        "title": "Finance Operations & Accounting Assistant (Bán thời gian / Part-time)",
+        "company": "Shopee Vietnam",
+        "market": "vietnam",
+        "location": "TP. Hồ Chí Minh",
+        "category": "finance",
+        "work_mode": "hybrid",
+        "employment_type": "part_time",
+        "platform_source": "TopCV & Shopee Careers",
+        "source": "https://careers.shopee.vn/job/finance-assistant-parttime",
+        "match_score": 88,
+        "hr_email": "recruitment@shopee.com",
+        "apply_channel": "email",
+        "raw_jd": """SHOPEE VIETNAM: TUYỂN DỤNG FINANCE OPERATIONS ASSISTANT (PART-TIME)
+Địa điểm: Saigon Centre, Quận 1, TP.HCM (Hỗ trợ linh hoạt làm việc từ xa).
+Hình thức: Bán thời gian / Part-time (20 - 25 giờ/tuần).
+
+Nội dung:
+- Đối soát chứng từ thanh toán của nhà bán hàng trên sàn thương mại điện tử.
+- Xử lý đối chiếu dòng tiền và cập nhật trạng thái hóa đơn điện tử.
+- Hỗ trợ giải đáp các thắc mắc về thanh toán từ bộ phận vận hành.
+
+Yêu cầu:
+- Sinh viên các trường ĐH có thể làm part-time linh hoạt.
+- Tỉ mỉ, có trách nhiệm với số liệu, kỹ năng Excel khá.
+
+Quyền lợi:
+- Thù lao tính theo giờ làm việc cạnh tranh + Cơ hội phát triển trong tập đoàn Sea Money.
+
+Ứng tuyển: recruitment@shopee.com."""
+    },
+    {
+        "id": "job_freehire_translator_remote",
+        "title": "Biên dịch viên Tiếng Anh - Tiếng Việt & Bản địa hóa (100% Remote / Freelance)",
+        "company": "Freehire Global Network",
+        "market": "freelance",
+        "location": "Remote / Toàn quốc",
+        "category": "translation",
+        "work_mode": "remote",
+        "employment_type": "freelance",
+        "platform_source": "Freehire Remote Portal",
+        "source": "https://freehire.org/jobs/english-vietnamese-translator",
+        "match_score": 92,
+        "hr_email": "editorial@freehire.org",
+        "apply_channel": "email",
+        "raw_jd": """FREEHIRE FREELANCE OPPORTUNITY: ENGLISH - VIETNAMESE TRANSLATOR & LOCALIZATION SPECIALIST
+Location: 100% Remote (Work from anywhere).
+Type: Freelance / Project-based / Part-time.
+
+Responsibilities:
+- Translate technical documentation, UI strings, software guides, and marketing articles from English to natural Vietnamese.
+- Ensure consistent terminology, cultural nuances, and grammatical accuracy across translated assets.
+- Proofread and edit localized content for web and mobile software applications.
+
+Requirements:
+- Fluent in written English and native Vietnamese.
+- Detail-oriented with strong linguistic and proofreading skills.
+- Basic understanding of technology or IT terminology is a strong plus.
+
+Compensation:
+- Flexible hourly / per-word compensation with direct bi-weekly payout.
+
+Submit your application and sample translations to: editorial@freehire.org."""
+    },
+    {
+        "id": "job_rikkei_comtor_danang",
+        "title": "Thực tập sinh Biên phiên dịch IT (IT Communicator / Comtor Intern)",
+        "company": "Rikkeisoft",
+        "market": "vietnam",
+        "location": "Đà Nẵng",
+        "category": "translation",
+        "work_mode": "onsite",
+        "employment_type": "internship",
+        "platform_source": "TopCV & Rikkeisoft Portal",
+        "source": "https://career.rikkeisoft.com/job/comtor-intern-danang",
+        "match_score": 91,
+        "hr_email": "tuyendung@rikkeisoft.com",
+        "apply_channel": "email",
+        "raw_jd": """RIKKEISOFT ĐÀ NẴNG: TUYỂN DỤNG THỰC TẬP SINH BIÊN PHIÊN DỊCH IT (COMTOR INTERN)
+Địa điểm: Tòa nhà Fhome, Lý Thường Kiệt, Hải Châu, Đà Nẵng.
+Hình thức: Thực tập sinh.
+
+Mô tả công việc:
+- Dịch tài liệu đặc tả yêu cầu, thiết kế hệ thống và email trao đổi với đối tác nước ngoài.
+- Hỗ trợ thông dịch trong các buổi họp kỹ thuật hàng ngày của đội ngũ phát triển phần mềm.
+- Học tập quy trình quản lý dự án phần mềm chuyên nghiệp.
+
+Yêu cầu:
+- Sinh viên chuyên ngành Ngoại ngữ (Tiếng Anh hoặc Tiếng Nhật N3/N2) hoặc CNTT yêu thích ngôn ngữ.
+- Kỹ năng đọc hiểu văn bản tốt, phát âm rõ ràng, tự tin giao tiếp.
+
+Quyền lợi:
+- Phụ cấp thực tập + Đào tạo thuật ngữ IT chuyên sâu từ các chuyên gia Comtor kinh nghiệm.
+
+Gửi hồ sơ về: tuyendung@rikkeisoft.com."""
+    },
+    {
+        "id": "job_viettelpost_logistics_intern",
+        "title": "Thực tập sinh Vận hành Chuỗi cung ứng & Kho vận (Logistics & Supply Chain Intern)",
+        "company": "Tổng Công ty Cổ phần Bưu chính Viettel (Viettel Post)",
+        "market": "vietnam",
+        "location": "Đà Nẵng / Cần Thơ",
+        "category": "logistics",
+        "work_mode": "onsite",
+        "employment_type": "internship",
+        "platform_source": "Viettel Post Careers",
+        "source": "https://viettelpost.com.vn/tuyen-dung/logistics-intern",
+        "match_score": 89,
+        "hr_email": "tuyendung@viettelpost.com.vn",
+        "apply_channel": "email",
+        "raw_jd": """VIETTEL POST TUYỂN DỤNG THỰC TẬP SINH LOGISTICS & QUẢN TRỊ VẬN HÀNH
+Địa điểm: Trung tâm Khai thác Viettel Post Đà Nẵng hoặc Chi nhánh Cần Thơ.
+Hình thức: Thực tập sinh toàn thời gian hoặc bán thời gian.
+
+Công việc:
+- Hỗ trợ giám sát luồng điều phối bưu gửi, hàng hóa trên hệ thống quản lý vận tải số TMS/WMS.
+- Phân tích thời gian giao nhận (SLA), phát hiện các điểm nghẽn trong chuỗi cung ứng.
+- Đề xuất các cải tiến về lộ trình giao hàng và quy trình quản lý kho thông minh.
+
+Yêu cầu:
+- Sinh viên chuyên ngành Logistics, Chuỗi cung ứng, Kinh doanh, Quản trị, CNTT.
+- Năng động, có tư duy số liệu và khả năng làm việc theo nhóm.
+
+Quyền lợi:
+- Trợ cấp thực tập + Trải nghiệm hệ thống kho vận thông minh lớn nhất Việt Nam.
+
+Nộp hồ sơ qua email: tuyendung@viettelpost.com.vn."""
+    },
+    {
+        "id": "job_vti_video_media_intern",
+        "title": "Video Editor & TikTok Content Creator (Thực tập / Part-time)",
+        "company": "VTI Media & Entertainment",
+        "market": "vietnam",
+        "location": "Hà Nội / Remote",
+        "category": "content_media",
+        "work_mode": "hybrid",
+        "employment_type": "part_time",
+        "platform_source": "TopCV & VTI Careers",
+        "source": "https://vti.com.vn/careers/video-editor-intern",
+        "match_score": 90,
+        "hr_email": "hr@vti.com.vn",
+        "apply_channel": "email",
+        "raw_jd": """VTI MEDIA: TUYỂN DỤNG VIDEO EDITOR & CONTENT CREATOR (PART-TIME / THỰC TẬP)
+Địa điểm: Tòa tháp Mễ Trì Hạ, Nam Từ Liêm, Hà Nội (Linh hoạt làm việc tại nhà / Remote).
+Hình thức: Bán thời gian / Part-time hoặc Thực tập sinh.
+
+Trách nhiệm:
+- Dựng video ngắn cho các nền tảng TikTok, YouTube Shorts, Facebook Reels.
+- Chèn hiệu ứng âm thanh, chuyển cảnh, caption hấp dẫn bắt trend giới trẻ.
+- Phối hợp cùng team nội dung lên ý tưởng kịch bản video và tư liệu hình ảnh.
+
+Yêu cầu:
+- Biết sử dụng các phần mềm dựng video như CapCut, Adobe Premiere, After Effects.
+- Có gu thẩm mỹ tốt, hiểu về nhịp điệu video và âm nhạc thịnh hành.
+- Kèm theo link sản phẩm video đã từng thực hiện khi gửi hồ sơ.
+
+Quyền lợi:
+- Nhuận bút video hấp dẫn + Thưởng theo lượng view/tương tác đạt top.
+- Lịch làm việc tự do, linh hoạt phù hợp với sinh viên.
+
+Ứng tuyển ngay: Gửi CV và video portfolio về hr@vti.com.vn với tiêu đề: [VTI] Video Editor - Họ Tên."""
     }
 ]
 

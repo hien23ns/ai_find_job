@@ -100,6 +100,769 @@ def verify_pdf_with_pypdf(pdf_path: Path) -> Dict[str, Any]:
     }
 
 
+
+def get_domain_tailoring(target_role: Optional[str] = None, eval_result: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    role_str = (target_role or "").lower()
+    cat = (eval_result.get("category") or "").lower() if eval_result else ""
+
+    is_design = bool(re.search(r'\b(design|ui/ux|ui|ux|graphic|designer|đồ họa|thiết kế)\b', role_str)) or cat == "design"
+    is_marketing = bool(re.search(r'\b(marketing|content|seo|truyền thông|quảng cáo|copywriter)\b', role_str)) or cat == "marketing"
+    is_data = bool(re.search(r'\b(data|dữ liệu|analytics|bi|business analyst|ba|ai|machine learning|trí tuệ nhân tạo|power bi|sql)\b', role_str)) or cat == "data_ai"
+    is_hr = bool(re.search(r'\b(hr|nhân sự|talent|recruiter|recruitment|tuyển dụng|admin|human resources)\b', role_str)) or cat == "hr_admin"
+    is_finance = bool(re.search(r'\b(finance|tài chính|kế toán|kiểm toán|accounting|auditor|thu ngân)\b', role_str)) or cat == "finance"
+    is_translation = bool(re.search(r'\b(translation|biên dịch|phiên dịch|translator|comtor|thông dịch|ngôn ngữ)\b', role_str)) or cat == "translation"
+    is_logistics = bool(re.search(r'\b(logistics|xuất nhập khẩu|kho vận|supply chain|vận hành kho|giao vận|chuyển phát)\b', role_str)) or cat == "logistics"
+    is_media = bool(re.search(r'\b(video|media|tiktok|quay dựng|editor|multimedia|dựng phim)\b', role_str)) or cat == "content_media"
+    is_sales = bool(re.search(r'\b(sale|sales|kinh doanh|bán hàng|business development|account executive|cskh)\b', role_str)) or cat == "sales"
+    is_cloud_devops = bool(re.search(r'\b(cloud|devops|aws|infrastructure|sre|hạ tầng|sysadmin)\b', role_str))
+    is_dev = bool(re.search(r'\b(developer|software|lập trình|frontend|backend|fullstack|mobile|android|engineer|web|ios|react|node|java|python)\b', role_str)) or cat in ["it", "tech"]
+
+    if is_cloud_devops:
+        domain = "cloud_devops"
+    elif is_hr:
+        domain = "hr_admin"
+    elif is_data:
+        domain = "data_ai"
+    elif is_media:
+        domain = "content_media"
+    elif is_design:
+        domain = "design"
+    elif is_marketing:
+        domain = "marketing"
+    elif is_finance:
+        domain = "finance"
+    elif is_translation:
+        domain = "translation"
+    elif is_logistics:
+        domain = "logistics"
+    elif is_sales:
+        domain = "sales"
+    elif is_dev:
+        domain = "dev"
+    else:
+        domain = "security"
+
+    # ==================== DATA DOMAIN ====================
+    if domain == "data_ai":
+        summary_en = (
+            "Undergraduate engineering student in ICT at Vietnam - Korea University of Information and Communication "
+            "Technology (VKU), graduating in 2028. Strong analytical foundation in Python scripting, structured data processing, "
+            "Linux/Bash automation, and AI workflows (Gemini Certified Student). Practical experience handling peer-to-peer data "
+            "streams in WebRTC and mobile data models. Seeking a Data Analyst / AI Internship to automate pipelines and derive insights."
+        )
+        summary_vi = (
+            "Sinh viên ngành CNTT tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp "
+            "năm 2028. Nền tảng vững vàng về lập trình Python xử lý dữ liệu bảng, tự động hóa tác vụ trên Linux/Bash và ứng dụng "
+            "công cụ AI (Gemini Certified Student). Từng phát triển cơ chế truyền tải dữ liệu P2P qua WebRTC. Mong muốn thực tập "
+            "vị trí Phân tích dữ liệu (Data Analyst) / AI để đóng góp vào việc chuẩn hóa và phân tích số liệu."
+        )
+        skills_en = [
+            {"label": "Data Processing & AI", "val": "Python, Structured data cleaning, Log parsing & metrics, Gemini AI Certified"},
+            {"label": "Cloud & Storage", "val": "AWS S3 object storage, Amazon EC2, AWS Shared Responsibility Model"},
+            {"label": "Systems & Scripting", "val": "Linux (Ubuntu), Bash Shell automation, Git version control"},
+            {"label": "Networking & Protocols", "val": "OSI Model, TCP/IP data transmission, WebRTC P2P data channels"}
+        ]
+        skills_vi = [
+            {"label": "Xử lý Dữ liệu & AI", "val": "Python, Làm sạch và trích xuất dữ liệu, Phân tích log số liệu, Chứng chỉ Gemini AI"},
+            {"label": "Đám mây & Lưu trữ", "val": "AWS S3 lưu trữ đối tượng, Amazon EC2, Mô hình trách nhiệm chia sẻ"},
+            {"label": "Hệ thống & Tự động hóa", "val": "Linux (Ubuntu), Viết script Bash Shell, Quản lý mã nguồn Git"},
+            {"label": "Mạng & Giao thức", "val": "Mô hình OSI, TCP/IP luồng truyền tải, Kênh dữ liệu WebRTC P2P"}
+        ]
+        cl_body_en = lambda c, r, name, loc, email, phone, contact: f"""Dear Hiring Team at {c},
+
+I am writing to enthusiastically apply for the {r} position at {c}. Currently an undergraduate student in ICT at Vietnam - Korea University of Information and Communication Technology (VKU), graduating in 2028, I have built a strong analytical background in Python scripting, data formatting, and algorithmic problem-solving.
+
+During my studies, I have utilized Python and Linux/Bash to process, parse, and automate data handling tasks. I have achieved the Gemini Certified Student credential and completed Rikkei Education's international project standard course. Furthermore, my hands-on capstone projects—including a WebRTC peer-to-peer data transmission mechanism and an Android application—provided practical experience with structured data models and system metrics.
+
+I am eager to contribute to {c}'s data initiatives, bringing a rigorous analytical work ethic, passion for data accuracy, and disciplined learning attitude.
+
+Thank you very much for considering my application. I welcome the opportunity to discuss my qualifications in greater detail.
+
+Sincerely,
+
+{name}
+{loc}
+Email: {email} | Phone: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+        cl_body_vi = lambda c, r, name, loc, email, phone, contact: f"""Kính gửi: Bộ phận Tuyển dụng {c},
+
+Tôi viết thư này để bày tỏ mong muốn được ứng tuyển vào vị trí {r} tại {c}. Hiện tôi là sinh viên ngành CNTT tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028. Trong quá trình học tập, tôi đã tập trung xây dựng năng lực tư duy logic, xử lý và phân tích số liệu bằng Python trên môi trường Linux.
+
+Tôi đã chủ động đạt chứng chỉ Gemini Certified Student và hoàn thành khóa huấn luyện dự án chuẩn quốc tế của Rikkei Education. Thông qua các dự án thực hành như chia sẻ dữ liệu P2P qua WebRTC và ứng dụng Android, tôi đã rèn luyện kỹ năng quản lý cấu trúc dữ liệu, kiểm tra tính toàn vẹn và tối ưu hóa luồng truyền tải thông tin.
+
+Tôi rất mong có cơ hội thực tập tại {c} để áp dụng kỹ năng xử lý dữ liệu, tinh thần trách nhiệm và tính cẩn trọng vào việc xây dựng báo cáo và hỗ trợ ra quyết định tại doanh nghiệp.
+
+Xin chân thành cảm ơn Quý công ty đã dành thời gian xem xét hồ sơ của tôi.
+
+Trân trọng,
+
+{name}
+{loc}
+Email: {email} | Điện thoại: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+
+    # ==================== DESIGN DOMAIN ====================
+    elif domain == "design":
+        summary_en = (
+            "Undergraduate student in ICT at Vietnam - Korea University of Information and Communication Technology "
+            "(VKU), graduating in 2028. Practical experience designing user interfaces and layouts for an Android mobile "
+            "social app and interactive WebRTC screen sharing. Certified in Gemini AI and International Project Standards "
+            "(Rikkei Education). Seeking a UI/UX & Digital Design Internship to craft intuitive, modern user experiences."
+        )
+        summary_vi = (
+            "Sinh viên ngành CNTT tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp "
+            "năm 2028. Có kinh nghiệm thực hành thiết kế giao diện người dùng trên ứng dụng di động Android và luồng tương tác "
+            "trực quan WebRTC. Đạt chứng chỉ Gemini Certified Student và chuẩn dự án quốc tế Rikkei Education. Mong muốn thực tập "
+            "vị trí Thiết kế UI/UX / Đồ họa số."
+        )
+        skills_en = [
+            {"label": "UI/UX & Digital Design", "val": "Mobile UI layouts, User flow wireframing, Modern interface ergonomics, Gemini AI design assistance"},
+            {"label": "Platforms & Tools", "val": "Android Studio XML layouts, WebRTC visual data, Linux (Ubuntu)"},
+            {"label": "Programming & Logic", "val": "Java, Python, Bash Shell"},
+            {"label": "Networking & Protocols", "val": "OSI Model, TCP/IP, P2P transmission"}
+        ]
+        skills_vi = [
+            {"label": "Thiết kế Giao diện & UI/UX", "val": "Bố cục ứng dụng di động, Phác thảo luồng người dùng (User flow), Ứng dụng Gemini AI hỗ trợ"},
+            {"label": "Nền tảng & Công cụ", "val": "Android Studio, Giao diện XML, WebRTC truyền dữ liệu trực quan, Linux"},
+            {"label": "Ngôn ngữ & Logic", "val": "Java, Python, Bash Shell"},
+            {"label": "Mạng & Giao thức", "val": "Mô hình OSI, TCP/IP, Truyền tải P2P"}
+        ]
+        cl_body_en = lambda c, r, name, loc, email, phone, contact: f"""Dear Hiring Team at {c},
+
+I am writing to express my enthusiastic interest in the {r} role at {c}. As an undergraduate student at Vietnam - Korea University of Information and Communication Technology (VKU), graduating in 2028, I combine foundational software principles with a strong eye for user-centric digital interface design.
+
+In my academic coursework and capstone projects, I developed the complete front-facing mobile user interface for an Android social networking app, focusing on clean layout hierarchy and intuitive user flows. Furthermore, having earned the Gemini Certified Student credential and Rikkei Education project standards certificate, I frequently leverage modern AI tools to accelerate prototyping and design ideation.
+
+I am keen to join {c} as an intern to contribute creative thinking, collaborate closely with developers and product managers, and support high-quality digital design deliverables.
+
+Thank you very much for reviewing my application.
+
+Sincerely,
+
+{name}
+{loc}
+Email: {email} | Phone: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+        cl_body_vi = lambda c, r, name, loc, email, phone, contact: f"""Kính gửi: Bộ phận Tuyển dụng {c},
+
+Tôi viết thư này để bày tỏ mong muốn ứng tuyển vào vị trí {r} tại {c}. Hiện tôi là sinh viên ngành CNTT tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028.
+
+Trong quá trình học tập và làm đồ án, tôi đã trực tiếp thiết kế và triển khai giao diện người dùng cho ứng dụng mạng xã hội trên nền tảng Android, chú trọng trải nghiệm điều hướng mượt mà và tính nhất quán thị giác. Tôi cũng đạt chứng chỉ Gemini Certified Student và rèn luyện kỹ năng thực hiện dự án theo tiêu chuẩn quốc tế từ Rikkei Education, biết ứng dụng AI để tạo bản mẫu ý tưởng nhanh chóng.
+
+Tôi rất mong có cơ hội thực tập tại {c} để phát huy tư duy thiết kế lấy người dùng làm trung tâm, học hỏi quy trình thiết kế chuyên nghiệp và đồng hành cùng đội ngũ phát triển sản phẩm.
+
+Xin chân thành cảm ơn Quý công ty.
+
+Trân trọng,
+
+{name}
+{loc}
+Email: {email} | Điện thoại: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+
+    # ==================== MARKETING DOMAIN ====================
+    elif domain == "marketing":
+        summary_en = (
+            "Undergraduate student at Vietnam - Korea University of ICT (VKU), graduating in 2028. Tech-savvy background "
+            "combining digital content creation mindset, AI-assisted productivity (Gemini Certified Student), and analytical "
+            "thinking from programming in Python and Java. Experienced with mobile user communities through Android app development. "
+            "Seeking a Digital Marketing / Content Internship to drive data-informed engagement and product storytelling."
+        )
+        summary_vi = (
+            "Sinh viên Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028. Có tư duy "
+            "phân tích nhạy bén, ứng dụng công cụ AI sáng tạo nội dung (Gemini Certified Student), phân tích dữ liệu cơ bản bằng "
+            "Python và kinh nghiệm phát triển ứng dụng mạng xã hội Android. Mong muốn thực tập vị trí Digital Marketing / Content "
+            "Creator để phát triển chiến dịch truyền thông sản phẩm số hiệu quả."
+        )
+        skills_en = [
+            {"label": "Digital Marketing & AI", "val": "Content strategy, Social engagement, Gemini AI prompt engineering, Product storytelling"},
+            {"label": "Analytics & Programming", "val": "Python data processing, Metric logging, Basic SEO fundamentals"},
+            {"label": "Systems & Cloud", "val": "Linux (Ubuntu), AWS S3/EC2 basics, WebRTC"},
+            {"label": "Languages & Communication", "val": "Vietnamese (Native), English technical reading & communication"}
+        ]
+        skills_vi = [
+            {"label": "Digital Marketing & AI", "val": "Chiến lược nội dung, Tương tác mạng xã hội, Ứng dụng AI Gemini, Truyền thông sản phẩm số"},
+            {"label": "Phân tích & Lập trình", "val": "Xử lý dữ liệu bằng Python, Thống kê chỉ số, Nền tảng SEO cơ bản"},
+            {"label": "Hệ thống & Đám mây", "val": "Linux (Ubuntu), AWS S3/EC2 cơ bản, WebRTC"},
+            {"label": "Ngoại ngữ & Kỹ năng", "val": "Tiếng Việt bản ngữ, Tiếng Anh đọc hiểu tài liệu và giao tiếp"}
+        ]
+        cl_body_en = lambda c, r, name, loc, email, phone, contact: f"""Dear Hiring Team at {c},
+
+I am writing to express my strong enthusiasm for the {r} role at {c}. As an undergraduate student at Vietnam - Korea University of Information and Communication Technology (VKU), graduating in 2028, I bridge technical product understanding with digital marketing creativity.
+
+My academic journey has equipped me with data-literate analytical skills using Python, while achieving the Gemini Certified Student credential has enabled me to leverage cutting-edge AI for content ideation and multi-channel marketing campaigns. Having designed user features for an Android social networking app, I understand user psychology, engagement touchpoints, and digital brand messaging.
+
+Joining {c} as an intern would be an outstanding opportunity to execute data-driven campaigns, produce engaging content, and contribute to measurable brand growth.
+
+Thank you very much for your time and consideration.
+
+Sincerely,
+
+{name}
+{loc}
+Email: {email} | Phone: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+        cl_body_vi = lambda c, r, name, loc, email, phone, contact: f"""Kính gửi: Bộ phận Tuyển dụng {c},
+
+Tôi viết thư này để bày tỏ nguyện vọng ứng tuyển vào vị trí {r} tại {c}. Hiện tôi là sinh viên tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028.
+
+Với kiến thức công nghệ và tư duy phân tích dữ liệu bằng Python, kết hợp chứng chỉ Gemini Certified Student trong việc ứng dụng AI sáng tạo nội dung, tôi có khả năng xây dựng các ý tưởng truyền thông số cuốn hút, bám sát hành vi người dùng và đo lường hiệu quả qua số liệu thực tế. Đồ án ứng dụng mạng xã hội Android cũng giúp tôi hiểu rõ tương tác cộng đồng và điểm chạm khách hàng số.
+
+Tôi mong muốn được tham gia thực tập tại {c} để cống hiến sự nhiệt tình, sáng tạo và học hỏi kinh nghiệm triển khai chiến dịch đa kênh từ đội ngũ marketing chuyên nghiệp.
+
+Xin chân thành cảm ơn Quý công ty.
+
+Trân trọng,
+
+{name}
+{loc}
+Email: {email} | Điện thoại: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+
+    # ==================== HR / ADMIN DOMAIN ====================
+    elif domain == "hr_admin":
+        summary_en = (
+            "Undergraduate student at Vietnam - Korea University of ICT (VKU), graduating in 2028. Possesses a unique blend of "
+            "technical IT knowledge and structured communication skills, certified in Building Personal Projects to International "
+            "Standards (Rikkei Education) and Gemini AI. Experienced in understanding tech job requirements and developer workflows. "
+            "Seeking an HR / IT Talent Acquisition Internship to support candidate screening, sourcing, and organizational processes."
+        )
+        summary_vi = (
+            "Sinh viên Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028. Kết hợp "
+            "nền tảng công nghệ thông tin với kỹ năng giao tiếp và tổ chức dự án chuẩn quốc tế (Rikkei Education). Thấu hiểu các "
+            "yêu cầu kỹ thuật phần mềm và mạng; thành thạo công cụ AI hỗ trợ (Gemini Certified). Mong muốn thực tập vị trí Tuyển dụng "
+            "CNTT (IT Recruiter) / Quản trị Nhân sự (HR)."
+        )
+        skills_en = [
+            {"label": "Tech Talent Sourcing & HR", "val": "IT JD requirement mapping, Technical profile screening, Gemini AI workflow assistance"},
+            {"label": "Organizational & Operations", "val": "Structured project execution (Rikkei Standards), Documentation, Process coordination"},
+            {"label": "Technical Foundation", "val": "Linux, Python, Java, Networking basics, Android mobile concepts"},
+            {"label": "Languages & Communication", "val": "Vietnamese (Native), English technical reading & professional communication"}
+        ]
+        skills_vi = [
+            {"label": "Tuyển dụng & Nhân sự CNTT", "val": "Đọc hiểu yêu cầu kỹ thuật JD, Sàng lọc hồ sơ công nghệ, Ứng dụng Gemini AI hỗ trợ"},
+            {"label": "Tổ chức & Quy trình", "val": "Triển khai dự án chuẩn quốc tế (Rikkei Education), Lưu trữ văn bản, Điều phối quy trình"},
+            {"label": "Nền tảng Công nghệ", "val": "Linux, Python, Java, Kiến thức mạng và phần mềm Android"},
+            {"label": "Ngoại ngữ & Giao tiếp", "val": "Tiếng Việt bản ngữ, Tiếng Anh đọc hiểu tài liệu và giao tiếp chuyên nghiệp"}
+        ]
+        cl_body_en = lambda c, r, name, loc, email, phone, contact: f"""Dear Hiring Team at {c},
+
+I am writing to enthusiastically apply for the {r} role at {c}. Currently an undergraduate student at Vietnam - Korea University of Information and Communication Technology (VKU), graduating in 2028, I bring a unique advantage to technical recruitment and HR operations: a direct understanding of engineering disciplines, programming stacks, and developer language.
+
+Having completed software projects and attained the Rikkei Education International Standard Project certificate, I am adept at communicating with technical candidates and mapping technical competencies against job descriptions. Combined with my proficiency in AI tools (Gemini Certified Student) and bilingual communication, I can accelerate candidate sourcing, interview coordination, and HR administration.
+
+I look forward to supporting {c}'s talent acquisition and people operations with diligence, integrity, and proactive enthusiasm.
+
+Sincerely,
+
+{name}
+{loc}
+Email: {email} | Phone: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+        cl_body_vi = lambda c, r, name, loc, email, phone, contact: f"""Kính gửi: Bộ phận Tuyển dụng {c},
+
+Tôi viết thư này để bày tỏ mong muốn được ứng tuyển vào vị trí {r} tại {c}. Tôi hiện là sinh viên tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028.
+
+Lợi thế của tôi trong mảng tuyển dụng và quản trị nhân sự là sự am hiểu thực tế về ngôn ngữ kỹ thuật, các framework công nghệ và tư duy của lập trình viên. Đạt chứng chỉ quản lý dự án theo chuẩn quốc tế của Rikkei Education và chứng chỉ Gemini Certified Student giúp tôi giao tiếp nhạy bén, sàng lọc hồ sơ ứng viên công nghệ chuẩn xác và sắp xếp tài liệu hành chính khoa học.
+
+Tôi rất mong có cơ hội thực tập tại {c} để hỗ trợ tìm kiếm nhân tài công nghệ, đồng hành cùng văn hóa doanh nghiệp và phát triển chuyên sâu trong ngành Nhân sự.
+
+Xin trân trọng cảm ơn Quý công ty.
+
+Trân trọng,
+
+{name}
+{loc}
+Email: {email} | Điện thoại: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+
+    # ==================== FINANCE DOMAIN ====================
+    elif domain == "finance":
+        summary_en = (
+            "Engineering student at Vietnam - Korea University of ICT (VKU), graduating in 2028. High quantitative aptitude, "
+            "meticulous attention to detail, and practical proficiency in Python for automated data calculation and structured "
+            "tabular analysis. Foundation in system security principles and process integrity. Seeking a Finance & Accounting "
+            "Internship to assist in ledger data entry, reconciliation, and automated reporting."
+        )
+        summary_vi = (
+            "Sinh viên Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028. Có tư duy "
+            "logic và tính toán chuẩn xác, thành thạo lập trình Python phục vụ tự động hóa tính toán và xử lý số liệu bảng tính. "
+            "Nắm vững nguyên tắc bảo mật thông tin và tính toàn vẹn dữ liệu. Mong muốn thực tập vị trí Kế toán / Tài chính để "
+            "hỗ trợ đối soát dữ liệu, nhập liệu và chuẩn hóa quy trình kế toán số."
+        )
+        skills_en = [
+            {"label": "Data Processing & Calculation", "val": "Python numerical scripts, Tabular data accuracy, Automated reconciliation"},
+            {"label": "Security & Data Integrity", "val": "Access control fundamentals, System confidentiality, AWS S3 secure storage"},
+            {"label": "Systems & Automation", "val": "Linux (Ubuntu), Bash Shell, Spreadsheet data formatting"},
+            {"label": "Professional Attributes", "val": "Meticulous discipline, Integrity, Vietnamese (Native), English reading"}
+        ]
+        skills_vi = [
+            {"label": "Xử lý Số liệu & Tính toán", "val": "Script Python xử lý số liệu, Độ chính xác dữ liệu bảng, Tự động hóa đối soát"},
+            {"label": "Bảo mật & Toàn vẹn Dữ liệu", "val": "Nguyên tắc phân quyền truy cập, Bảo mật thông tin, Lưu trữ bảo mật AWS S3"},
+            {"label": "Hệ thống & Tự động hóa", "val": "Linux (Ubuntu), Bash Shell, Chuẩn hóa dữ liệu bảng tính"},
+            {"label": "Phẩm chất & Ngoại ngữ", "val": "Kỷ luật cẩn trọng, Trung thực số liệu, Tiếng Việt bản ngữ, Tiếng Anh đọc hiểu"}
+        ]
+        cl_body_en = lambda c, r, name, loc, email, phone, contact: f"""Dear Hiring Team at {c},
+
+I am writing to formally apply for the {r} position at {c}. As an undergraduate student in ICT at Vietnam - Korea University of Information and Communication Technology (VKU), graduating in 2028, I offer high numerical rigor, mathematical discipline, and technical proficiency in Python data automation.
+
+My coursework has trained me in structured data processing, access control principles, and information security standards. I am experienced in writing automated scripts to eliminate calculation errors and verify balance sheets. Combined with disciplined work habits and the Rikkei Education project standards certification, I ensure complete precision and confidentiality in financial recordkeeping.
+
+I am enthusiastic about the chance to intern at {c} and contribute to your financial administration and digital ledger workflows.
+
+Sincerely,
+
+{name}
+{loc}
+Email: {email} | Phone: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+        cl_body_vi = lambda c, r, name, loc, email, phone, contact: f"""Kính gửi: Bộ phận Tuyển dụng {c},
+
+Tôi viết thư này để bày tỏ mong muốn ứng tuyển vào vị trí {r} tại {c}. Tôi hiện đang theo học tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028.
+
+Với nền tảng tư duy toán học và kỹ năng lập trình Python xử lý bảng tính số liệu, tôi luôn đề cao tính chính xác tuyệt đối, tính bảo mật dữ liệu và sự cẩn trọng trong từng chứng từ đối soát. Tôi đã đạt chứng chỉ dự án chuẩn quốc tế của Rikkei Education, rèn luyện thói quen làm việc có phương pháp, trung thực và tuân thủ nguyên tắc bảo mật thông tin.
+
+Tôi rất mong có cơ hội thực tập tại {c} để đóng góp công sức vào công tác kế toán, đối soát chứng từ và số hóa quy trình tài chính của Quý công ty.
+
+Xin trân trọng cảm ơn.
+
+Trân trọng,
+
+{name}
+{loc}
+Email: {email} | Điện thoại: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+
+    # ==================== TRANSLATION DOMAIN ====================
+    elif domain == "translation":
+        summary_en = (
+            "Undergraduate student in ICT at Vietnam - Korea University (VKU), graduating in 2028. Native Vietnamese with "
+            "advanced technical English reading comprehension for software, networking, and system specifications. Certified "
+            "by Rikkei Education in International Standards. Seeking an IT Comtor / Technical Translation Internship to deliver "
+            "accurate bilingual documentation and team communication."
+        )
+        summary_vi = (
+            "Sinh viên chuyên ngành CNTT tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt "
+            "nghiệp năm 2028. Tiếng Việt bản ngữ cùng năng lực đọc hiểu và biên dịch tài liệu kỹ thuật CNTT, đặc tả hệ thống và "
+            "phần mềm tiếng Anh chính xác. Đạt chứng chỉ Rikkei Education tiêu chuẩn quốc tế. Mong muốn thực tập vị trí IT Comtor "
+            "/ Biên dịch kỹ thuật."
+        )
+        skills_en = [
+            {"label": "Technical Translation & IT Comtor", "val": "Bilingual IT terminology (English-Vietnamese), Software spec translation, Documentation accuracy"},
+            {"label": "Technical Foundation", "val": "Computer networking (OSI, TCP/IP), Programming (Java, Python), Linux"},
+            {"label": "AI & Productivity", "val": "Gemini Certified Student, Computer-assisted translation, Prompt engineering"},
+            {"label": "Standards & Teamwork", "val": "Rikkei International Project Standards, Cross-cultural communication"}
+        ]
+        skills_vi = [
+            {"label": "Biên dịch Kỹ thuật & IT Comtor", "val": "Thuật ngữ CNTT Anh-Việt, Biên dịch đặc tả phần mềm & tài liệu kỹ thuật, Tính chính xác câu chữ"},
+            {"label": "Nền tảng Công nghệ", "val": "Mạng máy tính (OSI, TCP/IP), Ngôn ngữ lập trình (Java, Python), Linux"},
+            {"label": "Công cụ AI & Năng suất", "val": "Chứng chỉ Gemini AI, Sử dụng AI hỗ trợ biên dịch và tra cứu ngữ cảnh"},
+            {"label": "Tiêu chuẩn & Phối hợp", "val": "Dự án chuẩn quốc tế Rikkei Education, Giao tiếp đa văn hóa"}
+        ]
+        cl_body_en = lambda c, r, name, loc, email, phone, contact: f"""Dear Hiring Team at {c},
+
+I am writing to express my strong enthusiasm for the {r} role at {c}. Currently an undergraduate student at Vietnam - Korea University of Information and Communication Technology (VKU), graduating in 2028, I combine strong bilingual communication with comprehensive software and systems technical literacy.
+
+Having completed technical coursework and programming projects, I am familiar with software engineering terminologies, architecture diagrams, and technical requirements. This allows me to translate complex specifications accurately without semantic loss. Certified by Rikkei Education in international project standards and by Google as a Gemini Certified Student, I bridge linguistic gaps with modern efficiency.
+
+I would be thrilled to intern at {c} and contribute to smooth bilingual project communication, technical documentation, and cross-border collaboration.
+
+Sincerely,
+
+{name}
+{loc}
+Email: {email} | Phone: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+        cl_body_vi = lambda c, r, name, loc, email, phone, contact: f"""Kính gửi: Bộ phận Tuyển dụng {c},
+
+Tôi viết thư này để bày tỏ mong muốn ứng tuyển vào vị trí {r} tại {c}. Hiện tôi là sinh viên tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028.
+
+Ưu thế lớn nhất của tôi là nền tảng kỹ thuật công nghệ thông tin kết hợp khả năng đọc hiểu tài liệu tiếng Anh chuyên ngành chuẩn xác. Tôi có thể đọc hiểu thông suốt các tài liệu đặc tả API, kiến trúc mạng và mô tả yêu cầu chức năng phần mềm, giúp việc chuyển ngữ sang tiếng Việt không bị sai lệch thuật ngữ. Tôi cũng đạt chứng chỉ dự án tiêu chuẩn quốc tế Rikkei Education và chứng chỉ Gemini Certified Student.
+
+Tôi rất mong có cơ hội thực tập vị trí IT Comtor / Biên dịch kỹ thuật tại {c} để đóng góp vào việc kết nối tài liệu và truyền đạt thông suốt giữa các đội ngũ kỹ thuật.
+
+Xin trân trọng cảm ơn Quý công ty.
+
+Trân trọng,
+
+{name}
+{loc}
+Email: {email} | Điện thoại: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+
+    # ==================== LOGISTICS DOMAIN ====================
+    elif domain == "logistics":
+        summary_en = (
+            "Undergraduate student at Vietnam - Korea University of ICT (VKU), graduating in 2028. Strong analytical mindset "
+            "with foundational knowledge in network data flow (OSI, TCP/IP) and Python automation. Seeking an Operations &amp; "
+            "Logistics Internship to assist with inventory tracking, shipment scheduling, and digital process optimization."
+        )
+        summary_vi = (
+            "Sinh viên Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028. Nắm vững "
+            "tư duy quy trình, theo dõi luồng thông tin và tự động hóa tác vụ bằng Python và Linux. Mong muốn thực tập vị trí "
+            "Logistics / Quản trị chuỗi cung ứng và kho vận để đóng góp vào việc số hóa quản lý đơn hàng và điều phối."
+        )
+        skills_en = [
+            {"label": "Operations & Logistics Support", "val": "Dispatch tracking, Inventory data logging, Process flowchart mapping"},
+            {"label": "Data & Scripting", "val": "Python tabular data processing, Linux/Bash automation, Spreadsheet accuracy"},
+            {"label": "Networking & Information Flow", "val": "OSI & TCP/IP data transmission mechanics, System security principles"},
+            {"label": "Personal Attributes", "val": "Methodical discipline, Diligence, Vietnamese (Native), English reading"}
+        ]
+        skills_vi = [
+            {"label": "Vận hành & Hỗ trợ Logistics", "val": "Theo dõi đơn hàng & điều phối, Nhập liệu kho vận, Vẽ sơ đồ luồng quy trình"},
+            {"label": "Dữ liệu & Scripting", "val": "Xử lý dữ liệu bảng bằng Python, Tự động hóa Linux/Bash, Chuẩn hóa bảng tính"},
+            {"label": "Luồng Thông tin & Hệ thống", "val": "Cơ chế truyền tải dữ liệu TCP/IP, Nguyên tắc bảo mật thông tin"},
+            {"label": "Phẩm chất & Ngoại ngữ", "val": "Kỷ luật cẩn thận, Chăm chỉ, Tiếng Việt bản ngữ, Tiếng Anh đọc hiểu"}
+        ]
+        cl_body_en = lambda c, r, name, loc, email, phone, contact: f"""Dear Hiring Team at {c},
+
+I am writing to enthusiastically apply for the {r} role at {c}. As an undergraduate student at Vietnam - Korea University of Information and Communication Technology (VKU), graduating in 2028, I bring a structured analytical mindset and technical literacy to operations and supply chain logistics.
+
+My coursework in data transmission and systems has trained me to track complex operational flows methodically. Through Python programming and spreadsheet automation, I can reduce manual data entry bottlenecks and monitor shipment KPIs. Having achieved Rikkei Education's international project standards certification, I approach logistics tasks with high personal accountability and detail orientation.
+
+I welcome the opportunity to intern at {c} and contribute to your fulfillment, dispatching, and inventory operations.
+
+Sincerely,
+
+{name}
+{loc}
+Email: {email} | Phone: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+        cl_body_vi = lambda c, r, name, loc, email, phone, contact: f"""Kính gửi: Bộ phận Tuyển dụng {c},
+
+Tôi viết thư này để bày tỏ mong muốn được ứng tuyển vào vị trí {r} tại {c}. Hiện tôi là sinh viên tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028.
+
+Với tư duy kỹ thuật logic và kỹ năng tin học vững vàng, tôi có khả năng nắm bắt nhanh các phần mềm quản lý kho vận, viết script Python xử lý số liệu điều phối và tối ưu hóa luồng theo dõi trạng thái đơn hàng. Tôi đã đạt chứng chỉ dự án chuẩn quốc tế của Rikkei Education, luôn rèn luyện tính kỷ luật, cẩn trọng và tinh thần trách nhiệm cao đối với từng lô hàng.
+
+Tôi rất mong có cơ hội thực tập tại {c} để hỗ trợ công tác vận hành kho, theo dõi điều phối vận tải và đóng góp vào sự phát triển của chuỗi cung ứng công ty.
+
+Xin trân trọng cảm ơn Quý công ty.
+
+Trân trọng,
+
+{name}
+{loc}
+Email: {email} | Điện thoại: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+
+    # ==================== MEDIA / VIDEO DOMAIN ====================
+    elif domain == "content_media":
+        summary_en = (
+            "Creative undergraduate student in ICT at Vietnam - Korea University of Information and Communication "
+            "Technology (VKU), graduating in 2028. Proficient in digital media storytelling, AI-assisted video concepting "
+            "(Gemini Certified Student), and visual layout design from Android mobile app development. Seeking a Video Editor "
+            "&amp; Digital Media Internship to create high-retention multimedia content."
+        )
+        summary_vi = (
+            "Sinh viên ngành CNTT tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp "
+            "năm 2028. Thành thạo công cụ AI (Gemini Certified Student) hỗ trợ lên kịch bản, ý tưởng hình ảnh và có kinh nghiệm "
+            "thiết kế giao diện ứng dụng di động. Mong muốn thực tập vị trí Video Editor / Sáng tạo nội dung truyền thông số."
+        )
+        skills_en = [
+            {"label": "Media Creation & AI", "val": "Video editing concepts, Short-form storytelling (TikTok/Reels), Gemini AI creative prompting"},
+            {"label": "Visual & Digital Layouts", "val": "Mobile visual hierarchy, User engagement flow, Graphic fundamentals"},
+            {"label": "Technical Foundation", "val": "Linux (Ubuntu), Python automation, WebRTC visual streaming"},
+            {"label": "Languages & Teamwork", "val": "Vietnamese (Native), English technical reading & communication"}
+        ]
+        skills_vi = [
+            {"label": "Sáng tạo Media & AI", "val": "Tư duy dựng video, Kịch bản video ngắn (TikTok/Reels), Ứng dụng Gemini AI sáng tạo"},
+            {"label": "Bố cục Thị giác & Thiết kế", "val": "Bố cục giao diện di động, Điểm chạm tương tác người xem, Nền tảng đồ họa"},
+            {"label": "Nền tảng Công nghệ", "val": "Linux (Ubuntu), Tự động hóa Python, Luồng hình ảnh WebRTC"},
+            {"label": "Ngoại ngữ & Phối hợp", "val": "Tiếng Việt bản ngữ, Tiếng Anh đọc hiểu tài liệu và giao tiếp"}
+        ]
+        cl_body_en = lambda c, r, name, loc, email, phone, contact: f"""Dear Hiring Team at {c},
+
+I am writing to express my creative passion for the {r} role at {c}. Currently an undergraduate student at Vietnam - Korea University of Information and Communication Technology (VKU), graduating in 2028, I combine digital visual aesthetics with technical fluency in modern AI and multimedia tools.
+
+Certified as a Gemini AI Student, I leverage generative AI to brainstorm engaging video hooks, storyboard dynamic visual flows, and optimize content for short-form platforms (TikTok, Reels, YouTube Shorts). My background designing mobile applications has cultivated an acute sense of visual rhythm, pacing, and audience engagement retention.
+
+I am eager to join {c} as an intern to produce captivating digital media and bring fresh creative energy to your content channels.
+
+Sincerely,
+
+{name}
+{loc}
+Email: {email} | Phone: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+        cl_body_vi = lambda c, r, name, loc, email, phone, contact: f"""Kính gửi: Bộ phận Tuyển dụng {c},
+
+Tôi viết thư này để bày tỏ mong muốn được ứng tuyển vào vị trí {r} tại {c}. Tôi hiện đang theo học tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028.
+
+Với niềm đam mê sáng tạo nội dung đa phương tiện, tôi kết hợp tư duy thị giác thẩm mỹ với việc ứng dụng công cụ AI (Gemini Certified Student) để phát triển kịch bản và định hình nhịp điệu video ngắn (TikTok, Reels). Kinh nghiệm xây dựng giao diện ứng dụng di động cũng rèn luyện cho tôi sự nhạy cảm về bố cục hình ảnh và khả năng giữ chân người xem qua từng khung hình.
+
+Tôi rất mong có cơ hội thực tập tại {c} để đóng góp những ý tưởng video sáng tạo, bắt nhịp xu hướng thị trường và hỗ trợ xây dựng hình ảnh thương hiệu số của Quý công ty.
+
+Xin trân trọng cảm ơn.
+
+Trân trọng,
+
+{name}
+{loc}
+Email: {email} | Điện thoại: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+
+    # ==================== SALES DOMAIN ====================
+    elif domain == "sales":
+        summary_en = (
+            "Undergraduate student in ICT at Vietnam - Korea University of Information and Communication Technology (VKU), "
+            "graduating in 2028. Combines comprehensive technical understanding of software, networking, and cloud basics with "
+            "strong communication skills and client empathy. Certified by Rikkei Education. Seeking a Business Development / "
+            "Tech Sales Internship to identify client needs and present digital solutions."
+        )
+        summary_vi = (
+            "Sinh viên Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028. Hiểu rõ "
+            "kiến trúc sản phẩm phần mềm, dịch vụ mạng và công nghệ thông tin. Có kỹ năng lắng nghe, thấu cảm nhu cầu khách hàng "
+            "và thuyết trình giải pháp kỹ thuật rõ ràng. Mong muốn thực tập vị trí Phát triển kinh doanh (Business Development) "
+            "/ Sales B2B trong lĩnh vực công nghệ."
+        )
+        skills_en = [
+            {"label": "Tech Sales & Business Development", "val": "Client pain-point discovery, Solution presentation, B2B technology consulting"},
+            {"label": "Technology Competence", "val": "Software architecture understanding, Cloud fundamentals (AWS), Mobile apps"},
+            {"label": "Communication & Coordination", "val": "Cross-functional collaboration, Proposal drafting, Rikkei Project Standards"},
+            {"label": "Languages", "val": "Vietnamese (Native), English technical reading & professional communication"}
+        ]
+        skills_vi = [
+            {"label": "Sales Kỹ thuật & Phát triển Kinh doanh", "val": "Nắm bắt nhu cầu khách hàng, Thuyết trình giải pháp số, Tư vấn sản phẩm công nghệ B2B"},
+            {"label": "Hiểu biết Công nghệ", "val": "Kiến trúc phần mềm, Nền tảng điện toán đám mây (AWS), Ứng dụng di động"},
+            {"label": "Giao tiếp & Đàm phán", "val": "Phối hợp liên phòng ban, Soạn thảo đề xuất hợp tác, Chuẩn dự án Rikkei"},
+            {"label": "Ngoại ngữ", "val": "Tiếng Việt bản ngữ, Tiếng Anh đọc hiểu tài liệu và giao tiếp chuyên nghiệp"}
+        ]
+        cl_body_en = lambda c, r, name, loc, email, phone, contact: f"""Dear Hiring Team at {c},
+
+I am writing to enthusiastically apply for the {r} role at {c}. As an undergraduate student at Vietnam - Korea University of Information and Communication Technology (VKU), graduating in 2028, I bridge technological capability with consultative client-facing skills.
+
+Having developed technical software and networking projects, I can demystify complex technical concepts for business stakeholders and present tailored solutions with confidence. Certified in international project execution by Rikkei Education, I emphasize clear communication, active listening, and relationship-building.
+
+I am keen to join {c} as an intern to assist in pipeline prospecting, client engagement, and commercial technology presentations.
+
+Sincerely,
+
+{name}
+{loc}
+Email: {email} | Phone: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+        cl_body_vi = lambda c, r, name, loc, email, phone, contact: f"""Kính gửi: Bộ phận Tuyển dụng {c},
+
+Tôi viết thư này để bày tỏ mong muốn ứng tuyển vào vị trí {r} tại {c}. Hiện tôi là sinh viên tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028.
+
+Ưu điểm nổi bật của tôi khi tiếp cận công việc kinh doanh và phát triển đối tác là sự hiểu biết thấu đáo về cấu trúc giải pháp phần mềm và công nghệ số. Tôi có khả năng giải thích dễ hiểu các giá trị kỹ thuật tới khách hàng, lắng nghe các bài toán thực tế của doanh nghiệp và đề xuất phương án phù hợp. Đồng thời, chứng nhận dự án chuẩn quốc tế của Rikkei Education giúp tôi duy trì phong thái làm việc chuyên nghiệp và cam kết tiến độ.
+
+Tôi rất mong có cơ hội thực tập tại {c} để rèn luyện kỹ năng tư vấn bán hàng giải pháp số và đóng góp vào doanh thu của Quý công ty.
+
+Xin chân thành cảm ơn.
+
+Trân trọng,
+
+{name}
+{loc}
+Email: {email} | Điện thoại: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+
+    # ==================== DEV DOMAIN ====================
+    elif domain == "dev":
+        summary_en = (
+            "Undergraduate student in ICT at Vietnam - Korea University of Information and Communication Technology (VKU), "
+            "graduating in 2028. Practical experience in software development with Java and Android mobile applications, "
+            "WebRTC P2P implementation, and Python scripting on Linux. Seeking a Software Engineering / Mobile Developer "
+            "Internship to contribute to production codebases."
+        )
+        summary_vi = (
+            "Sinh viên Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028. Có kinh nghiệm "
+            "lập trình phát triển ứng dụng di động Android bằng Java, xây dựng cơ chế chia sẻ P2P với WebRTC và viết script tự động "
+            "trên Linux bằng Python. Mong muốn thực tập vị trí Lập trình viên phần mềm / Mobile Developer để rèn luyện kỹ năng thực tế."
+        )
+        skills_en = [
+            {"label": "Software & Mobile Development", "val": "Java, Android SDK, Object-Oriented Programming (OOP), WebRTC P2P"},
+            {"label": "Scripting & Backend Basics", "val": "Python, Linux (Ubuntu), Bash Shell, Git version control"},
+            {"label": "Networking & Protocols", "val": "OSI Model, TCP/IP, Socket communication, Packet inspection"},
+            {"label": "Cloud & Certifications", "val": "AWS IAM/EC2/S3 basics, Gemini Certified Student (2025), Rikkei Education"}
+        ]
+        skills_vi = [
+            {"label": "Phát triển Phần mềm & Di động", "val": "Java, Lập trình ứng dụng Android, Lập trình hướng đối tượng (OOP), WebRTC P2P"},
+            {"label": "Scripting & Nền tảng Hệ thống", "val": "Python, Linux (Ubuntu), Bash Shell, Quản trị Git"},
+            {"label": "Mạng & Giao thức", "val": "Mô hình OSI, TCP/IP, Giao tiếp Socket, Kiểm tra gói tin"},
+            {"label": "Đám mây & Chứng chỉ", "val": "AWS IAM/EC2/S3 cơ bản, Gemini Certified Student (2025), Rikkei Education"}
+        ]
+        cl_body_en = lambda c, r, name, loc, email, phone, contact: f"""Dear Hiring Team at {c},
+
+I am writing to express my strong enthusiasm for the {r} role at {c}. Currently an undergraduate student at Vietnam - Korea University of Information and Communication Technology (VKU), graduating in 2028, I have dedicated my studies to hands-on software development in Java and Python.
+
+Through my personal projects, I developed a mobile social networking application on Android and engineered a peer-to-peer screen sharing system using WebRTC. These projects taught me to write clean, modular code, manage versioning with Git, and debug complex runtime issues on Linux. Furthermore, my Rikkei Education certification in international project standards reflects my commitment to high software quality.
+
+I am eager to contribute to {c}'s engineering team as an intern, learn from your senior engineers, and tackle challenging technical problems.
+
+Sincerely,
+
+{name}
+{loc}
+Email: {email} | Phone: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+        cl_body_vi = lambda c, r, name, loc, email, phone, contact: f"""Kính gửi: Bộ phận Tuyển dụng {c},
+
+Tôi viết thư này để bày tỏ mong muốn được ứng tuyển vào vị trí {r} tại {c}. Hiện tôi là sinh viên ngành CNTT tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028.
+
+Trong quá trình học tập, tôi đã tập trung phát triển kỹ năng lập trình với Java và Python, trực tiếp xây dựng ứng dụng di động Android và triển khai cơ chế truyền dữ liệu P2P qua WebRTC. Tôi thành thạo thao tác trên Linux, quản lý mã nguồn bằng Git và tuân thủ tiêu chuẩn dự án quốc tế theo chứng nhận của Rikkei Education.
+
+Tôi rất mong có cơ hội thực tập tại {c} để tham gia vào quy trình phát triển sản phẩm thực tế, học hỏi từ các kỹ sư giàu kinh nghiệm và đóng góp vào mã nguồn dự án.
+
+Xin chân thành cảm ơn Quý công ty.
+
+Trân trọng,
+
+{name}
+{loc}
+Email: {email} | Điện thoại: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+
+    # ==================== CLOUD / DEVOPS DOMAIN ====================
+    elif domain == "cloud_devops":
+        summary_en = (
+            "Undergraduate student in Network and Information Security at Vietnam - Korea University of Information "
+            "and Communication Technology (VKU), graduating in 2028. Foundational knowledge in computer networking (OSI, "
+            "TCP/IP), Linux/Bash administration, Python, Java, and basic AWS cloud services (IAM, EC2, S3, Shared "
+            "Responsibility Model). Seeking a Cloud &amp; DevOps Internship to acquire practical experience in cloud infrastructure and automation."
+        )
+        summary_vi = (
+            "Sinh viên ngành Mạng và An toàn thông tin tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), "
+            "dự kiến tốt nghiệp năm 2028. Có kiến thức nền tảng về mạng máy tính (OSI, TCP/IP), Linux/Bash, lập trình Python/Java "
+            "và các dịch vụ đám mây AWS cơ bản (IAM, EC2, S3, Shared Responsibility Model). Mong muốn thực tập vị trí Cloud &amp; "
+            "DevOps để tích lũy kinh nghiệm thực hành hạ tầng đám mây và tự động hóa."
+        )
+        skills_en = [
+            {"label": "Cloud &amp; Architecture", "val": "AWS IAM, Amazon EC2, Amazon S3, Shared Responsibility Model (Foundational)"},
+            {"label": "Systems &amp; Scripting", "val": "Linux (Ubuntu), Bash Shell"},
+            {"label": "Programming Languages", "val": "Python, Java"},
+            {"label": "Networking &amp; Security", "val": "OSI Model, TCP/IP, Wireshark, Nmap, Firewall fundamentals, WebRTC, P2P"}
+        ]
+        skills_vi = [
+            {"label": "Điện toán Đám mây (Cơ bản)", "val": "AWS IAM, Amazon EC2, Amazon S3, Shared Responsibility Model"},
+            {"label": "Hệ thống & Scripting", "val": "Linux (Ubuntu), Bash Shell"},
+            {"label": "Ngôn ngữ Lập trình", "val": "Python, Java"},
+            {"label": "Mạng & An toàn Thông tin", "val": "Mô hình OSI, TCP/IP, Wireshark, Nmap, Firewall, WebRTC, P2P"}
+        ]
+        cl_body_en = lambda c, r, name, loc, email, phone, contact: f"""Dear Hiring Team at {c},
+
+I am writing to express my strong interest in the {r} position at {c}. As an undergraduate student majoring in Network and Information Security at Vietnam - Korea University of Information and Communication Technology (VKU), graduating in 2028, I have developed a solid foundation in Linux system administration, computer networking (OSI, TCP/IP), and programming with Python and Java.
+
+Throughout my academic coursework and personal projects, I have familiarized myself with foundational cloud concepts on AWS, including IAM, EC2, S3, and the AWS Shared Responsibility Model. Additionally, I have developed academic projects including a peer-to-peer screen sharing tool using WebRTC and an Android mobile application.
+
+I am particularly excited about the opportunity to intern at {c} because of your commitment to technological innovation and engineering excellence. I am eager to apply my foundational skills in scripting, networking, and cloud services under the guidance of your team.
+
+Sincerely,
+
+{name}
+{loc}
+Email: {email} | Phone: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+        cl_body_vi = lambda c, r, name, loc, email, phone, contact: f"""Kính gửi: Bộ phận Tuyển dụng {c},
+
+Tôi viết thư này để bày tỏ nguyện vọng ứng tuyển vào vị trí {r} tại {c}. Hiện tôi là sinh viên chuyên ngành Mạng và An toàn thông tin tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028. Trong quá trình học tập, tôi đã xây dựng nền tảng vững chắc về hệ điều hành Linux (Ubuntu), Bash script, lập trình Python/Java và kiến thức mạng máy tính (OSI, TCP/IP).
+
+Về mảng điện toán đám mây, tôi đã chủ động tìm hiểu và nắm vững các khái niệm cơ bản trên nền tảng AWS như IAM, Amazon EC2, Amazon S3 và Mô hình trách nhiệm chia sẻ (Shared Responsibility Model). Đồng thời, tôi đã thực hiện các đồ án học thuật bao gồm chia sẻ màn hình P2P qua WebRTC và ứng dụng di động Android.
+
+Tôi rất ấn tượng với môi trường kỹ thuật của {c}. Tôi mong muốn có cơ hội thực tập tại công ty để đóng góp sự nhiệt huyết, tinh thần kỷ luật và tiếp thu kinh nghiệm thực tế về tự động hóa hạ tầng từ các kỹ sư đi trước.
+
+Xin chân thành cảm ơn Quý công ty.
+
+Trân trọng,
+
+{name}
+{loc}
+Email: {email} | Điện thoại: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+
+    # ==================== OTHER DOMAINS / FALLBACK (SECURITY) ====================
+    else:
+        summary_en = (
+            "Undergraduate student in Network and Information Security at Vietnam - Korea University of Information "
+            "and Communication Technology (VKU), graduating in 2028. Foundational knowledge in network protocols (OSI, "
+            "TCP/IP), network analysis tools (Wireshark, Nmap, Firewall), Linux administration, and programming with "
+            "Python and Java. Seeking an Information Security &amp; SOC Analyst Internship to apply technical skills in security monitoring and network traffic analysis."
+        )
+        summary_vi = (
+            "Sinh viên ngành Mạng và An toàn thông tin tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), "
+            "dự kiến tốt nghiệp năm 2028. Có kiến thức nền tảng về mô hình OSI, TCP/IP, công cụ phân tích mạng (Wireshark, "
+            "Nmap, Firewall), quản trị Linux và lập trình Python/Java. Mong muốn thực tập vị trí An toàn thông tin / SOC "
+            "Analyst để phát triển kỹ năng giám sát an ninh mạng và phân tích lưu lượng thực tế."
+        )
+        skills_en = [
+            {"label": "Networking &amp; Security", "val": "OSI Model, TCP/IP, Wireshark, Nmap, Firewall fundamentals, WebRTC, P2P"},
+            {"label": "Systems &amp; Scripting", "val": "Linux (Ubuntu), Bash Shell"},
+            {"label": "Programming Languages", "val": "Python, Java"},
+            {"label": "Cloud &amp; Architecture", "val": "AWS IAM, Amazon EC2, Amazon S3, Shared Responsibility Model (Foundational)"}
+        ]
+        skills_vi = [
+            {"label": "Mạng & An toàn Thông tin", "val": "Mô hình OSI, TCP/IP, Wireshark, Nmap, Firewall, WebRTC, P2P"},
+            {"label": "Hệ thống & Scripting", "val": "Linux (Ubuntu), Bash Shell"},
+            {"label": "Ngôn ngữ Lập trình", "val": "Python, Java"},
+            {"label": "Điện toán Đám mây (Cơ bản)", "val": "AWS IAM, Amazon EC2, Amazon S3, Shared Responsibility Model"}
+        ]
+        cl_body_en = lambda c, r, name, loc, email, phone, contact: f"""Dear Hiring Team at {c},
+
+I am writing to enthusiastically apply for the {r} position at {c}. Currently pursuing my degree in Network and Information Security at Vietnam - Korea University of Information and Communication Technology (VKU), graduating in 2028, I have focused my studies on network architecture, packet analysis, and system security fundamentals.
+
+My academic foundation includes practical work with Linux environments (Ubuntu), Bash scripting, and programming in Python and Java. I have practical familiarity with network tools such as Wireshark and Nmap to analyze traffic and investigate packet flows, alongside core concepts of firewall rules.
+
+Joining {c} as an intern would provide an invaluable opportunity to contribute to security operations and threat monitoring. I am eager to learn from your security professionals, support daily monitoring workflows, and apply my technical skills with discipline and integrity.
+
+Sincerely,
+
+{name}
+{loc}
+Email: {email} | Phone: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+        cl_body_vi = lambda c, r, name, loc, email, phone, contact: f"""Kính gửi: Bộ phận Tuyển dụng {c},
+
+Tôi viết thư này để bày tỏ mong muốn được ứng tuyển vào vị trí {r} tại {c}. Tôi hiện đang theo học chuyên ngành Mạng và An toàn thông tin tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp vào năm 2028.
+
+Trong chương trình đào tạo kỹ sư, tôi đã trang bị kiến thức bài bản về mô hình mạng OSI, bộ giao thức TCP/IP, cấu trúc gói tin, cùng kỹ năng sử dụng các công cụ phân tích lưu lượng mạng như Wireshark, Nmap và nguyên lý hoạt động của Firewall. Bên cạnh đó, tôi có kỹ năng thực hành tốt với thao tác dòng lệnh trên Linux (Ubuntu) và viết script Python/Bash để đọc hiểu, xử lý log và tự động hóa tác vụ cơ bản.
+
+Tôi mong muốn được tham gia thực tập tại {c} để áp dụng kiến thức phân tích mạng và an toàn thông tin vào thực tiễn giám sát an ninh mạng, đồng thời rèn luyện tính kỷ luật và bảo mật thông tin theo chuẩn doanh nghiệp.
+
+Xin chân thành cảm ơn Quý công ty.
+
+Trân trọng,
+
+{name}
+{loc}
+Email: {email} | Điện thoại: {phone}
+GitHub: {contact.get('github', '')}
+LinkedIn: {contact.get('linkedin', '')}"""
+
+    return {
+        "domain": domain,
+        "summary_en": summary_en,
+        "summary_vi": summary_vi,
+        "skills_en": skills_en,
+        "skills_vi": skills_vi,
+        "cl_body_en": cl_body_en,
+        "cl_body_vi": cl_body_vi
+    }
+
+
 def generate_modern_tech_html(
     candidate: Dict[str, Any],
     language: str = "en",
@@ -287,11 +1050,14 @@ def generate_modern_tech_html(
             "val": "Mô hình OSI, TCP/IP, Wireshark, Nmap, Firewall, WebRTC, P2P"
         }
 
-    # Dynamic skill ordering based on target job
-    if is_cloud_devops:
-        skills_ordered = [skill_cloud, skill_sys, skill_prog, skill_net]
+    # Tailored summary & skills from domain engine
+    tailor = get_domain_tailoring(role, eval_result)
+    if is_en:
+        summary_text = tailor["summary_en"]
+        skills_ordered = tailor["skills_en"]
     else:
-        skills_ordered = [skill_net, skill_sys, skill_prog, skill_cloud]
+        summary_text = tailor["summary_vi"]
+        skills_ordered = tailor["skills_vi"]
 
     skill_blocks_html = "\n".join([
         f"""        <div class="skill-group">
@@ -881,24 +1647,9 @@ def generate_ats_html(
         lang1 = "Vietnamese: Native"
         lang2 = "English: Technical reading; basic conversational English"
 
-        if is_cloud_devops:
-            skills_content = """
-        <ul>
-          <li><strong>Cloud &amp; Infrastructure (Foundational):</strong> AWS IAM, Amazon EC2, Amazon S3, Shared Responsibility Model</li>
-          <li><strong>Systems &amp; Scripting:</strong> Linux (Ubuntu), Bash Shell</li>
-          <li><strong>Programming Languages:</strong> Python, Java</li>
-          <li><strong>Networking &amp; Security:</strong> OSI Model, TCP/IP, Wireshark, Nmap, Firewall fundamentals, WebRTC, P2P</li>
-        </ul>
-        """
-        else:
-            skills_content = """
-        <ul>
-          <li><strong>Networking &amp; Security:</strong> OSI Model, TCP/IP, Wireshark, Nmap, Firewall fundamentals, WebRTC, P2P</li>
-          <li><strong>Systems &amp; Scripting:</strong> Linux (Ubuntu), Bash Shell</li>
-          <li><strong>Programming Languages:</strong> Python, Java</li>
-          <li><strong>Cloud &amp; Infrastructure (Foundational):</strong> AWS IAM, Amazon EC2, Amazon S3, Shared Responsibility Model</li>
-        </ul>
-        """
+        tailor_ats_en = get_domain_tailoring(role)
+        summary_text = tailor_ats_en["summary_en"]
+        skills_content = "\n        <ul>\n" + "\n".join([f"          <li><strong>{s['label']}:</strong> {s['val']}</li>" for s in tailor_ats_en["skills_en"]]) + "\n        </ul>\n        "
     else:
         title_summary = "TÓM TẮT CHUYÊN MÔN"
         title_skills = "KỸ NĂNG KỸ THUẬT"
@@ -943,24 +1694,9 @@ def generate_ats_html(
         lang1 = "Tiếng Việt: Bản ngữ"
         lang2 = "Tiếng Anh: Technical reading; basic conversational English"
 
-        if is_cloud_devops:
-            skills_content = """
-        <ul>
-          <li><strong>Điện toán Đám mây (Cơ bản):</strong> AWS IAM, Amazon EC2, Amazon S3, Shared Responsibility Model</li>
-          <li><strong>Hệ thống &amp; Scripting:</strong> Linux (Ubuntu), Bash Shell</li>
-          <li><strong>Ngôn ngữ Lập trình:</strong> Python, Java</li>
-          <li><strong>Mạng &amp; An toàn Thông tin:</strong> Mô hình OSI, TCP/IP, Wireshark, Nmap, Firewall, WebRTC, P2P</li>
-        </ul>
-        """
-        else:
-            skills_content = """
-        <ul>
-          <li><strong>Mạng &amp; An toàn Thông tin:</strong> Mô hình OSI, TCP/IP, Wireshark, Nmap, Firewall, WebRTC, P2P</li>
-          <li><strong>Hệ thống &amp; Scripting:</strong> Linux (Ubuntu), Bash Shell</li>
-          <li><strong>Ngôn ngữ Lập trình:</strong> Python, Java</li>
-          <li><strong>Điện toán Đám mây (Cơ bản):</strong> AWS IAM, Amazon EC2, Amazon S3, Shared Responsibility Model</li>
-        </ul>
-        """
+        tailor_ats = get_domain_tailoring(role)
+        summary_text = tailor_ats["summary_vi"]
+        skills_content = "\n        <ul>\n" + "\n".join([f"          <li><strong>{s['label']}:</strong> {s['val']}</li>" for s in tailor_ats["skills_vi"]]) + "\n        </ul>\n        "
 
     html = f"""<!DOCTYPE html>
 <html lang="{language}">
@@ -1108,82 +1844,11 @@ def generate_job_cover_letter(
     loc = "Da Nang, Vietnam" if is_en else "Đà Nẵng, Việt Nam"
     today = datetime.now().strftime("%B %d, %Y" if is_en else "%d/%m/%Y")
     
-    is_cloud_devops = any(k in target_role.lower() for k in ["cloud", "devops", "aws", "infrastructure", "sre"])
-
+    tailor_cl = get_domain_tailoring(target_role, eval_result)
     if is_en:
-        if is_cloud_devops:
-            body = f"""Dear Hiring Team at {company},
-
-I am writing to express my strong interest in the {target_role} position at {company}. As an undergraduate student majoring in Network and Information Security at Vietnam - Korea University of Information and Communication Technology (VKU), graduating in 2028, I have developed a solid foundation in Linux system administration, computer networking (OSI, TCP/IP), and programming with Python and Java.
-
-Throughout my academic coursework and personal projects, I have familiarized myself with foundational cloud concepts on AWS, including IAM, EC2, S3, and the AWS Shared Responsibility Model. Additionally, I have developed academic projects including a peer-to-peer screen sharing tool using WebRTC and an Android mobile application. These projects have given me opportunities to apply programming and networking concepts.
-
-I am particularly excited about the opportunity to intern at {company} because of your commitment to technological innovation and engineering excellence. I am eager to apply my foundational skills in scripting, networking, and cloud services under the guidance of your team, while acquiring practical hands-on experience in cloud infrastructure, automation, and system reliability.
-
-Thank you very much for your time and consideration. I welcome the opportunity to discuss how my academic background and dedication to continuous learning can contribute to your team.
-
-Sincerely,
-
-{name}
-{loc}
-Email: {email} | Phone: {phone}
-GitHub: {contact.get('github', '')}
-LinkedIn: {contact.get('linkedin', '')}"""
-        else:
-            body = f"""Dear Hiring Team at {company},
-
-I am writing to enthusiastically apply for the {target_role} position at {company}. Currently pursuing my degree in Network and Information Security at Vietnam - Korea University of Information and Communication Technology (VKU), graduating in 2028, I have focused my studies on network architecture, packet analysis, and system security fundamentals.
-
-My academic foundation includes practical work with Linux environments (Ubuntu), Bash scripting, and programming in Python and Java. I have practical familiarity with network tools such as Wireshark and Nmap to analyze traffic and investigate packet flows, alongside core concepts of firewall rules. These projects have given me opportunities to apply programming and networking concepts.
-
-Joining {company} as an intern would provide an invaluable opportunity to contribute to security operations and threat monitoring. I am eager to learn from your security professionals, support daily monitoring workflows, and apply my technical skills with discipline and integrity.
-
-Thank you for reviewing my application. I look forward to the possibility of discussing my background in greater detail.
-
-Sincerely,
-
-{name}
-{loc}
-Email: {email} | Phone: {phone}
-GitHub: {contact.get('github', '')}
-LinkedIn: {contact.get('linkedin', '')}"""
+        body = tailor_cl["cl_body_en"](company, target_role, name, loc, email, phone, contact)
     else:
-        if is_cloud_devops:
-            body = f"""Kính gửi: Bộ phận Tuyển dụng {company},
-
-Tôi viết thư này để bày tỏ nguyện vọng ứng tuyển vào vị trí {target_role} tại {company}. Hiện tôi là sinh viên chuyên ngành Mạng và An toàn thông tin tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028. Trong quá trình học tập, tôi đã xây dựng nền tảng vững chắc về hệ điều hành Linux (Ubuntu), Bash script, lập trình Python/Java và kiến thức mạng máy tính (OSI, TCP/IP).
-
-Về mảng điện toán đám mây, tôi đã chủ động tìm hiểu và nắm vững các khái niệm cơ bản trên nền tảng AWS như IAM, Amazon EC2, Amazon S3 và Mô hình trách nhiệm chia sẻ (Shared Responsibility Model). Đồng thời, tôi đã thực hiện các đồ án học thuật bao gồm chia sẻ màn hình P2P qua WebRTC và ứng dụng di động Android. Các dự án này đã mang lại cho tôi cơ hội vận dụng các kiến thức lập trình và mạng máy tính vào thực tế.
-
-Tôi rất ấn tượng với môi trường kỹ thuật và các giải pháp chuyển đổi số của {company}. Tôi mong muốn có cơ hội thực tập tại công ty để đóng góp sự nhiệt huyết, tinh thần kỷ luật và tiếp thu kinh nghiệm thực tế về tự động hóa hạ tầng và vận hành hệ thống đám mây từ các kỹ sư đi trước.
-
-Xin chân thành cảm ơn Quý công ty đã dành thời gian xem xét hồ sơ của tôi. Tôi rất mong có cơ hội được trao đổi trực tiếp trong buổi phỏng vấn.
-
-Trân trọng,
-
-{name}
-{loc}
-Email: {email} | Điện thoại: {phone}
-GitHub: {contact.get('github', '')}
-LinkedIn: {contact.get('linkedin', '')}"""
-        else:
-            body = f"""Kính gửi: Bộ phận Tuyển dụng {company},
-
-Tôi viết thư này để bày tỏ mong muốn được ứng tuyển vào vị trí {target_role} tại {company}. Tôi hiện đang theo học chuyên ngành Mạng và An toàn thông tin tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp vào năm 2028.
-
-Trong chương trình đào tạo kỹ sư, tôi đã trang bị kiến thức bài bản về mô hình mạng OSI, bộ giao thức TCP/IP, cấu trúc gói tin, cùng kỹ năng sử dụng các công cụ phân tích lưu lượng mạng như Wireshark, Nmap và nguyên lý hoạt động của Firewall. Bên cạnh đó, tôi có kỹ năng thực hành tốt với thao tác dòng lệnh trên Linux (Ubuntu) và viết script Python/Bash để đọc hiểu, xử lý log và tự động hóa tác vụ cơ bản. Các dự án này đã mang lại cho tôi cơ hội vận dụng các kiến thức lập trình và mạng máy tính vào thực tế.
-
-Tôi mong muốn được tham gia thực tập tại {company} để áp dụng kiến thức phân tích mạng và an toàn thông tin vào thực tiễn giám sát an ninh mạng, đồng thời rèn luyện tính kỷ luật và bảo mật thông tin theo chuẩn doanh nghiệp.
-
-Tôi xin chân thành cảm ơn Quý công ty đã quan tâm đến hồ sơ ứng tuyển. Rất mong có cơ hội được tham gia trao đổi sâu hơn về vị trí thực tập này.
-
-Trân trọng,
-
-{name}
-{loc}
-Email: {email} | Điện thoại: {phone}
-GitHub: {contact.get('github', '')}
-LinkedIn: {contact.get('linkedin', '')}"""
+        body = tailor_cl["cl_body_vi"](company, target_role, name, loc, email, phone, contact)
 
     title_header = "# COVER LETTER" if is_en else "# THƯ ỨNG TUYỂN"
     cand_label = "**Candidate:**" if is_en else "**Ứng viên:**"
