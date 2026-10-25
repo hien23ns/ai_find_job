@@ -338,30 +338,139 @@ let cachedJobsList = [];
 let currentJobFilter = "all";
 let currentFormJobId = null;
 
+function getCategoryBadge(cat) {
+  if (!cat) return "";
+  const map = {
+    design: '<span class="badge badge-design">🎨 Thiết kế</span>',
+    marketing: '<span class="badge badge-marketing">📢 Marketing</span>',
+    security: '<span class="badge badge-security">🛡️ An ninh mạng</span>',
+    it: '<span class="badge badge-it">💻 CNTT & PM</span>',
+    sales: '<span class="badge badge-sales">💼 Sales & BD</span>'
+  };
+  return map[cat] || `<span class="badge badge-gray">${escapeHtml(cat)}</span>`;
+}
+
+function getLocationBadge(loc) {
+  if (!loc) return "";
+  const map = {
+    danang: '<span class="badge badge-location">📍 Đà Nẵng</span>',
+    hanoi: '<span class="badge badge-location">📍 Hà Nội</span>',
+    hcm: '<span class="badge badge-location">📍 TP.HCM</span>',
+    cantho: '<span class="badge badge-location">📍 Cần Thơ</span>',
+    haiphong: '<span class="badge badge-location">📍 Hải Phòng</span>',
+    remote: '<span class="badge badge-remote">🏠 Remote</span>',
+    international: '<span class="badge badge-location">🌏 Quốc tế</span>',
+    vietnam: '<span class="badge badge-location">📍 Toàn quốc</span>'
+  };
+  return map[loc] || `<span class="badge badge-location">📍 ${escapeHtml(loc)}</span>`;
+}
+
+function getWorkModeBadge(mode) {
+  if (!mode) return "";
+  const map = {
+    remote: '<span class="badge badge-remote">🏠 Remote / WFH</span>',
+    hybrid: '<span class="badge badge-it">🔄 Hybrid</span>',
+    onsite: '<span class="badge badge-gray">🏢 On-site</span>'
+  };
+  return map[mode] || "";
+}
+
+function getEmploymentTypeBadge(type) {
+  if (!type) return "";
+  const map = {
+    parttime: '<span class="badge badge-parttime">⏳ Part-time</span>',
+    fulltime: '<span class="badge badge-fulltime">⏰ Full-time</span>',
+    internship: '<span class="badge badge-intern">🎓 Thực tập sinh</span>',
+    freelance: '<span class="badge badge-freelance">💼 Freelance</span>'
+  };
+  return map[type] || "";
+}
+
 async function loadJobsList() {
   try {
     const res = await fetch("/api/jobs");
     cachedJobsList = await res.json();
     const countEl = document.getElementById("search-total-count");
     if (countEl) countEl.innerText = cachedJobsList.length;
-    filterJobsList(currentJobFilter);
+    applyFilters();
   } catch (e) {
     console.error("Error loading jobs list", e);
   }
 }
 
+function selectQuickCategory(cat) {
+  document.querySelectorAll("#quick-category-pills .category-pill").forEach(p => {
+    p.classList.toggle("active", p.getAttribute("data-category") === cat);
+  });
+  const catSel = document.getElementById("search-category");
+  if (catSel) catSel.value = cat;
+
+  // Set helpful keywords placeholder/suggestion if field is empty or generic
+  const kwInput = document.getElementById("search-keywords");
+  if (kwInput) {
+    if (cat === "design") kwInput.value = "UI/UX Graphic Designer";
+    else if (cat === "marketing") kwInput.value = "Digital Marketing Content";
+    else if (cat === "it") kwInput.value = "Software Developer CNTT";
+    else if (cat === "security") kwInput.value = "Cyber Security SOC";
+    else if (cat === "sales") kwInput.value = "Sales Business Development";
+    else if (cat === "all") kwInput.value = "";
+  }
+  applyFilters();
+}
+
+function onCategorySelectChange() {
+  const cat = document.getElementById("search-category")?.value || "all";
+  document.querySelectorAll("#quick-category-pills .category-pill").forEach(p => {
+    p.classList.toggle("active", p.getAttribute("data-category") === cat);
+  });
+  applyFilters();
+}
+
 function filterJobsList(filterType) {
   currentJobFilter = filterType;
-  document.querySelectorAll(".filter-job-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".quick-filter-chip").forEach(b => b.classList.remove("active"));
   const activeBtn = document.getElementById(`btn-filter-${filterType}`);
   if (activeBtn) activeBtn.classList.add("active");
+  applyFilters();
+}
 
-  let filtered = cachedJobsList;
-  if (filterType === "email") {
-    filtered = cachedJobsList.filter(j => j.has_hr_email);
-  } else if (filterType === "form") {
-    filtered = cachedJobsList.filter(j => !j.has_hr_email);
-  }
+function applyFilters() {
+  const catFilter = document.getElementById("search-category")?.value || "all";
+  const locFilter = document.getElementById("search-location")?.value || "all";
+  const modeFilter = document.getElementById("search-work-mode")?.value || "all";
+  const typeFilter = document.getElementById("search-employment-type")?.value || "all";
+  const chipFilter = currentJobFilter;
+
+  let filtered = cachedJobsList.filter(j => {
+    // 1. Category filter
+    if (catFilter !== "all" && j.category && j.category !== catFilter) return false;
+
+    // 2. Location filter
+    if (locFilter !== "all") {
+      if (locFilter === "remote" && j.work_mode !== "remote" && j.location !== "remote") return false;
+      if (locFilter !== "remote" && j.location && j.location !== locFilter) return false;
+    }
+
+    // 3. Work Mode filter
+    if (modeFilter !== "all" && j.work_mode && j.work_mode !== modeFilter) return false;
+
+    // 4. Employment Type filter
+    if (typeFilter !== "all" && j.employment_type && j.employment_type !== typeFilter) return false;
+
+    // 5. Quick Filter Chip
+    if (chipFilter === "email" && !j.has_hr_email) return false;
+    if (chipFilter === "form" && j.has_hr_email) return false;
+    if (chipFilter === "remote" && j.work_mode !== "remote" && j.location !== "remote") return false;
+    if (chipFilter === "parttime" && j.employment_type !== "parttime") return false;
+    if (chipFilter === "design" && j.category !== "design") return false;
+    if (chipFilter === "marketing" && j.category !== "marketing") return false;
+    if (chipFilter === "danang" && j.location !== "danang") return false;
+
+    return true;
+  });
+
+  const countEl = document.getElementById("search-total-count");
+  if (countEl) countEl.innerText = filtered.length;
 
   renderJobsTable(filtered, "#search-results-table tbody");
 }
@@ -370,31 +479,50 @@ function renderJobsTable(jobs, selector) {
   const tbody = document.querySelector(selector);
   tbody.innerHTML = "";
   if (!jobs || jobs.length === 0) {
-    tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#94a3b8; padding:20px;'>Không tìm thấy việc làm phù hợp với bộ lọc hiện tại. Bấm 'Tìm kiếm việc ngay' để cập nhật.</td></tr>";
+    tbody.innerHTML = "<tr><td colspan='7' style='text-align:center; color:#94a3b8; padding:24px;'>Không tìm thấy việc làm phù hợp với bộ lọc hiện tại. Bấm 'Tìm kiếm việc ngay' để quét tin tuyển dụng thực tế mới nhất.</td></tr>";
     return;
   }
   jobs.forEach(j => {
     const tr = document.createElement("tr");
 
     const channelBadge = j.has_hr_email
-      ? `<span class="badge badge-green" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:600; font-size:11.5px;">✉️ HR: ${escapeHtml(j.hr_email)}</span>`
+      ? `<span class="badge badge-green" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:600; font-size:11.5px;">✉️ ${escapeHtml(j.hr_email)}</span>`
       : `<span class="badge badge-amber" style="background:#fef9c3; color:#854d0e; border:1px solid #fde047; font-weight:600; font-size:11.5px;">🌐 Nộp Form / Link</span>`;
 
     const applyActionBtn = j.has_hr_email
-      ? `<button class="btn btn-success btn-sm" style="background:#15803d; color:#fff; font-weight:700; margin-left:4px;" onclick="triggerAutoApplyEmail('${j.id}')">🚀 Gửi Email Apply</button>`
-      : `<button class="btn btn-primary btn-sm" style="background:#2563eb; color:#fff; font-weight:700; margin-left:4px;" onclick="openFormHelperModal('${j.id}')">📝 Điền & Nộp Form</button>`;
+      ? `<button class="btn btn-success btn-sm" style="background:#15803d; color:#fff; font-weight:700; margin-left:4px;" onclick="triggerAutoApplyEmail('${j.id}')">🚀 Gửi Email</button>`
+      : `<button class="btn btn-primary btn-sm" style="background:#2563eb; color:#fff; font-weight:700; margin-left:4px;" onclick="openFormHelperModal('${j.id}')">📝 Nộp Form</button>`;
 
     const isLiveJob = (j.id && j.id.startsWith("job_live_")) || (j.notes && j.notes.includes("Tin tuyển dụng thực tế"));
-    const liveTag = isLiveJob ? `<span class="badge badge-green" style="background:#ecfdf5; color:#047857; border:1px solid #6ee7b7; font-size:10.5px; margin-left:4px;" title="Tin tuyển dụng thực tế đang mở tuyển trên cổng trực tuyến">🟢 Đang tuyển</span>` : "";
+    const liveTag = isLiveJob ? `<span class="badge badge-green" style="background:#ecfdf5; color:#047857; border:1px solid #6ee7b7; font-size:10px; margin-left:4px;" title="Tin tuyển dụng thực tế đang mở tuyển trên cổng">🟢 Đang tuyển</span>` : "";
+
+    const catBadge = getCategoryBadge(j.category);
+    const locBadge = getLocationBadge(j.location);
+    const modeBadge = getWorkModeBadge(j.work_mode);
+    const typeBadge = getEmploymentTypeBadge(j.employment_type);
 
     tr.innerHTML = `
-      <td style="font-weight:600;">${escapeHtml(j.company)} ${liveTag}</td>
-      <td>${escapeHtml(j.title)}</td>
+      <td>
+        <div style="font-weight:700; color:#0f172a; display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
+          ${escapeHtml(j.company)} ${liveTag}
+        </div>
+        <div style="margin-top:4px;">${locBadge}</div>
+      </td>
+      <td>
+        <div style="font-weight:600; color:#1e293b; margin-bottom:4px;">${escapeHtml(j.title)}</div>
+        <div>${catBadge}</div>
+      </td>
+      <td>
+        <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
+          ${modeBadge || '<span class="badge badge-gray">🏢 On-site</span>'}
+          ${typeBadge || '<span class="badge badge-intern">🎓 Thực tập sinh</span>'}
+        </div>
+      </td>
       <td>${channelBadge}</td>
       <td><span class="badge ${j.match_score >= 80 ? 'badge-green' : 'badge-amber'}">${j.match_score}/100</span></td>
       <td><span class="badge ${getStatusBadgeClass(j.status)}">${escapeHtml(j.status)}</span></td>
       <td style="white-space:nowrap;">
-        <button class="btn btn-secondary btn-sm" onclick="openJobDetail('${j.id}')">Xem JD</button>
+        <button class="btn btn-secondary btn-sm" onclick="openJobDetail('${j.id}')">JD</button>
         <button class="btn btn-primary btn-sm" style="margin-left:4px;" onclick="openPackageTabForJob('${j.id}')">Hồ sơ</button>
         ${applyActionBtn}
       </td>
@@ -509,30 +637,33 @@ async function markFormAsSubmitted(jobId) {
 
 async function runJobSearch() {
   const btn = document.getElementById("btn-run-search");
-  btn.innerText = "🔍 Đang quét tin thật (LinkedIn & Portals)...";
+  btn.innerText = "🔍 Đang quét tin thật...";
   btn.disabled = true;
 
-  const keywords = document.getElementById("search-keywords").value || "Cyber Security Intern";
-  const market = document.getElementById("search-market").value || "vietnam";
-  const limit = document.getElementById("search-limit").value || "5";
+  const keywords = (document.getElementById("search-keywords").value || "").trim();
+  const category = document.getElementById("search-category")?.value || "all";
+  const location = document.getElementById("search-location")?.value || "all";
+  const work_mode = document.getElementById("search-work-mode")?.value || "all";
+  const employment_type = document.getElementById("search-employment-type")?.value || "all";
+  const market = document.getElementById("search-market")?.value || "vietnam";
+  const limit = document.getElementById("search-limit")?.value || "5";
 
-  showToast(`🔍 Đang quét và kiểm tra các vị trí thực tế đang mở tuyển cho '${keywords}'...`, "info");
+  showToast(`🔍 Đang quét và kiểm tra các vị trí tuyển dụng thực tế...`, "info");
 
   try {
     const res = await fetch("/api/jobs/search", {
       method: "POST",
       headers: getFetchHeaders(),
-      body: jsonStringifySafe({ keywords, market, limit })
+      body: jsonStringifySafe({ keywords, category, location, work_mode, employment_type, market, limit })
     });
     const data = await res.json();
     const liveNote = data.is_live ? " [🟢 Tin thật đang mở tuyển]" : "";
     showToast(`🎉 Tìm thấy ${data.total_found} tin tuyển dụng thực tế${liveNote}. Đã lưu ${data.imported_count} việc vào danh sách.`, "success");
     await loadJobsList();
-    navToTab("jobs");
   } catch (e) {
     showToast("Lỗi trong quá trình tìm kiếm việc làm", "error");
   } finally {
-    btn.innerText = "Tìm kiếm việc ngay";
+    btn.innerHTML = `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg> Tìm kiếm việc ngay`;
     btn.disabled = false;
   }
 }

@@ -629,7 +629,10 @@ Official application email: recruitment@hitachids.com"""
         "title": "Cyber Security Intern",
         "company": "Noventiq Vietnam",
         "market": "vietnam",
+        "category": "security",
         "location": "Hà Nội",
+        "work_mode": "onsite",
+        "employment_type": "internship",
         "platform_source": "LinkedIn",
         "source": "https://www.linkedin.com/jobs/view/4455639330",
         "match_score": 92,
@@ -656,7 +659,10 @@ Application Method: Apply directly via LinkedIn Portal: https://www.linkedin.com
         "title": "Security Operations Intern",
         "company": "Sky Mavis",
         "market": "vietnam",
+        "category": "security",
         "location": "TP.HCM",
+        "work_mode": "hybrid",
+        "employment_type": "internship",
         "platform_source": "LinkedIn",
         "source": "https://www.linkedin.com/jobs/view/4454784325",
         "match_score": 90,
@@ -675,13 +681,614 @@ Requirements:
 - Strong knowledge of networking, operating systems, and scripting.
 
 Application Method: Submit your profile directly through Sky Mavis Career Portal: https://www.linkedin.com/jobs/view/4454784325"""
+    },
+    # =========================================================================
+    # LĨNH VỰC THIẾT KẾ (DESIGN / UI-UX / GRAPHIC / 2D-3D)
+    # =========================================================================
+    {
+        "id": "job_vng_graphic_design_intern",
+        "title": "Thực tập sinh Thiết kế Đồ họa & Visual Content (Graphic Design Intern)",
+        "company": "VNG Corporation",
+        "market": "vietnam",
+        "category": "design",
+        "location": "TP.HCM",
+        "work_mode": "hybrid",
+        "employment_type": "internship",
+        "platform_source": "TopCV & VNG Careers",
+        "source": "https://careers.vng.com.vn/job/graphic-design-intern",
+        "match_score": 93,
+        "hr_email": "recruitment@vng.com.vn",
+        "apply_channel": "email",
+        "raw_jd": """VNG CORPORATION TUYỂN DỤNG: THỰC TẬP SINH THIẾT KẾ ĐỒ HỌA (GRAPHIC DESIGN INTERN)
+Địa điểm: VNG Campus, Khu chế xuất Tân Thuận, Quận 7, TP.HCM.
+Hình thức: Thực tập sinh bán thời gian / Linh hoạt theo lịch học (Hybrid).
+
+Mô tả công việc:
+- Thiết kế ấn phẩm truyền thông số: Banner, Poster, Infographic, hình ảnh mạng xã hội (Facebook, LinkedIn, TikTok).
+- Phối hợp cùng team Marketing & Product lên ý tưởng thiết kế giao diện và hình ảnh minh họa cho các chiến dịch.
+- Sử dụng thành thạo các công cụ thiết kế: Adobe Photoshop, Illustrator, Figma.
+- Hỗ trợ chuẩn hóa kho tư liệu hình ảnh và quy chuẩn nhận diện thương hiệu.
+
+Yêu cầu ứng viên:
+- Sinh viên chuyên ngành Thiết kế đồ họa, Mỹ thuật ứng dụng, Đa phương tiện hoặc tương đương.
+- Sử dụng tốt Adobe Photoshop, Illustrator; biết Figma hoặc After Effects là lợi thế lớn.
+- Có portfolio thể hiện tư duy bố cục, màu sắc và typography tốt.
+- Tinh thần sáng tạo, chủ động và có trách nhiệm với deadline.
+
+Quyền lợi:
+- Trợ cấp thực tập hấp dẫn: 5.000.000đ - 7.000.000đ/tháng + Phụ cấp ăn trưa tại Campus.
+- Môi trường công nghệ hàng đầu Việt Nam, hỗ trợ trang thiết bị làm việc hiện đại.
+- Cơ hội trở thành nhân viên thiết kế chính thức sau kỳ thực tập.
+
+Hồ sơ ứng tuyển gửi về: recruitment@vng.com.vn kèm link Portfolio."""
+    },
+    {
+        "id": "job_fpt_uiux_intern_danang",
+        "title": "UI/UX Designer Intern (Web & Mobile Application)",
+        "company": "FPT Software",
+        "market": "vietnam",
+        "category": "design",
+        "location": "Đà Nẵng",
+        "work_mode": "onsite",
+        "employment_type": "internship",
+        "platform_source": "ITviec & FPT Careers",
+        "source": "https://career.fpt-software.com/job/uiux-intern-danang",
+        "match_score": 94,
+        "hr_email": "recruitment@fpt.com",
+        "apply_channel": "email",
+        "raw_jd": """FPT SOFTWARE ĐÀ NẴNG - TUYỂN DỤNG THỰC TẬP SINH THIẾT KẾ UI/UX
+Địa điểm: FPT Complex, Đường Nam Kỳ Khởi Nghĩa, Quận Ngũ Hành Sơn, Đà Nẵng.
+Hình thức: Thực tập sinh toàn thời gian hoặc bán thời gian tối thiểu 4 buổi/tuần.
+
+Trách nhiệm:
+- Tham gia nghiên cứu trải nghiệm người dùng (User Research), vẽ User Flow, Wireframe và Prototype trên Figma.
+- Thiết kế giao diện trực quan (UI Design) cho các ứng dụng Web và Mobile phục vụ khách hàng toàn cầu.
+- Xây dựng và duy trì Design System, Component Library nhất quán.
+- Làm việc chặt chẽ cùng Software Developers để đối soát sản phẩm thực tế theo đúng bản thiết kế.
+
+Yêu cầu:
+- Sinh viên các trường ĐH tại Đà Nẵng (VKU, Bách Khoa, Kiến Trúc, Duy Tân...).
+- Sử dụng thành thạo Figma, nắm vững nguyên lý thiết kế UI (Auto Layout, Variants, Component).
+- Hiểu biết về Responsive Design, Accessibility và trải nghiệm người dùng (UX).
+- Kèm theo link Portfolio hoặc dự án đồ án thực hành khi nộp đơn.
+
+Quyền lợi:
+- Phụ cấp thực tập hàng tháng + Hỗ trợ xe đưa đón trong TP Đà Nẵng.
+- Được Senior UI/UX Designer hướng dẫn trực tiếp 1-1.
+
+Hồ sơ gửi về email: recruitment@fpt.com với tiêu đề: [FPT_DN] UI/UX Intern - Họ Tên."""
+    },
+    {
+        "id": "job_vnpay_uiux_designer",
+        "title": "Chuyên viên Thiết kế Giao diện UI/UX (Figma / Design System)",
+        "company": "VNPAY",
+        "market": "vietnam",
+        "category": "design",
+        "location": "Hà Nội",
+        "work_mode": "onsite",
+        "employment_type": "full_time",
+        "platform_source": "TopCV & VNPAY Portal",
+        "source": "https://vnpay.vn/tuyen-dung/uiux-designer",
+        "match_score": 91,
+        "hr_email": "tuyendung@vnpay.vn",
+        "apply_channel": "email",
+        "raw_jd": """VNPAY (FINTECH HÀNG ĐẦU VIỆT NAM) TUYỂN DỤNG: UI/UX DESIGNER
+Địa điểm: Tòa nhà VNPAY, Láng Hạ, Ba Đình, Hà Nội.
+Hình thức: Toàn thời gian (Full-time).
+
+Mô tả công việc:
+- Thiết kế trải nghiệm và giao diện thanh toán số cho hệ sinh thái ví VNPAY và ứng dụng ngân hàng.
+- Xây dựng wireframe, interactive prototype, và hoàn thiện UI chuẩn xác đến từng pixel.
+- Tối ưu hóa hành trình người dùng dựa trên dữ liệu phân tích và thử nghiệm A/B testing.
+- Tham gia phát triển Design System chung của toàn công ty.
+
+Yêu cầu:
+- Tốt nghiệp hoặc chuẩn bị tốt nghiệp chuyên ngành Thiết kế, CNTT hoặc liên quan.
+- Tối thiểu 0 - 2 năm kinh nghiệm thiết kế sản phẩm số (chấp nhận Fresher có Portfolio xuất sắc).
+- Thành thạo Figma, Adobe Creative Cloud.
+- Tư duy sản phẩm và giải quyết vấn đề tốt.
+
+Quyền lợi:
+- Thu nhập cạnh tranh từ 12.000.000đ - 22.000.000đ/tháng + Thưởng hiệu quả kinh doanh.
+- Đầy đủ bảo hiểm cao cấp VNPAY Care, khám sức khỏe quốc tế.
+
+Ứng tuyển qua email: tuyendung@vnpay.vn kèm Portfolio."""
+    },
+    {
+        "id": "job_shopee_graphic_parttime",
+        "title": "Graphic Designer & Visual Content (Part-time / Bán thời gian)",
+        "company": "Shopee Vietnam",
+        "market": "vietnam",
+        "category": "design",
+        "location": "TP.HCM",
+        "work_mode": "remote",
+        "employment_type": "part_time",
+        "platform_source": "Shopee Careers & TopCV",
+        "source": "https://careers.shopee.vn/job/parttime-designer",
+        "match_score": 92,
+        "hr_email": "careers@shopee.vn",
+        "apply_channel": "email",
+        "raw_jd": """SHOPEE VIETNAM TUYỂN DỤNG: GRAPHIC DESIGNER (BÁN THỜI GIAN / PART-TIME)
+Địa điểm: TP. Hồ Chí Minh (Hỗ trợ làm việc từ xa / Remote linh hoạt).
+Hình thức: Bán thời gian (20 - 25 giờ/tuần).
+
+Nhiệm vụ:
+- Thiết kế hình ảnh sản phẩm, banner khuyến mãi theo chiến dịch Mega Sale hàng tháng.
+- Thiết kế template hình ảnh sản phẩm, story visual cho sàn TMĐT Shopee.
+- Xử lý hình ảnh, chỉnh màu sắc và cắt ghép layout nhanh chóng, chuẩn quy cách.
+
+Yêu cầu:
+- Chấp nhận sinh viên đang đi học có thể làm việc bán thời gian.
+- Sử dụng tốt Photoshop, Illustrator. Tốc độ thiết kế tốt, đúng deadline.
+- Có tinh thần học hỏi, tiếp thu phản hồi tích cực.
+
+Hồ sơ gửi về: careers@shopee.vn với tiêu đề: [Part-time Designer] Họ và Tên."""
+    },
+    {
+        "id": "job_sotatek_product_designer_remote",
+        "title": "UI/UX Product Designer (Làm việc từ xa / Remote Toàn quốc)",
+        "company": "SotaTek",
+        "market": "vietnam",
+        "category": "design",
+        "location": "Remote / Toàn quốc",
+        "work_mode": "remote",
+        "employment_type": "full_time",
+        "platform_source": "ITviec & SotaTek Careers",
+        "source": "https://sotatek.com/careers/ui-ux-remote",
+        "match_score": 90,
+        "hr_email": "tuyendung@sotatek.com",
+        "apply_channel": "email",
+        "raw_jd": """SOTATEK - WE ARE HIRING: UI/UX PRODUCT DESIGNER (100% REMOTE)
+Hình thức: Toàn thời gian / Làm việc từ xa 100% (Ứng viên tại Đà Nẵng, Hà Nội, TP.HCM hoặc bất kỳ tỉnh thành nào).
+
+Nội dung công việc:
+- Thiết kế giải pháp UI/UX cho các sản phẩm Web3, SaaS và Mobile Application đa quốc gia.
+- Tạo interactive prototype trên Figma, bàn giao spec thiết kế chi tiết cho đội ngũ Dev.
+- Tham gia các buổi Sprint Planning và Review cùng khách hàng quốc tế.
+
+Yêu cầu:
+- Có kinh nghiệm thiết kế giao diện web/app với portfolio rõ ràng.
+- Sử dụng thành thạo Figma và Design System.
+- Tiếng Anh giao tiếp hoặc đọc hiểu tốt tài liệu kỹ thuật.
+
+Gửi CV và Portfolio về: tuyendung@sotatek.com"""
+    },
+    {
+        "id": "job_rikkei_design_2d_danang",
+        "title": "Thực tập sinh Thiết kế 2D & Marketing Creative",
+        "company": "Rikkeisoft",
+        "market": "vietnam",
+        "category": "design",
+        "location": "Đà Nẵng",
+        "work_mode": "hybrid",
+        "employment_type": "internship",
+        "platform_source": "TopCV & Rikkeisoft Portal",
+        "source": "https://career.rikkeisoft.com/job/danang-design-intern",
+        "match_score": 93,
+        "hr_email": "tuyendung@rikkeisoft.com",
+        "apply_channel": "email",
+        "raw_jd": """RIKKEISOFT ĐÀ NẴNG: TUYỂN DỤNG THỰC TẬP SINH THIẾT KẾ ĐỒ HỌA
+Địa điểm: Tòa nhà Fhome, 16 Lý Thường Kiệt, Hải Châu, Đà Nẵng.
+Hình thức: Thực tập sinh (Linh hoạt lịch học, hỗ trợ bán thời gian).
+
+Mô tả công việc:
+- Thiết kế hình ảnh phục vụ các kênh truyền thông nội bộ và đối ngoại của Rikkeisoft Đà Nẵng.
+- Hỗ trợ làm slide thuyết trình, infographic, standee và tư liệu sự kiện công nghệ.
+- Làm việc cùng team truyền thông để triển khai các chiến dịch tuyển dụng và văn hóa doanh nghiệp.
+
+Yêu cầu:
+- Sinh viên năm 2, 3, 4 chuyên ngành thiết kế đồ họa hoặc đam mê thiết kế.
+- Sử dụng Photoshop, Illustrator, Canva, Figma.
+- Tinh thần trách nhiệm, hòa đồng.
+
+Quyền lợi:
+- Phụ cấp thực tập + Hỗ trợ dấu thực tập tốt nghiệp.
+- Môi trường trẻ trung, sáng tạo tại trung tâm Đà Nẵng.
+
+Ứng tuyển qua email: tuyendung@rikkeisoft.com"""
+    },
+    {
+        "id": "job_axon_junior_uiux",
+        "title": "Junior UI/UX Designer (Agile / Scrum)",
+        "company": "Axon Active Vietnam",
+        "market": "vietnam",
+        "category": "design",
+        "location": "Đà Nẵng",
+        "work_mode": "onsite",
+        "employment_type": "full_time",
+        "platform_source": "ITviec & Axon Portal",
+        "source": "https://axonactive.com/careers/ui-ux-danang",
+        "match_score": 91,
+        "hr_email": "job@axonactive.com",
+        "apply_channel": "email",
+        "raw_jd": """AXON ACTIVE VIETNAM (SWISS SOFTWARE ENGINEERING EXCELLENCE)
+Vị trí: Junior UI/UX Designer
+Địa điểm: Đà Nẵng | Toàn thời gian.
+
+Trách nhiệm:
+- Tham gia các dự án phát triển phần mềm theo chuẩn Scrum Thụy Sĩ.
+- Thiết kế Wireframe, UI Mockup và Prototype cho các ứng dụng doanh nghiệp.
+- Đảm bảo trải nghiệm trực quan, dễ sử dụng cho người dùng cuối.
+
+Yêu cầu:
+- Tốt nghiệp ĐH/CĐ hoặc có chứng chỉ tương đương về UI/UX.
+- Tiếng Anh giao tiếp tốt (làm việc trực tiếp với Product Owner nước ngoài).
+- Kỹ năng Figma tốt.
+
+Nộp hồ sơ: Gửi CV tiếng Anh và Portfolio về job@axonactive.com"""
+    },
+
+    # =========================================================================
+    # LĨNH VỰC MARKETING (DIGITAL MARKETING / CONTENT / SEO / SOCIAL MEDIA)
+    # =========================================================================
+    {
+        "id": "job_sun_digital_marketing_intern",
+        "title": "Digital Marketing Intern (SEO / Content Creator)",
+        "company": "Sun* Asterisk",
+        "market": "vietnam",
+        "category": "marketing",
+        "location": "Đà Nẵng",
+        "work_mode": "hybrid",
+        "employment_type": "internship",
+        "platform_source": "TopCV & Sun* Portal",
+        "source": "https://sun-asterisk.vn/careers/digital-marketing-intern",
+        "match_score": 93,
+        "hr_email": "recruitment-vn@sun-asterisk.com",
+        "apply_channel": "email",
+        "raw_jd": """SUN* ASTERISK ĐÀ NẴNG: TUYỂN DỤNG DIGITAL MARKETING INTERN
+Địa điểm: Tòa nhà Bưu điện Đà Nẵng, 271 Nguyễn Văn Linh, Quận Thanh Khê, Đà Nẵng.
+Hình thức: Thực tập sinh (Hỗ trợ lịch học, làm việc kết hợp linh hoạt Hybrid).
+
+Nhiệm vụ:
+- Viết bài chuẩn SEO, sáng tạo nội dung cho Blog công nghệ và mạng xã hội của Sun*.
+- Lập kế hoạch nội dung hàng tuần, nghiên cứu từ khóa (Keyword Research) bằng Ahrefs/Semrush.
+- Hỗ trợ triển khai các chiến dịch Email Marketing và tối ưu hóa chuyển đổi landing page.
+- Đo lường và báo cáo hiệu quả chiến dịch bằng Google Analytics và Search Console.
+
+Yêu cầu ứng viên:
+- Sinh viên chuyên ngành Marketing, Truyền thông, Kinh tế hoặc CNTT có đam mê Marketing.
+- Kỹ năng viết tốt, diễn đạt mạch lạc, tư duy sáng tạo.
+- Biết cơ bản về SEO, WordPress, Canva là lợi thế.
+- Tinh thần học hỏi và chủ động trong công việc.
+
+Quyền lợi:
+- Phụ cấp thực tập từ 3.500.000đ - 6.000.000đ/tháng + Thưởng dự án.
+- Môi trường làm việc mở, văn hóa phẳng chuẩn Nhật Bản.
+- Được đào tạo chuyên sâu về Inbound Marketing và SEO thực chiến.
+
+Hồ sơ ứng tuyển gửi về: recruitment-vn@sun-asterisk.com"""
+    },
+    {
+        "id": "job_techcombank_content_marketing",
+        "title": "Thực tập sinh Content Marketing & Truyền thông Kỹ thuật số",
+        "company": "Techcombank",
+        "market": "vietnam",
+        "category": "marketing",
+        "location": "Hà Nội",
+        "work_mode": "onsite",
+        "employment_type": "internship",
+        "platform_source": "TopCV & Techcombank Careers",
+        "source": "https://techcombankjobs.com/job/content-intern",
+        "match_score": 92,
+        "hr_email": "tuyendung@techcombank.com.vn",
+        "apply_channel": "email",
+        "raw_jd": """TECHCOMBANK - CHƯƠNG TRÌNH THỰC TẬP SINH MARKETING TÀI CHÍNH SỐ
+Địa điểm: Techcombank Head Office, 6 Quang Trung, Hoàn Kiếm, Hà Nội.
+Hình thức: Toàn thời gian / Thực tập sinh 3-6 tháng.
+
+Mô tả công việc:
+- Sáng tạo bài viết, nội dung truyền thông cho các tính năng ngân hàng số Techcombank Mobile.
+- Tham gia xây dựng kịch bản video ngắn, bài viết social media, thông cáo báo chí.
+- Phối hợp cùng đội ngũ Media & Graphic Design để sản xuất nội dung hình ảnh/video chất lượng cao.
+- Theo dõi xu hướng tài chính công nghệ (Fintech) để đề xuất ý tưởng tương tác mới.
+
+Yêu cầu:
+- Sinh viên năm cuối hoặc mới tốt nghiệp khối ngành Kinh tế, Báo chí, Ngoại thương, Marketing.
+- Khả năng ngôn ngữ tiếng Việt và tiếng Anh tốt.
+- Tư duy mạch lạc, có trách nhiệm cao.
+
+Ứng tuyển trực tiếp: tuyendung@techcombank.com.vn với tiêu đề: [Techcombank] Content Intern - Họ Tên."""
+    },
+    {
+        "id": "job_vti_performance_marketing",
+        "title": "Performance Marketing Executive (Google Ads / Facebook Ads)",
+        "company": "VTI Group",
+        "market": "vietnam",
+        "category": "marketing",
+        "location": "Hà Nội",
+        "work_mode": "onsite",
+        "employment_type": "full_time",
+        "platform_source": "TopCV & VTI Careers",
+        "source": "https://vti.com.vn/careers/performance-marketing",
+        "match_score": 90,
+        "hr_email": "hr@vti.com.vn",
+        "apply_channel": "email",
+        "raw_jd": """VTI GROUP TUYỂN DỤNG: PERFORMANCE MARKETING CHUYÊN NGHIỆP
+Địa điểm: Tòa nhà Sông Đà, Mễ Trì, Nam Từ Liêm, Hà Nội.
+Hình thức: Toàn thời gian.
+
+Trách nhiệm:
+- Lên kế hoạch và trực tiếp cài đặt, tối ưu hóa các chiến dịch quảng cáo Google Ads (Search, Display, Performance Max) và Meta Ads.
+- Quản lý ngân sách quảng cáo, theo dõi chỉ số ROI, CPA, CPL chặt chẽ.
+- Phối hợp sản xuất creative (banner, video script) để thử nghiệm phân tách A/B testing.
+
+Yêu cầu:
+- Tối thiểu 6 tháng - 2 năm kinh nghiệm chạy quảng cáo số (chấp nhận ứng viên Fresher có thành tích chạy ads ấn tượng).
+- Hiểu sâu về cấu trúc tài khoản, pixel, tracking conversion.
+- Kỹ năng phân tích số liệu nhạy bén.
+
+Gửi CV về: hr@vti.com.vn"""
+    },
+    {
+        "id": "job_cmc_social_media_parttime",
+        "title": "Social Media & Brand Marketing Intern (Bán thời gian / Part-time)",
+        "company": "CMC Corporation",
+        "market": "vietnam",
+        "category": "marketing",
+        "location": "Hà Nội",
+        "work_mode": "hybrid",
+        "employment_type": "part_time",
+        "platform_source": "TopCV & CMC Portal",
+        "source": "https://cmc.com.vn/tuyen-dung/parttime-social-marketing",
+        "match_score": 92,
+        "hr_email": "tuyendung@cmc.com.vn",
+        "apply_channel": "email",
+        "raw_jd": """TẬP ĐOÀN CÔNG NGHỆ CMC: TUYỂN DỤNG BÁN THỜI GIAN MARKETING & SOCIAL MEDIA
+Địa điểm: Tòa nhà CMC, Duy Tân, Cầu Giấy, Hà Nội.
+Hình thức: Bán thời gian (Part-time / 20-25h/tuần, hỗ trợ sinh viên).
+
+Công việc:
+- Quản trị kênh truyền thông Fanpage, LinkedIn của CMC Corp.
+- Lên ý tưởng bài đăng, minigame, phỏng vấn nhân vật công nghệ nội bộ.
+- Tương tác với cộng đồng người theo dõi, hỗ trợ trả lời tin nhắn và bình luận.
+
+Yêu cầu:
+- Sinh viên đang theo học tại Hà Nội, có kỹ năng viết lách tốt.
+- Nhanh nhẹn, nắm bắt trend mạng xã hội.
+
+Quyền lợi:
+- Lương bán thời gian hấp dẫn theo giờ/tháng.
+- Nhận dấu thực tập và giấy chứng nhận từ tập đoàn công nghệ hàng đầu.
+
+Hồ sơ gửi về: tuyendung@cmc.com.vn"""
+    },
+    {
+        "id": "job_noventiq_marketing_remote",
+        "title": "Digital Marketing Specialist (Làm việc từ xa / Remote Toàn quốc)",
+        "company": "Noventiq Vietnam",
+        "market": "vietnam",
+        "category": "marketing",
+        "location": "Remote / Toàn quốc",
+        "work_mode": "remote",
+        "employment_type": "full_time",
+        "platform_source": "LinkedIn & Noventiq Careers",
+        "source": "https://noventiq.com/careers/digital-marketing-remote",
+        "match_score": 91,
+        "hr_email": "vietnam.recruitment@noventiq.com",
+        "apply_channel": "email",
+        "raw_jd": """NOVENTIQ GLOBAL DIGITAL TRANSFORMATION: DIGITAL MARKETING SPECIALIST
+Location: Remote (Vietnam nationwide).
+Employment Type: Full-time.
+
+Responsibilities:
+- Drive lead generation and brand awareness campaigns for enterprise cloud & cybersecurity solutions.
+- Execute multi-channel marketing campaigns: webinars, email newsletters, LinkedIn thought leadership.
+- Coordinate with regional marketing team across APAC.
+
+Requirements:
+- Proven experience in B2B marketing, tech sector preferred.
+- Fluent English proficiency (written & spoken).
+- Self-motivated and comfortable working remotely.
+
+Apply via email: vietnam.recruitment@noventiq.com"""
+    },
+    {
+        "id": "job_viettel_content_seo",
+        "title": "Content Marketing & SEO Specialist (Viettel Digital)",
+        "company": "Viettel Digital",
+        "market": "vietnam",
+        "category": "marketing",
+        "location": "Hà Nội",
+        "work_mode": "onsite",
+        "employment_type": "full_time",
+        "platform_source": "TopCV & Viettel Careers",
+        "source": "https://tuyendung.viettel.vn/job/content-seo-viettel-digital",
+        "match_score": 93,
+        "hr_email": "vcs.care@viettel.com.vn",
+        "apply_channel": "email",
+        "raw_jd": """TỔNG CÔNG TY DỊCH VỤ SỐ VIETTEL (VIETTEL DIGITAL) TUYỂN DỤNG:
+Vị trí: Chuyên viên Content Marketing & SEO (Viettel Money)
+Địa điểm: Tòa nhà Viettel, Trần Hữu Dực, Nam Từ Liêm, Hà Nội.
+
+Mô tả:
+- Xây dựng chiến lược nội dung và thực thi tối ưu hóa SEO onpage/offpage cho cổng thông tin Viettel Money.
+- Viết bài PR, bài phân tích chuyên sâu về thanh toán điện tử và tài chính số.
+- Phối hợp cùng các đối tác truyền thông lớn để lan tỏa thông điệp sản phẩm.
+
+Yêu cầu:
+- Tốt nghiệp ĐH chuyên ngành Marketing, Báo chí hoặc CNTT.
+- Am hiểu thuật toán tìm kiếm của Google, có kinh nghiệm đưa từ khóa lên top.
+
+Gửi CV về: vcs.care@viettel.com.vn"""
+    },
+
+    # =========================================================================
+    # CÔNG VIỆC THEO KHU VỰC CHI TIẾT (CẦN THƠ, HẢI PHÒNG, FREELANCE REMOTE)
+    # =========================================================================
+    {
+        "id": "job_fpt_cantho_marketing_intern",
+        "title": "Thực tập sinh Marketing & Phát triển Thị trường Miền Tây",
+        "company": "FPT Telecom Cần Thơ",
+        "market": "vietnam",
+        "category": "marketing",
+        "location": "Cần Thơ",
+        "work_mode": "onsite",
+        "employment_type": "internship",
+        "platform_source": "TopCV & FPT Careers",
+        "source": "https://fpt.vn/tuyen-dung/cantho-marketing-intern",
+        "match_score": 91,
+        "hr_email": "recruitment@fpt.com",
+        "apply_channel": "email",
+        "raw_jd": """FPT TELECOM CẦN THƠ: TUYỂN DỤNG THỰC TẬP SINH MARKETING
+Địa điểm: Đường 30 Tháng 4, Phường Hưng Lợi, Quận Ninh Kiều, Cần Thơ.
+Hình thức: Thực tập sinh / Hỗ trợ bán thời gian theo lịch học.
+
+Công việc:
+- Hỗ trợ triển khai các chương trình activation, sự kiện giới thiệu dịch vụ Internet & Camera FPT tại Cần Thơ.
+- Sáng tạo bài đăng mạng xã hội, quản lý tương tác trên các hội nhóm địa phương.
+- Hỗ trợ khảo sát nhu cầu khách hàng tại khu vực Đồng bằng Sông Cửu Long.
+
+Hồ sơ gửi về: recruitment@fpt.com"""
+    },
+    {
+        "id": "job_lg_haiphong_it_parttime",
+        "title": "IT Support & Quản trị Hệ thống (Bán thời gian / Part-time)",
+        "company": "LG Innotek Hải Phòng",
+        "market": "vietnam",
+        "category": "tech",
+        "location": "Hải Phòng",
+        "work_mode": "onsite",
+        "employment_type": "part_time",
+        "platform_source": "TopCV & LG Careers",
+        "source": "https://lginnotek.com/careers/haiphong-it-support",
+        "match_score": 92,
+        "hr_email": "tuyendung@cmc.com.vn",
+        "apply_channel": "email",
+        "raw_jd": """LG INNOTEK HẢI PHÒNG: TUYỂN DỤNG BÁN THỜI GIAN IT SUPPORT
+Địa điểm: KCN Tràng Duệ, Huyện An Dương, Hải Phòng.
+Hình thức: Bán thời gian / Theo ca linh hoạt.
+
+Công việc:
+- Hỗ trợ xử lý sự cố máy tính, máy in, mạng LAN tại khu vực văn phòng và nhà xưởng.
+- Cài đặt phần mềm, kiểm tra phân quyền tài khoản người dùng nội bộ.
+
+Yêu cầu:
+- Sinh viên các trường ĐH/CĐ tại Hải Phòng (ĐH Hàng hải, ĐH Hải Phòng...).
+- Nhiệt tình, có trách nhiệm.
+
+Hồ sơ gửi về: tuyendung@cmc.com.vn"""
+    },
+    {
+        "id": "job_freehire_remote_uiux_freelance",
+        "title": "Freelance UI/UX & Web Designer (Project-based / Theo dự án)",
+        "company": "Freehire Global",
+        "market": "freelance",
+        "category": "design",
+        "location": "Remote / Toàn quốc",
+        "work_mode": "remote",
+        "employment_type": "freelance",
+        "platform_source": "Freehire Portal",
+        "source": "https://freehire.org/jobs/ui-ux-contract",
+        "match_score": 94,
+        "hr_email": "contracts@freehire.org",
+        "apply_channel": "email",
+        "raw_jd": """FREEHIRE FREELANCE OPPORTUNITY: UI/UX & WEB DESIGNER (PROJECT-BASED)
+Location: 100% Remote (Worldwide / APAC).
+Type: Freelance / Contract / Project-based.
+
+Scope:
+- Design landing pages and web apps for client startups in Singapore, Japan, and Vietnam.
+- Deliver production-ready Figma files with mobile responsive layouts.
+- Payment per milestone upon delivery approval.
+
+Requirements:
+- Proven UI design skills with Figma portfolio.
+- Reliable communication and deadline commitment.
+
+Send proposal and portfolio to: contracts@freehire.org"""
+    },
+    {
+        "id": "job_freehire_content_writer_freelance",
+        "title": "Freelance Content Writer & Copywriter (Song ngữ Anh - Việt)",
+        "company": "Freehire Global",
+        "market": "freelance",
+        "category": "marketing",
+        "location": "Remote / Toàn quốc",
+        "work_mode": "remote",
+        "employment_type": "freelance",
+        "platform_source": "Freehire Portal",
+        "source": "https://freehire.org/jobs/content-writer-contract",
+        "match_score": 93,
+        "hr_email": "editorial@freehire.org",
+        "apply_channel": "email",
+        "raw_jd": """FREEHIRE FREELANCE: BILINGUAL CONTENT WRITER & COPYWRITER (VIETNAMESE - ENGLISH)
+Location: Remote.
+Type: Freelance / Project-based / Part-time.
+
+Scope of Work:
+- Write tech blogs, landing page copywriting, and press releases for innovative tech ventures.
+- Research industry topics and draft well-structured articles in Vietnamese and English.
+- Flexible working hours, output-based compensation.
+
+Apply with writing samples: editorial@freehire.org"""
     }
 ]
 
 
-def get_all_multi_platform_jobs() -> List[Dict[str, Any]]:
+def get_all_multi_platform_jobs(
+    category: Optional[str] = None,
+    location: Optional[str] = None,
+    work_mode: Optional[str] = None,
+    employment_type: Optional[str] = None,
+    query: Optional[str] = None
+) -> List[Dict[str, Any]]:
     """
-    Returns the enriched multi-platform verified job catalog.
-    All jobs are guaranteed to have real, active HR recruitment emails or direct portal application links.
+    Returns the enriched multi-platform verified job catalog with full multi-domain filtering:
+    - category: design, marketing, security, tech, sales, all
+    - location: danang, hanoi, hcm, cantho, haiphong, remote, korea, all
+    - work_mode: remote, hybrid, onsite, all
+    - employment_type: internship, full_time, part_time, freelance, all
+    - query: free text keyword matching across title, company, description
     """
-    return list(VERIFIED_PLATFORM_JOBS)
+    results = list(VERIFIED_PLATFORM_JOBS)
+
+    if category and category != "all":
+        cat_lower = category.lower()
+        results = [
+            j for j in results
+            if j.get("category", "").lower() == cat_lower
+            or cat_lower in j.get("title", "").lower()
+            or cat_lower in j.get("raw_jd", "").lower()
+        ]
+
+    if location and location != "all":
+        loc_map = {
+            "danang": ["đà nẵng", "da nang", "danang"],
+            "hanoi": ["hà nội", "ha noi", "hanoi"],
+            "hcm": ["hồ chí minh", "ho chi minh", "hcm", "sài gòn", "saigon"],
+            "cantho": ["cần thơ", "can tho"],
+            "haiphong": ["hải phòng", "hai phong"],
+            "remote": ["remote", "từ xa", "toàn quốc"],
+            "korea": ["hàn quốc", "korea", "seoul"]
+        }
+        loc_terms = loc_map.get(location.lower(), [location.lower()])
+        results = [
+            j for j in results
+            if any(term in (j.get("location", "") + " " + j.get("raw_jd", "")).lower() for term in loc_terms)
+        ]
+
+    if work_mode and work_mode != "all":
+        wm_lower = work_mode.lower()
+        results = [
+            j for j in results
+            if j.get("work_mode", "").lower() == wm_lower
+            or wm_lower in (j.get("location", "") + " " + j.get("raw_jd", "")).lower()
+        ]
+
+    if employment_type and employment_type != "all":
+        emp_lower = employment_type.lower()
+        results = [
+            j for j in results
+            if j.get("employment_type", "").lower() == emp_lower
+            or emp_lower in (j.get("title", "") + " " + j.get("raw_jd", "")).lower()
+        ]
+
+    if query:
+        q_terms = [t for t in query.lower().split() if len(t) > 1]
+        if q_terms:
+            results = [
+                j for j in results
+                if any(term in (j.get("title", "") + " " + j.get("company", "") + " " + j.get("raw_jd", "")).lower() for term in q_terms)
+            ]
+
+    return results

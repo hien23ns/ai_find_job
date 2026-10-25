@@ -200,11 +200,23 @@ async def update_profile(request: Request):
 async def list_jobs(
     market: Optional[str] = None,
     status: Optional[str] = None,
+    category: Optional[str] = None,
+    location: Optional[str] = None,
+    work_mode: Optional[str] = None,
+    employment_type: Optional[str] = None,
     q: Optional[str] = None,
     only_email: bool = False
 ):
     db = DatabaseManager()
-    raw_jobs = db.list_jobs(market=market, status=status, search_query=q)
+    raw_jobs = db.list_jobs(
+        market=market,
+        status=status,
+        category=category,
+        location=location,
+        work_mode=work_mode,
+        employment_type=employment_type,
+        search_query=q
+    )
     enriched = []
     for j in raw_jobs:
         hr_email = sanitize_email(find_hr_email(company=j.get("company", ""), raw_jd=j.get("raw_jd", ""), source_url=j.get("source", "")))
@@ -304,18 +316,57 @@ async def get_job_detail(job_id: str):
 @app.post("/api/jobs/search")
 async def execute_job_search(request: Request):
     payload = await request.json()
-    keywords = (payload.get("keywords") or "Cyber Security Intern").strip()
+    keywords = (payload.get("keywords") or "").strip()
     market = payload.get("market", "vietnam")
-    limit = int(payload.get("limit", 10))
+    limit = int(payload.get("limit", 15))
+    category = payload.get("category", "all")
+    loc_filter = payload.get("location", "all")
+    work_mode = payload.get("work_mode", "all")
+    employment_type = payload.get("employment_type", "all")
 
     db = DatabaseManager()
     searcher = JobSearcher()
 
-    location = "Vietnam"
-    if market == "korea":
-        location = "South Korea"
+    # Determine default keywords if user left it blank
+    effective_keywords = keywords
+    if not effective_keywords:
+        if category == "design":
+            effective_keywords = "UI/UX Graphic Designer"
+        elif category == "marketing":
+            effective_keywords = "Digital Marketing Content Creator"
+        elif category == "it":
+            effective_keywords = "Software Developer CNTT"
+        elif category == "security":
+            effective_keywords = "Cyber Security SOC Analyst"
+        elif category == "sales":
+            effective_keywords = "Business Development Sales"
+        else:
+            effective_keywords = "Thực tập sinh Intern"
+
+    # Geo location for live search
+    location_str = "Vietnam"
+    if loc_filter == "danang":
+        location_str = "Da Nang, Vietnam"
+    elif loc_filter == "hanoi":
+        location_str = "Hanoi, Vietnam"
+    elif loc_filter == "hcm":
+        location_str = "Ho Chi Minh City, Vietnam"
+    elif loc_filter == "cantho":
+        location_str = "Can Tho, Vietnam"
+    elif loc_filter == "haiphong":
+        location_str = "Hai Phong, Vietnam"
+    elif loc_filter == "remote" or work_mode == "remote":
+        location_str = "Remote"
+    elif market == "korea" or loc_filter == "korea":
+        location_str = "South Korea"
     elif market == "freelance":
-        location = "Remote"
+        location_str = "Remote"
+
+    live_query = effective_keywords
+    if work_mode == "remote" and "remote" not in live_query.lower():
+        live_query += " Remote"
+    if employment_type == "parttime" and "part" not in live_query.lower():
+        live_query += " Part-time"
 
     candidate_profile = CANDIDATE_FILE if CANDIDATE_FILE.exists() else (PROJECT_ROOT / "data" / "candidates" / "candidate_mock.json")
 
@@ -325,8 +376,8 @@ async def execute_job_search(request: Request):
     # Source A: Live Active Search (LinkedIn Guest API - Verifying isActive == True)
     try:
         live_linkedin = searcher.search_live_active_jobs(
-            query=keywords,
-            location=location,
+            query=live_query,
+            location=location_str,
             limit=limit,
             market=market,
             candidate_profile_path=candidate_profile
@@ -340,27 +391,28 @@ async def execute_job_search(request: Request):
     # Source B: Multi-Platform Tech Catalog (TopCV, ITviec, VietnamWorks, CareerViet, Direct Enterprise Portals)
     try:
         from src.multi_platform_searcher import get_all_multi_platform_jobs
-        platform_jobs = get_all_multi_platform_jobs()
-        kw_lower = keywords.lower()
+        platform_jobs = get_all_multi_platform_jobs(
+            category=category,
+            location=loc_filter,
+            work_mode=work_mode,
+            employment_type=employment_type,
+            query=keywords if keywords else None
+        )
         for pj in platform_jobs:
-            text_to_match = (pj.get("title", "") + " " + pj.get("company", "") + " " + pj.get("raw_jd", "")).lower()
-            # Match keywords or include relevant technical student/intern roles
-            matches = any(term in text_to_match for term in kw_lower.split()) or any(k in text_to_match for k in ["intern", "security", "network", "cloud", "soc"])
-            if matches:
-                pj_copy = dict(pj)
-                pj_copy["source_platform"] = pj.get("platform_source", "TopCV / ITviec / Doanh nghiệp")
-                pj_copy["description"] = pj.get("raw_jd", "")
-                pj_copy["url"] = pj.get("source", "")
-                pj_copy["is_live"] = True
-                pj_copy["is_active"] = True
-                aggregated_jobs.append(pj_copy)
+            pj_copy = dict(pj)
+            pj_copy["source_platform"] = pj.get("platform_source", "TopCV / ITviec / Doanh nghiệp")
+            pj_copy["description"] = pj.get("raw_jd", "")
+            pj_copy["url"] = pj.get("source", "")
+            pj_copy["is_live"] = True
+            pj_copy["is_active"] = True
+            aggregated_jobs.append(pj_copy)
     except Exception as e:
         print(f"Notice: Multi-platform catalog: {e}")
 
-    # Source C: Freehire (if market is freelance or remote)
-    if market == "freelance" or "remote" in keywords.lower():
+    # Source C: Freehire (if market is freelance or remote requested)
+    if market == "freelance" or work_mode == "remote" or loc_filter == "remote" or "remote" in effective_keywords.lower():
         try:
-            freehire_jobs = searcher.search_freehire(query=keywords, region="apac", limit=limit, remote="remote")
+            freehire_jobs = searcher.search_freehire(query=effective_keywords, region="apac", limit=limit, remote="remote")
             for fj in freehire_jobs:
                 fj["source_platform"] = "Freehire (Remote / APAC)"
                 aggregated_jobs.append(fj)
@@ -373,7 +425,7 @@ async def execute_job_search(request: Request):
     unique_to_import = []
     for j in aggregated_jobs:
         company = (j.get("company") or "Chưa rõ").strip()
-        title = (j.get("title") or keywords).strip()
+        title = (j.get("title") or effective_keywords).strip()
         url = (j.get("url") or j.get("source") or "").strip()
         ck = get_canonical_job_key(company, title, url)
         if ck not in seen_keys:
@@ -400,7 +452,7 @@ async def execute_job_search(request: Request):
     for j in unique_to_import:
         j_id = j.get("id") or f"job_{secrets.token_hex(4)}"
         company = j.get("company", "Công ty chưa rõ")
-        title = j.get("title", keywords)
+        title = j.get("title", effective_keywords)
         desc = j.get("description") or j.get("raw_jd") or ""
 
         db.save_job({
@@ -414,6 +466,10 @@ async def execute_job_search(request: Request):
             "notes": f"🟢 Tin tuyển dụng thực tế đang tuyển | Nguồn: {j.get('source_platform', 'Đa nền tảng')}",
             "canonical_key": j.get("canonical_key", f"{company}_{title}".lower().replace(" ", "_")),
             "raw_jd": desc,
+            "category": j.get("category"),
+            "location": j.get("location"),
+            "work_mode": j.get("work_mode"),
+            "employment_type": j.get("employment_type"),
             "created_at": now,
             "updated_at": now
         })

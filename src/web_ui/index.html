@@ -228,27 +228,89 @@
       <section class="page-section" id="sec-search">
         <div class="card">
           <div class="card-header">
-            <div class="card-title">Bộ lọc & Tìm kiếm việc làm</div>
-            <button class="btn btn-primary" id="btn-run-search">Tìm kiếm việc ngay</button>
+            <div class="card-title">Bộ lọc & Tìm kiếm việc làm Đa ngành & Đa khu vực</div>
+            <button class="btn btn-primary" id="btn-run-search">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              Tìm kiếm việc ngay
+            </button>
           </div>
           <div class="card-body">
-            <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:16px;">
-              <div class="form-group">
-                <label class="form-label">Từ khóa kỹ năng / Vị trí</label>
-                <input type="text" class="form-control" id="search-keywords" value="cloud devops intern">
+            <!-- 1. Thanh chọn nhanh Ngành nghề (Quick Category Pills) -->
+            <div style="margin-bottom:12px;">
+              <label class="form-label" style="margin-bottom:8px;">Chọn nhanh Lĩnh vực nghề nghiệp:</label>
+              <div class="category-pills-row" id="quick-category-pills">
+                <button type="button" class="category-pill active" data-category="all" onclick="selectQuickCategory('all')">🌐 Tất cả lĩnh vực</button>
+                <button type="button" class="category-pill" data-category="design" onclick="selectQuickCategory('design')">🎨 Thiết kế (UI/UX, Graphic, 2D/3D)</button>
+                <button type="button" class="category-pill" data-category="marketing" onclick="selectQuickCategory('marketing')">📢 Marketing & Content Creator</button>
+                <button type="button" class="category-pill" data-category="security" onclick="selectQuickCategory('security')">🛡️ An ninh mạng & Bảo mật (SOC/Infosec)</button>
+                <button type="button" class="category-pill" data-category="it" onclick="selectQuickCategory('it')">💻 Công nghệ thông tin & Phần mềm</button>
+                <button type="button" class="category-pill" data-category="sales" onclick="selectQuickCategory('sales')">💼 Kinh doanh & Sales</button>
               </div>
-              <div class="form-group">
-                <label class="form-label">Thị trường</label>
-                <select class="form-control" id="search-market">
-                  <option value="vietnam">Việt Nam</option>
-                  <option value="korea">Hàn Quốc (Xác minh visa)</option>
-                  <option value="freelance">Freelance / Dự án</option>
+            </div>
+
+            <!-- 2. Hàng bộ lọc đa chiều (Category, Keywords, Location, Work Mode, Employment Type, Market) -->
+            <div style="display:grid; grid-template-columns: 2fr 1.2fr 1.2fr; gap:14px; margin-bottom:12px;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Từ khóa vị trí / kỹ năng</label>
+                <input type="text" class="form-control" id="search-keywords" placeholder="VD: UI/UX, Graphic Designer, Digital Marketing, Thực tập sinh...">
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Lĩnh vực chuyên môn</label>
+                <select class="form-control" id="search-category" onchange="onCategorySelectChange()">
+                  <option value="all">🌐 Tất cả lĩnh vực</option>
+                  <option value="design">🎨 Thiết kế (UI/UX, Graphic Design, 2D/3D)</option>
+                  <option value="marketing">📢 Marketing, Content & Truyền thông</option>
+                  <option value="security">🛡️ An toàn thông tin & An ninh mạng</option>
+                  <option value="it">💻 Công nghệ thông tin / Lập trình</option>
+                  <option value="sales">💼 Kinh doanh / Sales / CSKH</option>
                 </select>
               </div>
-              <div class="form-group">
-                <label class="form-label">Giới hạn mỗi cổng (Limit)</label>
-                <input type="number" class="form-control" id="search-limit" value="3" min="1" max="10">
-                <small style="color:#64748b; font-size:11px;">*Giới hạn mỗi truy vấn, không phải tổng kết quả</small>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Khu vực làm việc chi tiết</label>
+                <select class="form-control" id="search-location" onchange="applyFilters()">
+                  <option value="all">📍 Tất cả khu vực</option>
+                  <option value="danang">📍 Đà Nẵng</option>
+                  <option value="hanoi">📍 Hà Nội</option>
+                  <option value="hcm">📍 TP. Hồ Chí Minh</option>
+                  <option value="cantho">📍 Cần Thơ & Miền Tây</option>
+                  <option value="haiphong">📍 Hải Phòng & Miền Bắc</option>
+                  <option value="remote">🏠 Remote / Làm việc từ xa</option>
+                  <option value="international">🌏 Quốc tế / Hàn Quốc</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 0.8fr; gap:14px;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Hình thức làm việc</label>
+                <select class="form-control" id="search-work-mode" onchange="applyFilters()">
+                  <option value="all">🏢 Tất cả hình thức</option>
+                  <option value="remote">🏠 Làm từ xa (Remote / WFH 100%)</option>
+                  <option value="hybrid">🔄 Linh hoạt (Hybrid)</option>
+                  <option value="onsite">🏢 Tại văn phòng (On-site)</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Loại hình công việc</label>
+                <select class="form-control" id="search-employment-type" onchange="applyFilters()">
+                  <option value="all">⏳ Tất cả loại hình</option>
+                  <option value="fulltime">⏰ Toàn thời gian (Full-time)</option>
+                  <option value="parttime">⏳ Bán thời gian (Part-time)</option>
+                  <option value="internship">🎓 Thực tập sinh (Internship)</option>
+                  <option value="freelance">💼 Freelance / Theo dự án</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Thị trường nguồn</label>
+                <select class="form-control" id="search-market">
+                  <option value="vietnam">Việt Nam (Đa nền tảng)</option>
+                  <option value="korea">Hàn Quốc (Xác minh visa)</option>
+                  <option value="freelance">Freelance / Quốc tế</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Giới hạn quét</label>
+                <input type="number" class="form-control" id="search-limit" value="5" min="1" max="25">
               </div>
             </div>
           </div>
@@ -257,22 +319,28 @@
         <div class="card">
           <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
             <div class="card-title">Kết quả việc làm tìm thấy (<span id="search-total-count">0</span> việc)</div>
-            <div style="display:flex; gap:8px;">
-              <button class="btn btn-secondary btn-sm filter-job-btn active" id="btn-filter-all" onclick="filterJobsList('all')">🔘 Tất cả</button>
-              <button class="btn btn-secondary btn-sm filter-job-btn" id="btn-filter-email" onclick="filterJobsList('email')" style="background:#f0fdf4; border-color:#86efac; color:#15803d; font-weight:700;">✉️ Ưu tiên có Email HR (Gửi 1-click)</button>
-              <button class="btn btn-secondary btn-sm filter-job-btn" id="btn-filter-form" onclick="filterJobsList('form')" style="background:#fefce8; border-color:#fde047; color:#854d0e; font-weight:600;">🌐 Nộp qua Form / Link</button>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;" id="filter-chips-container">
+              <button class="quick-filter-chip active" id="btn-filter-all" onclick="filterJobsList('all')">🔘 Tất cả</button>
+              <button class="quick-filter-chip" id="btn-filter-remote" onclick="filterJobsList('remote')" style="background:#f0fdf4; border-color:#86efac; color:#15803d;">🏠 Remote (Làm từ xa)</button>
+              <button class="quick-filter-chip" id="btn-filter-parttime" onclick="filterJobsList('parttime')" style="background:#fffbeb; border-color:#fde68a; color:#b45309;">⏳ Part-time (Bán thời gian)</button>
+              <button class="quick-filter-chip" id="btn-filter-design" onclick="filterJobsList('design')" style="background:#fdf2f8; border-color:#fbcfe8; color:#be185d;">🎨 Thiết kế</button>
+              <button class="quick-filter-chip" id="btn-filter-marketing" onclick="filterJobsList('marketing')" style="background:#fff7ed; border-color:#fed7aa; color:#c2410c;">📢 Marketing</button>
+              <button class="quick-filter-chip" id="btn-filter-danang" onclick="filterJobsList('danang')" style="background:#eff6ff; border-color:#bfdbfe; color:#1d4ed8;">📍 Đà Nẵng</button>
+              <button class="quick-filter-chip" id="btn-filter-email" onclick="filterJobsList('email')" style="background:#ecfdf5; border-color:#a7f3d0; color:#047857; font-weight:700;">✉️ Có Email HR (Gửi 1-click)</button>
+              <button class="quick-filter-chip" id="btn-filter-form" onclick="filterJobsList('form')" style="background:#fefce8; border-color:#fde047; color:#854d0e;">🌐 Form/Link</button>
             </div>
           </div>
           <div class="card-body" style="padding:0;">
             <table class="data-table" id="search-results-table">
               <thead>
                 <tr>
-                  <th>Công ty</th>
-                  <th>Vị trí tuyển dụng</th>
-                  <th>Phương thức nộp & Email HR</th>
+                  <th>Công ty & Khu vực</th>
+                  <th>Vị trí & Lĩnh vực</th>
+                  <th>Hình thức & Loại hình</th>
+                  <th>Kênh nộp & Email HR</th>
                   <th>Điểm Match</th>
                   <th>Trạng thái</th>
-                  <th>Thao tác ứng tuyển</th>
+                  <th>Thao tác</th>
                 </tr>
               </thead>
               <tbody>

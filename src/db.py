@@ -65,6 +65,15 @@ def init_database(db_path: Optional[Path] = None) -> None:
                         "INSERT INTO schema_version (version, applied_at) VALUES ('1.0', ?)",
                         (datetime.now().strftime("%Y-%m-%d %H:%M:%S"),)
                     )
+
+                # Check if v2.0 migration needed (category, location, work_mode, employment_type)
+                cur2 = conn.execute("SELECT version FROM schema_version WHERE version = '2.0'")
+                if not cur2.fetchone():
+                    _apply_migration_v2(conn)
+                    conn.execute(
+                        "INSERT INTO schema_version (version, applied_at) VALUES ('2.0', ?)",
+                        (datetime.now().strftime("%Y-%m-%d %H:%M:%S"),)
+                    )
         finally:
             conn.close()
 
@@ -165,6 +174,151 @@ def _apply_migration_v1(conn: sqlite3.Connection) -> None:
             "INSERT OR IGNORE INTO settings (key, value, updated_at) VALUES (?, ?, ?)",
             (k, v, now)
         )
+
+
+def infer_job_attributes(
+    title: str = "",
+    location: str = "",
+    raw_jd: str = "",
+    explicit_attrs: Optional[Dict[str, Any]] = None
+) -> Dict[str, str]:
+    """
+    Infers domain category, detailed location, work mode, and employment type.
+    """
+    explicit = explicit_attrs or {}
+    t_lower = (title or "").lower()
+    l_lower = (location or "").lower()
+    d_lower = (raw_jd or "").lower()
+    combined = f"{t_lower} {l_lower} {d_lower}"
+
+    # 1. Category (design, marketing, security, tech, sales, general)
+    category = explicit.get("category")
+    if not category or category in ["all", "general", ""]:
+        if any(k in t_lower or k in d_lower for k in [
+            "ui/ux", "ui-ux", "ux/ui", "graphic design", "thiết kế đồ họa", "thiết kế",
+            "figma", "photoshop", "illustrator", "creative", "product design", "2d", "3d", "motion"
+        ]):
+            category = "design"
+        elif any(k in t_lower or k in d_lower for k in [
+            "marketing", "truyền thông", "seo", "content", "copywriter", "facebook ads",
+            "google ads", "social media", "performance marketing", "growth", "quảng cáo"
+        ]):
+            category = "marketing"
+        elif any(k in t_lower or k in d_lower for k in [
+            "security", "an ninh mạng", "an toàn thông tin", "soc", "network", "mạng",
+            "cloud", "devops", "pentest", "siem", "firewall", "hạ tầng"
+        ]):
+            category = "security"
+        elif any(k in t_lower or k in d_lower for k in [
+            "developer", "lập trình", "software", "backend", "frontend", "fullstack",
+            "python", "java", "react", "flutter", "data", "engineer", "kỹ sư phần mềm"
+        ]):
+            category = "tech"
+        elif any(k in t_lower or k in d_lower for k in [
+            "sales", "kinh doanh", "bán hàng", "business development", "account executive"
+        ]):
+            category = "sales"
+        else:
+            category = "tech"
+
+    # 2. Detailed Location
+    loc_val = explicit.get("location")
+    if not loc_val or loc_val in ["all", "Toàn quốc", ""]:
+        if any(k in l_lower or k in d_lower or k in t_lower for k in ["đà nẵng", "da nang", "danang"]):
+            loc_val = "Đà Nẵng"
+        elif any(k in l_lower or k in d_lower or k in t_lower for k in ["hà nội", "ha noi", "hanoi"]):
+            loc_val = "Hà Nội"
+        elif any(k in l_lower or k in d_lower or k in t_lower for k in ["hồ chí minh", "ho chi minh", "hcm", "sài gòn", "saigon"]):
+            loc_val = "TP. Hồ Chí Minh"
+        elif any(k in l_lower or k in d_lower for k in ["cần thơ", "can tho"]):
+            loc_val = "Cần Thơ"
+        elif any(k in l_lower or k in d_lower for k in ["hải phòng", "hai phong"]):
+            loc_val = "Hải Phòng"
+        elif any(k in l_lower or k in d_lower for k in ["korea", "hàn quốc", "seoul"]):
+            loc_val = "Hàn Quốc"
+        elif any(k in l_lower or k in d_lower for k in ["remote", "từ xa", "wfh", "làm việc tại nhà"]):
+            loc_val = "Remote / Toàn quốc"
+        else:
+            loc_val = location if location else "Toàn quốc"
+
+    # 3. Work Mode (remote, hybrid, onsite)
+    work_mode = explicit.get("work_mode")
+    if not work_mode or work_mode in ["all", ""]:
+        if any(k in combined for k in ["remote", "từ xa", "wfh", "work from home", "làm việc tại nhà", "online"]):
+            work_mode = "remote"
+        elif any(k in combined for k in ["hybrid", "linh hoạt", "kết hợp"]):
+            work_mode = "hybrid"
+        else:
+            work_mode = "onsite"
+
+    # 4. Employment Type (internship, full_time, part_time, freelance)
+    emp_type = explicit.get("employment_type")
+    if not emp_type or emp_type in ["all", ""]:
+        if any(k in t_lower or k in d_lower for k in ["intern", "thực tập", "internship", "học việc", "fresher", "sinh viên"]):
+            emp_type = "internship"
+        elif any(k in combined for k in ["part-time", "part time", "bán thời gian", "bán tg", "theo ca", "ca gãy"]):
+            emp_type = "part_time"
+        elif any(k in combined for k in ["freelance", "dự án", "project-based", "cộng tác viên", "ctv", "contract"]):
+            emp_type = "freelance"
+        else:
+            emp_type = "full_time"
+
+    return {
+        "category": category,
+        "location": loc_val,
+        "work_mode": work_mode,
+        "employment_type": emp_type
+    }
+
+
+def _apply_migration_v2(conn: sqlite3.Connection) -> None:
+    """
+    Applies Schema Version 2.0: Adds multi-domain category, location, work_mode, and employment_type.
+    """
+    cols = [
+        ("category", "TEXT DEFAULT 'tech'"),
+        ("location", "TEXT DEFAULT 'Toàn quốc'"),
+        ("work_mode", "TEXT DEFAULT 'onsite'"),
+        ("employment_type", "TEXT DEFAULT 'full_time'")
+    ]
+    for col_name, col_def in cols:
+        try:
+            conn.execute(f"ALTER TABLE jobs ADD COLUMN {col_name} {col_def};")
+        except sqlite3.OperationalError:
+            pass  # Column already exists
+
+    # Backfill inferred attributes for existing jobs
+    try:
+        cur = conn.execute("SELECT id, title, notes, raw_jd, location, category, work_mode, employment_type FROM jobs")
+        rows = cur.fetchall()
+        for r in rows:
+            inferred = infer_job_attributes(
+                title=r["title"],
+                location=r["location"] if (r["location"] and r["location"] != "Toàn quốc") else (r["notes"] or ""),
+                raw_jd=r["raw_jd"] or "",
+                explicit_attrs={
+                    "category": r["category"],
+                    "location": r["location"],
+                    "work_mode": r["work_mode"],
+                    "employment_type": r["employment_type"]
+                }
+            )
+            conn.execute("""
+                UPDATE jobs SET
+                    category = ?,
+                    location = ?,
+                    work_mode = ?,
+                    employment_type = ?
+                WHERE id = ?
+            """, (
+                inferred["category"],
+                inferred["location"],
+                inferred["work_mode"],
+                inferred["employment_type"],
+                r["id"]
+            ))
+    except Exception as e:
+        print(f"Warning: Backfill migration v2.0: {e}")
 
 
 def migrate_tracker_json_to_db(
@@ -292,6 +446,10 @@ def sync_db_to_tracker_json(
                 "notes": r["notes"] or "",
                 "next_step": r["next_step"] or "",
                 "canonical_key": r["canonical_key"] or "",
+                "category": r["category"] if "category" in r.keys() else "tech",
+                "location": r["location"] if "location" in r.keys() else "Toàn quốc",
+                "work_mode": r["work_mode"] if "work_mode" in r.keys() else "onsite",
+                "employment_type": r["employment_type"] if "employment_type" in r.keys() else "full_time",
                 "created_at": r["created_at"],
                 "updated_at": r["updated_at"]
             }
@@ -363,22 +521,51 @@ class DatabaseManager:
         self,
         market: Optional[str] = None,
         status: Optional[str] = None,
-        search_query: Optional[str] = None
+        search_query: Optional[str] = None,
+        category: Optional[str] = None,
+        location: Optional[str] = None,
+        work_mode: Optional[str] = None,
+        employment_type: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         conn = get_connection(self.db_path)
         try:
             query = "SELECT * FROM jobs WHERE 1=1"
             params: List[Any] = []
-            if market:
+            if market and market != "all":
                 query += " AND market = ?"
                 params.append(market)
-            if status:
+            if status and status != "all":
                 query += " AND status = ?"
                 params.append(status)
+            if category and category != "all":
+                query += " AND category = ?"
+                params.append(category)
+            if location and location != "all":
+                loc_map = {
+                    "danang": ["%đà nẵng%", "%danang%", "%da nang%"],
+                    "hanoi": ["%hà nội%", "%hanoi%", "%ha noi%"],
+                    "hcm": ["%hồ chí minh%", "%hcm%", "%saigon%", "%ho chi minh%"],
+                    "cantho": ["%cần thơ%", "%can tho%"],
+                    "haiphong": ["%hải phòng%", "%hai phong%"],
+                    "remote": ["%remote%", "%từ xa%", "%wfh%"],
+                    "korea": ["%hàn quốc%", "%korea%", "%seoul%"],
+                    "international": ["%quốc tế%", "%korea%", "%seoul%", "%global%"]
+                }
+                patterns = loc_map.get(location.lower(), [f"%{location}%"])
+                loc_clause = " OR ".join(["location LIKE ?" for _ in patterns])
+                query += f" AND ({loc_clause})"
+                params.extend(patterns)
+            if work_mode and work_mode != "all":
+                query += " AND work_mode = ?"
+                params.append(work_mode)
+            if employment_type and employment_type != "all":
+                emp_clean = employment_type.replace("-", "").replace("_", "").lower()
+                query += " AND (REPLACE(REPLACE(employment_type, '-', ''), '_', '') = ?)"
+                params.append(emp_clean)
             if search_query:
-                query += " AND (title LIKE ? OR company LIKE ? OR notes LIKE ?)"
+                query += " AND (title LIKE ? OR company LIKE ? OR notes LIKE ? OR raw_jd LIKE ?)"
                 kw = f"%{search_query}%"
-                params.extend([kw, kw, kw])
+                params.extend([kw, kw, kw, kw])
             query += " ORDER BY updated_at DESC"
             cur = conn.execute(query, params)
             return [dict(r) for r in cur.fetchall()]
@@ -397,6 +584,22 @@ class DatabaseManager:
                 source = (job_data.get("source") or "").strip()
                 can_key = job_data.get("canonical_key") or get_canonical_job_key(company, title, source)
                 job_data["canonical_key"] = can_key
+
+                # Infer or respect domain attributes (category, location, work_mode, employment_type)
+                inferred = infer_job_attributes(
+                    title=title,
+                    location=job_data.get("location") or job_data.get("notes") or "",
+                    raw_jd=job_data.get("raw_jd", ""),
+                    explicit_attrs=job_data
+                )
+                category = inferred["category"]
+                location = inferred["location"]
+                work_mode = inferred["work_mode"]
+                employment_type = inferred["employment_type"]
+                job_data["category"] = category
+                job_data["location"] = location
+                job_data["work_mode"] = work_mode
+                job_data["employment_type"] = employment_type
 
                 # Collision-resistant deduplication across searches:
                 # Check by ID, canonical_key, or normalized (company, title)
@@ -427,8 +630,10 @@ class DatabaseManager:
                         INSERT INTO jobs (
                             id, title, company, market, source, match_score,
                             status, application_date, notes, next_step,
-                            canonical_key, raw_jd, evidence, created_at, updated_at
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            canonical_key, raw_jd, evidence,
+                            category, location, work_mode, employment_type,
+                            created_at, updated_at
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         ON CONFLICT(id) DO UPDATE SET
                             title=excluded.title,
                             company=excluded.company,
@@ -442,6 +647,10 @@ class DatabaseManager:
                             canonical_key=excluded.canonical_key,
                             raw_jd=excluded.raw_jd,
                             evidence=excluded.evidence,
+                            category=excluded.category,
+                            location=excluded.location,
+                            work_mode=excluded.work_mode,
+                            employment_type=excluded.employment_type,
                             updated_at=excluded.updated_at
                     """, (
                         target_id,
@@ -457,6 +666,10 @@ class DatabaseManager:
                         can_key,
                         job_data.get("raw_jd", ""),
                         job_data.get("evidence", ""),
+                        category,
+                        location,
+                        work_mode,
+                        employment_type,
                         created_at,
                         now
                     ))

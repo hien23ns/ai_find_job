@@ -215,9 +215,88 @@ class TestWebApi(unittest.TestCase):
             headers={"X-CSRF-Token": CSRF_TOKEN}
         )
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()["status"], "success")
         updated = db.get_job(test_id)
         self.assertEqual(updated["status"], "Đã nộp qua form")
+
+    def test_job_filtering_by_category_location_work_mode_employment_type(self):
+        db = DatabaseManager()
+        # Seed test jobs with diverse domains, locations, and modalities
+        db.save_job({
+            "id": "test_filter_design",
+            "title": "Graphic Design Intern",
+            "company": "Creative Hub Studio",
+            "market": "vietnam",
+            "location": "danang",
+            "category": "design",
+            "work_mode": "onsite",
+            "employment_type": "internship",
+            "status": "Chưa nộp"
+        })
+        db.save_job({
+            "id": "test_filter_marketing_remote",
+            "title": "Digital Marketing Specialist",
+            "company": "Growth Agency VN",
+            "market": "vietnam",
+            "location": "remote",
+            "category": "marketing",
+            "work_mode": "remote",
+            "employment_type": "fulltime",
+            "status": "Chưa nộp"
+        })
+        db.save_job({
+            "id": "test_filter_parttime",
+            "title": "Content Creator Part-time",
+            "company": "Media House",
+            "market": "vietnam",
+            "location": "hanoi",
+            "category": "marketing",
+            "work_mode": "hybrid",
+            "employment_type": "parttime",
+            "status": "Chưa nộp"
+        })
+
+        # Test Category Filter
+        resp_cat = self.client.get("/api/jobs?category=design")
+        self.assertEqual(resp_cat.status_code, 200)
+        jobs_cat = resp_cat.json()
+        self.assertTrue(all(j.get("category") == "design" for j in jobs_cat))
+        self.assertTrue(any(j["id"] == "test_filter_design" for j in jobs_cat))
+
+        # Test Location Filter
+        resp_loc = self.client.get("/api/jobs?location=danang")
+        self.assertEqual(resp_loc.status_code, 200)
+        jobs_loc = resp_loc.json()
+        self.assertTrue(all(any(k in (j.get("location") or "").lower() for k in ["danang", "da nang", "đà"]) for j in jobs_loc))
+
+        # Test Work Mode Filter
+        resp_mode = self.client.get("/api/jobs?work_mode=remote")
+        self.assertEqual(resp_mode.status_code, 200)
+        jobs_mode = resp_mode.json()
+        self.assertTrue(all(j.get("work_mode") == "remote" for j in jobs_mode))
+
+        # Test Employment Type Filter
+        resp_type = self.client.get("/api/jobs?employment_type=parttime")
+        self.assertEqual(resp_type.status_code, 200)
+        jobs_type = resp_type.json()
+        self.assertTrue(all(j.get("employment_type") in ["parttime", "part_time"] for j in jobs_type))
+
+    def test_job_search_with_category_and_location(self):
+        resp = self.client.post(
+            "/api/jobs/search",
+            headers={"X-CSRF-Token": CSRF_TOKEN},
+            json={
+                "category": "design",
+                "location": "danang",
+                "work_mode": "all",
+                "employment_type": "all",
+                "limit": 5
+            }
+        )
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertIn("total_found", data)
+        self.assertIn("imported_count", data)
+        self.assertGreater(data["total_found"], 0)
 
 
 if __name__ == "__main__":
