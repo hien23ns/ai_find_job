@@ -539,9 +539,12 @@ async def get_package_details(job_id: str):
     if (pkg_dir / "cover_letter_en.md").exists():
         cl_text = (pkg_dir / "cover_letter_en.md").read_text(encoding="utf-8")
 
-    email_text = ""
-    if (pkg_dir / "email_body.txt").exists():
-        email_text = (pkg_dir / "email_body.txt").read_text(encoding="utf-8")
+    from src.application_sender import extract_clean_email_components
+    _, email_text, _ = extract_clean_email_components(
+        pkg_dir=pkg_dir,
+        role=app_record.get("role", ""),
+        company=app_record.get("company", "")
+    )
 
     pdf_url = f"/files/{pkg_dir.relative_to(PROJECT_ROOT).as_posix()}/cv_en.pdf"
     preview_html_url = f"/files/{pkg_dir.relative_to(PROJECT_ROOT).as_posix()}/email_preview.html"
@@ -573,7 +576,14 @@ async def update_package_documents(job_id: str, request: Request):
         (pkg_dir / "cover_letter_en.md").write_text(payload["cover_letter_text"], encoding="utf-8")
 
     if "email_body_text" in payload:
-        (pkg_dir / "email_body.txt").write_text(payload["email_body_text"], encoding="utf-8")
+        clean_text = payload["email_body_text"]
+        (pkg_dir / "email_clean_body.txt").write_text(clean_text, encoding="utf-8")
+        (pkg_dir / "email_body.txt").write_text(clean_text, encoding="utf-8")
+        from src.application_sender import build_corporate_email_html
+        (pkg_dir / "email_clean_body.html").write_text(
+            build_corporate_email_html(clean_text, candidate_name="Ngô Văn Hiền"),
+            encoding="utf-8"
+        )
 
     db.add_history(
         application_id=app_record["id"],
@@ -771,26 +781,17 @@ async def direct_send_email(app_id: str, request: Request):
     pkg_dir = Path(app_record.get("package_dir", ""))
     ensure_within_project(pkg_dir)
 
-    subject_file = pkg_dir / "email_subject.txt"
-    body_file = pkg_dir / "email_body.txt"
-    preview_file = pkg_dir / "email_preview.html"
+    from src.application_sender import extract_clean_email_components
+    subject, body_text, body_html = extract_clean_email_components(
+        pkg_dir=pkg_dir,
+        role=app_record.get("role", ""),
+        company=app_record.get("company", ""),
+        candidate_name="Ngô Văn Hiền"
+    )
+
     cv_file = pkg_dir / "cv_en.pdf"
-
-    subject = f"Application for {app_record['role']} - Ngô Văn Hiền"
-    if subject_file.exists():
-        lines = [l.strip() for l in subject_file.read_text(encoding="utf-8").splitlines() if l.strip()]
-        if lines:
-            subject = lines[0].replace("[LỰA CHỌN B - ỨNG TUYỂN TRỰC TIẾP (KHUYÊN DÙNG)]:", "").strip()
-
-    body_text = ""
-    if body_file.exists():
-        body_text = body_file.read_text(encoding="utf-8")
-    else:
-        body_text = f"Dear Hiring Team,\n\nPlease find attached my CV for {app_record['role']}.\n\nSincerely,\nNgô Văn Hiền"
-
-    body_html = None
-    if preview_file.exists():
-        body_html = preview_file.read_text(encoding="utf-8")
+    if not cv_file.exists():
+        cv_file = pkg_dir / "cv_vi.pdf"
 
     attachments = []
     if cv_file.exists():
@@ -893,24 +894,18 @@ async def auto_apply_email_by_job(job_id: str, request: Request):
     pkg_dir = Path(app_record.get("package_dir", ""))
     ensure_within_project(pkg_dir)
 
-    subject_file = pkg_dir / "email_subject.txt"
-    body_file = pkg_dir / "email_body.txt"
-    preview_file = pkg_dir / "email_preview.html"
+    from src.application_sender import extract_clean_email_components
+    subject, body_text, body_html = extract_clean_email_components(
+        pkg_dir=pkg_dir,
+        role=job.get("title", ""),
+        company=job.get("company", ""),
+        candidate_name="Ngô Văn Hiền"
+    )
+
     cv_file = pkg_dir / "cv_en.pdf"
+    if not cv_file.exists():
+        cv_file = pkg_dir / "cv_vi.pdf"
 
-    subject = f"Application for {job['title']} - Ngô Văn Hiền"
-    if subject_file.exists():
-        lines = [l.strip() for l in subject_file.read_text(encoding="utf-8").splitlines() if l.strip()]
-        if lines:
-            subject = lines[0].replace("[LỰA CHỌN B - ỨNG TUYỂN TRỰC TIẾP (KHUYÊN DÙNG)]:", "").strip()
-
-    body_text = ""
-    if body_file.exists():
-        body_text = body_file.read_text(encoding="utf-8")
-    else:
-        body_text = f"Dear Hiring Team,\n\nPlease find attached my CV for {job['title']}.\n\nSincerely,\nNgô Văn Hiền"
-
-    body_html = preview_file.read_text(encoding="utf-8") if preview_file.exists() else None
     attachments = [cv_file] if cv_file.exists() else []
 
     worker = get_worker()

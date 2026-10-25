@@ -15,6 +15,7 @@ import re
 import json
 import hashlib
 import urllib.parse
+import html
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, Optional, Tuple, List
@@ -210,7 +211,7 @@ Trân trọng,
 
 Tôi viết thư này để gửi hồ sơ ứng tuyển vào vị trí {role} tại {company}.
 
-Hiện tôi là sinh viên chuyên ngành Mạng và An toàn thông tin tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028 (GPA tích lũy: 2.9/4.0). Trong quá trình học tập, tôi đã tích lũy kiến thức nền tảng về mạng máy tính (OSI, TCP/IP), quản trị hệ thống Linux, lập trình Python/Java và dịch vụ đám mây AWS cơ bản (IAM, EC2, S3, Mô hình trách nhiệm chia sẻ).
+Hiện tôi là sinh viên chuyên ngành Mạng và An toàn thông tin tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028. Trong quá trình học tập, tôi đã tích lũy kiến thức nền tảng về mạng máy tính (OSI, TCP/IP), quản trị hệ thống Linux, lập trình Python/Java và dịch vụ đám mây AWS cơ bản (IAM, EC2, S3, Mô hình trách nhiệm chia sẻ).
 
 Bên cạnh đó, tôi đã hoàn thành các đồ án học thuật bao gồm chia sẻ màn hình P2P qua WebRTC và ứng dụng di động Android. Các dự án này đã mang lại cho tôi cơ hội vận dụng các kiến thức lập trình và mạng máy tính vào thực tế.
 
@@ -434,15 +435,172 @@ def generate_email_preview_html(
       {attach_chips}
     </div>
   </div>
-
-  <div class="disclaimer">
-    <strong>Ghi chú an toàn:</strong> Email này đang ở trạng thái <code>DRAFT</code> (Bản nháp), chưa được gửi đi. 
-    Bạn có thể dùng lệnh <code>python -m src.cli apply</code> để xem trước và xác nhận xuất file <code>.eml</code> hoặc mở kênh nộp.
-  </div>
 </div>
 </body>
 </html>
 """
+
+def build_corporate_email_html(
+    body_text: str,
+    candidate_name: str = "Ngô Văn Hiền"
+) -> str:
+    """
+    Builds a clean, professional corporate HTML email body without any preview tabs,
+    draft disclaimers, or debug UI elements.
+    """
+    text = body_text.replace("\r\n", "\n").strip()
+    raw_paras = [p.strip() for p in text.split("\n\n") if p.strip()]
+    
+    html_paras = []
+    for p in raw_paras:
+        lines = p.split("\n")
+        # Check if entire paragraph is bullet items
+        if all(line.strip().startswith(("-", "*", "+", "•")) or not line.strip() for line in lines):
+            items_html = "".join(
+                f"<li style='margin-bottom: 6px;'>{html.escape(line.strip().lstrip('-*+• '))}</li>"
+                for line in lines if line.strip()
+            )
+            html_paras.append(f"<ul style='margin: 0 0 16px 20px; padding: 0; color: #1e293b;'>{items_html}</ul>")
+        else:
+            escaped_lines = [html.escape(l) for l in lines]
+            content = "<br/>".join(escaped_lines)
+            # Make URLs clickable with styling
+            url_pattern = r'(https?://[^\s<>"]+)'
+            content = re.sub(
+                url_pattern,
+                r'<a href="\1" style="color: #2563eb; text-decoration: underline;" target="_blank">\1</a>',
+                content
+            )
+            html_paras.append(f"<p style='margin: 0 0 16px 0; font-size: 15px; line-height: 1.65; color: #1e293b;'>{content}</p>")
+            
+    content_html = "\n".join(html_paras)
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 24px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #ffffff; color: #1e293b; -webkit-font-smoothing: antialiased;">
+  <div style="max-width: 650px; margin: 0 auto; padding: 0 20px; font-size: 15px; line-height: 1.65;">
+{content_html}
+  </div>
+</body>
+</html>"""
+
+
+def extract_clean_email_components(
+    pkg_dir: Path,
+    role: str = "",
+    company: str = "",
+    candidate_name: str = "Ngô Văn Hiền",
+    option: str = "b"
+) -> Tuple[str, str, str]:
+    """
+    Extracts pure subject, pure body text, and generates professional corporate HTML.
+    Guarantees no internal debug UI, draft banners, or option headers are ever sent.
+    Returns: (clean_subject, clean_body_text, clean_body_html)
+    """
+    pkg_dir = ensure_within_project(pkg_dir)
+    
+    clean_subject = ""
+    clean_body_text = ""
+    
+    # 1. Try reading clean files directly
+    clean_subj_file = pkg_dir / "email_clean_subject.txt"
+    if clean_subj_file.exists():
+        subj_candidate = clean_subj_file.read_text(encoding="utf-8").strip()
+        if subj_candidate:
+            clean_subject = subj_candidate
+
+    clean_body_file = pkg_dir / "email_clean_body.txt"
+    if clean_body_file.exists():
+        body_candidate = clean_body_file.read_text(encoding="utf-8").strip()
+        if body_candidate:
+            clean_body_text = body_candidate
+            
+    # 2. Check application.json
+    app_json = pkg_dir / "application.json"
+    if app_json.exists():
+        try:
+            meta = json.loads(app_json.read_text(encoding="utf-8"))
+            opt_key = f"option_{option}_direct" if option == "b" else "option_a_inquiry"
+            opt_data = meta.get("options", {}).get(opt_key, {})
+            if not clean_subject and opt_data.get("subject"):
+                clean_subject = opt_data["subject"]
+        except Exception:
+            pass
+
+    # 3. Check draft_application.eml if body is still needed
+    eml_file = pkg_dir / "draft_application.eml"
+    if not clean_body_text and eml_file.exists():
+        try:
+            from email import message_from_bytes
+            msg = message_from_bytes(eml_file.read_bytes())
+            if not clean_subject and msg.get("Subject"):
+                clean_subject = str(msg.get("Subject"))
+            if msg.is_multipart():
+                for part in msg.walk():
+                    if part.get_content_type() == "text/plain":
+                        payload = part.get_payload(decode=True)
+                        if payload:
+                            clean_body_text = payload.decode("utf-8", errors="ignore").strip()
+                            break
+            else:
+                payload = msg.get_payload(decode=True)
+                if payload:
+                    clean_body_text = payload.decode("utf-8", errors="ignore").strip()
+        except Exception:
+            pass
+
+    # 4. Check email_subject.txt if subject is still empty
+    subj_file = pkg_dir / "email_subject.txt"
+    if not clean_subject and subj_file.exists():
+        lines = [l.strip() for l in subj_file.read_text(encoding="utf-8").splitlines() if l.strip()]
+        for idx, line in enumerate(lines):
+            if "[LỰA CHỌN B" in line and idx + 1 < len(lines):
+                clean_subject = lines[idx + 1].strip()
+                break
+            elif not line.startswith("[") and not clean_subject:
+                clean_subject = line
+                break
+
+    # 5. Check email_body.txt if body is still empty
+    body_file = pkg_dir / "email_body.txt"
+    if not clean_body_text and body_file.exists():
+        raw_body = body_file.read_text(encoding="utf-8")
+        if "======================================================================" in raw_body:
+            chunks = raw_body.split("======================================================================")
+            for idx, chunk in enumerate(chunks):
+                if "LỰA CHỌN B" in chunk and idx + 1 < len(chunks):
+                    candidate_body = chunks[idx + 1].strip()
+                    if candidate_body:
+                        clean_body_text = candidate_body
+                        break
+        else:
+            clean_body_text = raw_body.strip()
+
+    # 6. Fallback values
+    if not clean_subject:
+        clean_subject = f"Ứng tuyển vị trí {role or 'Thực tập sinh'} - {candidate_name}"
+        
+    if not clean_body_text:
+        clean_body_text = f"""Kính gửi: Bộ phận Tuyển dụng {company or 'Quý công ty'},
+
+Tôi viết thư này để gửi hồ sơ ứng tuyển vào vị trí {role or 'Thực tập sinh'}.
+
+Hiện tôi là sinh viên chuyên ngành Mạng và An toàn thông tin tại Trường Đại học Công nghệ thông tin và Truyền thông Việt - Hàn (VKU), dự kiến tốt nghiệp năm 2028. Trong quá trình học tập, tôi đã tích lũy kiến thức nền tảng về mạng máy tính (OSI, TCP/IP), quản trị hệ thống Linux, lập trình Python/Java và dịch vụ đám mây AWS cơ bản.
+
+Tôi xin phép gửi kèm CV Modern Tech đính kèm để Quý công ty xem xét. Tôi rất mong có cơ hội được trao đổi chi tiết hơn trong buổi phỏng vấn.
+
+Trân trọng,
+
+{candidate_name}
+Email: hienngo090800@gmail.com | Điện thoại: 0393492064
+LinkedIn: https://www.linkedin.com/in/ngovanhien
+GitHub: https://github.com/hien23ns"""
+
+    clean_body_html = build_corporate_email_html(clean_body_text, candidate_name=candidate_name)
+    return clean_subject, clean_body_text, clean_body_html
 
 
 def build_rfc822_eml(
@@ -525,7 +683,7 @@ def create_application_bundle(
         if cl_vi.exists():
             attachments_to_embed.append(cl_vi)
 
-    # 4. Save email_subject.txt
+    # 4. Save email_subject.txt & clean subject
     subject_content = f"""[LỰA CHỌN B - ỨNG TUYỂN TRỰC TIẾP (KHUYÊN DÙNG)]:
 {draft_data['option_b']['subject']}
 
@@ -533,8 +691,9 @@ def create_application_bundle(
 {draft_data['option_a']['subject']}
 """
     (package_dir / "email_subject.txt").write_text(subject_content, encoding="utf-8")
+    (package_dir / "email_clean_subject.txt").write_text(draft_data['option_b']['subject'], encoding="utf-8")
 
-    # 5. Save email_body.txt
+    # 5. Save email_body.txt & clean body & corporate HTML
     body_content = f"""======================================================================
 LỰA CHỌN B: EMAIL ỨNG TUYỂN TRUNG THỰC (Độ dài: {draft_data['option_b']['word_count']} từ)
 ======================================================================
@@ -546,8 +705,15 @@ LỰA CHỌN A: EMAIL HỎI ĐIỀU KIỆN NGOẠI LỆ GPA & LỊCH THỰC TẬ
 {draft_data['option_a']['body']}
 """
     (package_dir / "email_body.txt").write_text(body_content, encoding="utf-8")
+    (package_dir / "email_clean_body.txt").write_text(draft_data['option_b']['body'], encoding="utf-8")
 
-    # 6. Save email_preview.html
+    clean_corp_html = build_corporate_email_html(
+        body_text=draft_data['option_b']['body'],
+        candidate_name=candidate.get("name", "Ngô Văn Hiền")
+    )
+    (package_dir / "email_clean_body.html").write_text(clean_corp_html, encoding="utf-8")
+
+    # 6. Save email_preview.html (interactive local preview only)
     preview_html = generate_email_preview_html(
         draft_data=draft_data,
         channel_info=channel_info,

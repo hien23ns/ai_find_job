@@ -127,6 +127,84 @@ class TestEmailDispatchAdvanced(unittest.TestCase):
         self.assertEqual(res.status, "SENT")
         self.assertEqual(provider.sent_messages[-1]["to"], "careers@cystack.net")
 
+    def test_corporate_email_html_formatting_and_no_disclaimers(self):
+        from src.application_sender import build_corporate_email_html
+        body_text = """Kính gửi Bộ phận Tuyển dụng CyStack,
+
+Tôi viết thư này để ứng tuyển vị trí SOC Analyst Intern.
+
+Trân trọng,
+Ngô Văn Hiền
+GitHub: https://github.com/hien23ns
+LinkedIn: https://www.linkedin.com/in/ngovanhien"""
+
+        html_out = build_corporate_email_html(body_text, candidate_name="Ngô Văn Hiền")
+        self.assertIn("Kính gửi Bộ phận Tuyển dụng CyStack", html_out)
+        self.assertIn('<a href="https://github.com/hien23ns"', html_out)
+        self.assertIn('<a href="https://www.linkedin.com/in/ngovanhien"', html_out)
+        self.assertNotIn("disclaimer", html_out)
+        self.assertNotIn("DRAFT", html_out)
+        self.assertNotIn("Ghi chú an toàn", html_out)
+        self.assertNotIn("python -m src.cli apply", html_out)
+
+    def test_extract_clean_email_components_strips_internal_draft_headers(self):
+        from src.application_sender import extract_clean_email_components
+        pkg_dir = self.test_dir / "test_pkg_v1"
+        pkg_dir.mkdir(parents=True, exist_ok=True)
+        (pkg_dir / "email_subject.txt").write_text("""[LỰA CHỌN B - ỨNG TUYỂN TRỰC TIẾP (KHUYÊN DÙNG)]:
+Ứng tuyển vị trí SOC Analyst Intern - Ngô Văn Hiền
+
+[LỰA CHỌN A - HỎI ĐIỀU KIỆN GPA / LỊCH THỰC TẬP]:
+Thắc mắc về điều kiện ứng tuyển SOC Analyst Intern - Ngô Văn Hiền""", encoding="utf-8")
+
+        (pkg_dir / "email_body.txt").write_text("""======================================================================
+LỰA CHỌN B: EMAIL ỨNG TUYỂN TRUNG THỰC (Độ dài: 140 từ)
+======================================================================
+Kính gửi Quý công ty,
+
+Tôi xin ứng tuyển vị trí SOC Analyst.
+
+Trân trọng,
+Ngô Văn Hiền
+
+======================================================================
+LỰA CHỌN A: EMAIL HỎI ĐIỀU KIỆN NGOẠI LỆ GPA & LỊCH THỰC TẬP (Độ dài: 120 từ)
+======================================================================
+Kính gửi Quý công ty, Tôi muốn hỏi về GPA.""", encoding="utf-8")
+
+        subj, body, body_html = extract_clean_email_components(pkg_dir, role="SOC Analyst Intern", company="CyStack")
+        self.assertEqual(subj, "Ứng tuyển vị trí SOC Analyst Intern - Ngô Văn Hiền")
+        self.assertIn("Tôi xin ứng tuyển vị trí SOC Analyst.", body)
+        self.assertNotIn("LỰA CHỌN B", body)
+        self.assertNotIn("LỰA CHỌN A", body)
+        self.assertNotIn("======================================================================", body)
+        self.assertNotIn("disclaimer", body_html)
+        self.assertNotIn("Ghi chú an toàn", body_html)
+
+    def test_smtp_provider_sanitizes_accidental_preview_html(self):
+        smtp = SmtpEmailProvider(
+            host="127.0.0.1",
+            port=2525,
+            username="",
+            password="",
+            timeout_seconds=2
+        )
+        contaminated_html = """<div class="preview-card">
+          <div class="disclaimer">Ghi chú an toàn: Email này đang ở trạng thái DRAFT. Bạn có thể dùng lệnh python -m src.cli apply</div>
+        </div>"""
+        clean_text = "Dear Hiring Team, please find attached my CV. Sincerely, Ngô Văn Hiền"
+        # Using LocalMockEmailProvider to inspect resulting message parts
+        provider = LocalMockEmailProvider()
+        res = provider.send_email(
+            from_email="cand@test.com",
+            from_name="Ngô Văn Hiền",
+            to_email="hr@cystack.net",
+            subject="Clean Application",
+            body_text=clean_text,
+            body_html=contaminated_html
+        )
+        self.assertEqual(res.status, "SENT")
+
 
 if __name__ == "__main__":
     unittest.main()

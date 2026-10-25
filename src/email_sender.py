@@ -299,6 +299,11 @@ class SmtpEmailProvider(BaseEmailProvider):
         alt_part = MIMEMultipart("alternative")
         text_sub = MIMEText(body_text, "plain", "utf-8")
         alt_part.attach(text_sub)
+        # Defense-in-depth safety guard: Ensure body_html never leaks internal debug UI or disclaimers
+        if not body_html or any(tag in body_html for tag in ["disclaimer", "tab-bar", "preview-card", "preview-title", "Ghi chú an toàn", "Bản xem trước"]):
+            from src.application_sender import build_corporate_email_html
+            body_html = build_corporate_email_html(body_text, candidate_name=from_name)
+
         if body_html:
             html_sub = MIMEText(body_html, "html", "utf-8")
             alt_part.attach(html_sub)

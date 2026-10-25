@@ -350,29 +350,27 @@ class ApplicationWorker:
 
         provider = get_configured_email_provider()
         pkg_dir = Path(app.get("package_dir", ""))
-        subject_file = pkg_dir / "email_subject.txt"
-        body_file = pkg_dir / "email_body.txt"
-
-        subject = f"Application for {app['role']} - Ngô Văn Hiền"
-        if subject_file.exists():
-            lines = [l.strip() for l in subject_file.read_text(encoding="utf-8").splitlines() if l.strip()]
-            if lines:
-                subject = lines[0].replace("[LỰA CHỌN B - ỨNG TUYỂN TRỰC TIẾP (KHUYÊN DÙNG)]:", "").strip()
-
-        body = "Please find attached my application documents."
-        if body_file.exists():
-            body = body_file.read_text(encoding="utf-8")
+        from src.application_sender import extract_clean_email_components
+        subject, body_text, body_html = extract_clean_email_components(
+            pkg_dir=pkg_dir,
+            role=app.get("role", ""),
+            company=app.get("company", ""),
+            candidate_name="Ngô Văn Hiền"
+        )
 
         attachments = []
         if (pkg_dir / "cv_en.pdf").exists():
             attachments.append(pkg_dir / "cv_en.pdf")
+        elif (pkg_dir / "cv_vi.pdf").exists():
+            attachments.append(pkg_dir / "cv_vi.pdf")
 
         res = provider.send_email(
             from_email="hienngo090800@gmail.com",
             from_name="Ngô Văn Hiền",
             to_email=to_email,
             subject=subject,
-            body_text=body,
+            body_text=body_text,
+            body_html=body_html,
             attachment_paths=attachments
         )
 
