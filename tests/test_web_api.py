@@ -127,6 +127,13 @@ class TestWebApi(unittest.TestCase):
         db = DatabaseManager()
         # Seed a test job with company AvePoint
         job_id = "test_job_avepoint_auto"
+        from src.db import get_connection
+        conn = get_connection(db.db_path)
+        with conn:
+            conn.execute("DELETE FROM applications WHERE job_id = ? OR id LIKE ?", (job_id, f"app_{job_id}%"))
+            conn.execute("DELETE FROM jobs WHERE id = ?", (job_id,))
+        conn.close()
+
         db.save_job({
             "id": job_id,
             "title": "Cloud Security Intern",

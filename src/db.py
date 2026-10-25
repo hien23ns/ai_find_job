@@ -390,6 +390,38 @@ class DatabaseManager:
             conn = get_connection(self.db_path)
             try:
                 now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+                from src.upstream_bridge import get_canonical_job_key
+                company = (job_data.get("company") or "").strip()
+                title = (job_data.get("title") or "").strip()
+                source = (job_data.get("source") or "").strip()
+                can_key = job_data.get("canonical_key") or get_canonical_job_key(company, title, source)
+                job_data["canonical_key"] = can_key
+
+                # Collision-resistant deduplication across searches:
+                # Check by ID, canonical_key, or normalized (company, title)
+                cur = conn.execute("""
+                    SELECT id, status, application_date, canonical_key, created_at FROM jobs
+                    WHERE id = ?
+                       OR (canonical_key IS NOT NULL AND canonical_key != '' AND canonical_key = ?)
+                       OR (LOWER(TRIM(company)) = LOWER(TRIM(?)) AND LOWER(TRIM(title)) = LOWER(TRIM(?)))
+                    LIMIT 1
+                """, (job_data["id"], can_key, company, title))
+                existing = cur.fetchone()
+
+                if existing:
+                    target_id = existing["id"]
+                    job_data["id"] = target_id
+                    # Preserve applied/submitted status if incoming status is default 'Chưa nộp' so repeated searches never reset user progress
+                    incoming_status = job_data.get("status", "Chưa nộp")
+                    if incoming_status == "Chưa nộp" and existing["status"] in ["Đã gửi email", "Đã nộp", "Đã nộp qua form", "SUBMITTED"]:
+                        job_data["status"] = existing["status"]
+                        job_data["application_date"] = existing["application_date"]
+                    created_at = existing["created_at"] or now
+                else:
+                    target_id = job_data["id"]
+                    created_at = job_data.get("created_at", now)
+
                 with conn:
                     conn.execute("""
                         INSERT INTO jobs (
@@ -412,21 +444,21 @@ class DatabaseManager:
                             evidence=excluded.evidence,
                             updated_at=excluded.updated_at
                     """, (
-                        job_data["id"],
-                        job_data["title"],
-                        job_data["company"],
+                        target_id,
+                        title,
+                        company,
                         job_data.get("market", "vietnam"),
-                        job_data.get("source", ""),
+                        source,
                         int(job_data.get("match_score", 0)),
                         job_data.get("status", "Chưa nộp"),
                         job_data.get("application_date"),
                         job_data.get("notes", ""),
                         job_data.get("next_step", ""),
-                        job_data.get("canonical_key", ""),
+                        can_key,
                         job_data.get("raw_jd", ""),
                         job_data.get("evidence", ""),
-                        job_data.get("created_at", now),
-                        job_data.get("updated_at", now)
+                        created_at,
+                        now
                     ))
             finally:
                 conn.close()
