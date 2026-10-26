@@ -462,7 +462,7 @@ async def execute_job_search(request: Request):
         j["id"] = j_id
         j["category"] = j_cat
 
-        db.save_job({
+        saved_rec = db.save_job({
             "id": j_id,
             "title": title,
             "company": company,
@@ -480,6 +480,13 @@ async def execute_job_search(request: Request):
             "created_at": now,
             "updated_at": now
         })
+        # Synchronize canonical database ID and attributes so frontend newlyFoundJobIds and filters match 100%
+        actual_id = (saved_rec or {}).get("id") or j_id
+        j["id"] = actual_id
+        j["category"] = (saved_rec or {}).get("category") or j_cat
+        j["location"] = (saved_rec or {}).get("location") or j.get("location")
+        j["work_mode"] = (saved_rec or {}).get("work_mode") or j.get("work_mode")
+        j["employment_type"] = (saved_rec or {}).get("employment_type") or j.get("employment_type")
         imported_count += 1
 
     return {

@@ -4,15 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ai-find-job - Trợ lý Tìm việc & Ứng tuyển Tự động</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <!-- Sidebar Navigation -->
   <aside class="app-sidebar">
     <div class="sidebar-header">
-      <div class="brand-icon">AG</div>
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+          <polyline points="2 17 12 22 22 17"></polyline>
+          <polyline points="2 12 12 17 22 12"></polyline>
+        </svg>
+      </div>
       <div class="brand-text">
-        <h1>ai-find-job</h1>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <h1>ai-find-job</h1>
+          <span class="brand-badge">PRO</span>
+        </div>
         <p>Hệ thống Ứng tuyển Tự động</p>
       </div>
     </div>
@@ -228,13 +240,38 @@
       <section class="page-section" id="sec-search">
         <div class="card">
           <div class="card-header">
-            <div class="card-title">Bộ lọc & Tìm kiếm việc làm Đa ngành & Đa khu vực</div>
-            <button class="btn btn-primary" id="btn-run-search">
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-              Tìm kiếm việc ngay
-            </button>
+            <div class="card-title">
+              <span>🔍 Động cơ Tìm kiếm & Đề xuất Việc làm Đa Nền tảng</span>
+              <span class="badge badge-green" style="font-size:11px;">Live ATS Aggregator</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button class="btn btn-secondary btn-sm" onclick="resetAllFilters()" title="Xóa toàn bộ bộ lọc và hiển thị tất cả việc">
+                🔄 Đặt lại bộ lọc
+              </button>
+              <button class="btn btn-primary" id="btn-run-search">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                Tìm kiếm việc ngay
+              </button>
+            </div>
           </div>
           <div class="card-body">
+            <div class="search-hero-box">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg, #4f46e5, #06b6d4); display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px;">
+                  🚀
+                </div>
+                <div>
+                  <div style="font-weight:700; font-size:13.5px; color:var(--text-main);">Quét tin tuyển dụng thực tế trực tiếp</div>
+                  <div style="font-size:12px; color:var(--text-muted);">
+                    Tự động thu thập từ <b>LinkedIn Guest API</b>, <b>TopCV</b>, <b>ITviec</b>, <b>CareerViet</b> & Cổng tuyển dụng doanh nghiệp. Xác thực email HR & link nộp form tự động.
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <span class="badge badge-blue">✓ Khử trùng lặp Canonical</span>
+                <span class="badge badge-green">✓ Xác minh MX Domain HR</span>
+              </div>
+            </div>
             <!-- 1. Thanh chọn nhanh Ngành nghề (Quick Category Pills) -->
             <div style="margin-bottom:12px;">
               <label class="form-label" style="margin-bottom:8px;">Chọn nhanh Lĩnh vực nghề nghiệp:</label>

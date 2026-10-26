@@ -465,6 +465,74 @@ function filterJobsList(filterType) {
   applyFilters();
 }
 
+// --- Normalized Filter Matching Utilities ---
+function matchesLocation(jobLoc, jobWorkMode, filterLoc) {
+  if (!filterLoc || filterLoc === "all") return true;
+  const loc = (jobLoc || "").toLowerCase();
+  const mode = (jobWorkMode || "").toLowerCase();
+  if (filterLoc === "remote") {
+    return mode === "remote" || loc.includes("remote") || loc.includes("từ xa") || loc.includes("wfh") || loc.includes("toàn quốc");
+  }
+  if (loc.includes("toàn quốc")) return true;
+  if (filterLoc === "danang") return loc.includes("đà nẵng") || loc.includes("danang") || loc.includes("da nang");
+  if (filterLoc === "hanoi") return loc.includes("hà nội") || loc.includes("hanoi") || loc.includes("ha noi");
+  if (filterLoc === "hcm") return loc.includes("hồ chí minh") || loc.includes("hcm") || loc.includes("saigon") || loc.includes("tp.hcm") || loc.includes("tphcm");
+  if (filterLoc === "cantho") return loc.includes("cần thơ") || loc.includes("can tho");
+  if (filterLoc === "haiphong") return loc.includes("hải phòng") || loc.includes("hai phong");
+  if (filterLoc === "international" || filterLoc === "korea") {
+    return loc.includes("korea") || loc.includes("hàn quốc") || loc.includes("seoul") || loc.includes("quốc tế") || loc.includes("global") || loc.includes("apac");
+  }
+  return loc.includes(filterLoc.toLowerCase());
+}
+
+function matchesCategory(jobCat, filterCat) {
+  if (!filterCat || filterCat === "all") return true;
+  const jc = (jobCat || "").toLowerCase();
+  const fc = filterCat.toLowerCase();
+  if (fc === "it" || fc === "tech") return jc === "it" || jc === "tech" || jc === "cntt";
+  return jc === fc;
+}
+
+function matchesWorkMode(jobMode, filterMode) {
+  if (!filterMode || filterMode === "all") return true;
+  const jm = (jobMode || "").toLowerCase();
+  const fm = filterMode.toLowerCase();
+  if (fm === "remote") return jm === "remote" || jm.includes("từ xa") || jm.includes("wfh");
+  if (fm === "hybrid") return jm === "hybrid" || jm.includes("linh hoạt");
+  if (fm === "onsite") return jm === "onsite" || jm.includes("văn phòng") || jm === "on-site";
+  return jm === fm;
+}
+
+function matchesEmploymentType(jobType, filterType) {
+  if (!filterType || filterType === "all") return true;
+  const jt = (jobType || "").replace(/[-_]/g, "").toLowerCase();
+  const ft = filterType.replace(/[-_]/g, "").toLowerCase();
+  if (ft === "fulltime") return jt.includes("fulltime") || jt.includes("toàn");
+  if (ft === "parttime") return jt.includes("parttime") || jt.includes("bán");
+  if (ft === "internship") return jt.includes("intern") || jt.includes("thực tập");
+  if (ft === "freelance") return jt.includes("freelance") || jt.includes("dự án");
+  return jt.includes(ft);
+}
+
+function resetAllFilters() {
+  const catSel = document.getElementById("search-category");
+  if (catSel) catSel.value = "all";
+  const locSel = document.getElementById("search-location");
+  if (locSel) locSel.value = "all";
+  const modeSel = document.getElementById("search-work-mode");
+  if (modeSel) modeSel.value = "all";
+  const typeSel = document.getElementById("search-employment-type");
+  if (typeSel) typeSel.value = "all";
+  const kwInput = document.getElementById("search-keywords");
+  if (kwInput) kwInput.value = "";
+  document.querySelectorAll("#quick-category-pills .category-pill").forEach(p => p.classList.remove("active"));
+  document.querySelector('#quick-category-pills .category-pill[data-category="all"]')?.classList.add("active");
+  currentJobFilter = "all";
+  document.querySelectorAll(".quick-filter-chip").forEach(b => b.classList.remove("active"));
+  document.getElementById("btn-filter-all")?.classList.add("active");
+  applyFilters();
+}
+
 function applyFilters() {
   const catFilter = document.getElementById("search-category")?.value || "all";
   const locFilter = document.getElementById("search-location")?.value || "all";
@@ -477,43 +545,41 @@ function applyFilters() {
   let filtered = cachedJobsList.filter(j => {
     const isNewlyFound = newlyFoundJobIds.has(j.id);
 
+    // CRITICAL: Newly found jobs from the user's explicit search are ALWAYS shown!
+    if (isNewlyFound) return true;
+
     // 0. Keyword live search matching
     if (kwTerms.length > 0) {
       const searchTarget = `${j.company || ""} ${j.title || ""} ${j.category || ""} ${j.location || ""} ${j.notes || ""} ${j.raw_jd || ""}`.toLowerCase();
       const matches = kwTerms.some(term => searchTarget.includes(term));
-      if (!matches && !isNewlyFound) return false;
+      if (!matches) return false;
     }
 
     // 1. Category filter
-    if (catFilter !== "all" && j.category && j.category !== catFilter) {
-      if (!isNewlyFound) return false;
-    }
+    if (!matchesCategory(j.category, catFilter)) return false;
 
     // 2. Location filter
-    if (locFilter !== "all") {
-      if (locFilter === "remote" && j.work_mode !== "remote" && j.location !== "remote") return false;
-      if (locFilter !== "remote" && j.location && j.location !== locFilter) return false;
-    }
+    if (!matchesLocation(j.location, j.work_mode, locFilter)) return false;
 
     // 3. Work Mode filter
-    if (modeFilter !== "all" && j.work_mode && j.work_mode !== modeFilter) return false;
+    if (!matchesWorkMode(j.work_mode, modeFilter)) return false;
 
     // 4. Employment Type filter
-    if (typeFilter !== "all" && j.employment_type && j.employment_type !== typeFilter) return false;
+    if (!matchesEmploymentType(j.employment_type, typeFilter)) return false;
 
     // 5. Quick Filter Chip
     if (chipFilter === "new_search" && !isNewlyFound) return false;
     if (chipFilter === "has_package" && !j.has_package) return false;
     if (chipFilter === "email" && !j.has_hr_email) return false;
     if (chipFilter === "form" && j.has_hr_email) return false;
-    if (chipFilter === "remote" && j.work_mode !== "remote" && j.location !== "remote") return false;
-    if (chipFilter === "parttime" && j.employment_type !== "parttime") return false;
-    if (chipFilter === "design" && j.category !== "design") return false;
-    if (chipFilter === "marketing" && j.category !== "marketing") return false;
-    if (chipFilter === "data_ai" && j.category !== "data_ai") return false;
-    if (chipFilter === "hr_admin" && j.category !== "hr_admin") return false;
-    if (chipFilter === "finance" && j.category !== "finance") return false;
-    if (chipFilter === "danang" && j.location !== "danang") return false;
+    if (chipFilter === "remote" && !matchesWorkMode(j.work_mode, "remote") && !matchesLocation(j.location, j.work_mode, "remote")) return false;
+    if (chipFilter === "parttime" && !matchesEmploymentType(j.employment_type, "parttime")) return false;
+    if (chipFilter === "design" && !matchesCategory(j.category, "design")) return false;
+    if (chipFilter === "marketing" && !matchesCategory(j.category, "marketing")) return false;
+    if (chipFilter === "data_ai" && !matchesCategory(j.category, "data_ai")) return false;
+    if (chipFilter === "hr_admin" && !matchesCategory(j.category, "hr_admin")) return false;
+    if (chipFilter === "finance" && !matchesCategory(j.category, "finance")) return false;
+    if (chipFilter === "danang" && !matchesLocation(j.location, j.work_mode, "danang")) return false;
 
     return true;
   });
@@ -536,11 +602,32 @@ function renderJobsTable(jobs, selector) {
   const tbody = document.querySelector(selector);
   tbody.innerHTML = "";
   if (!jobs || jobs.length === 0) {
-    tbody.innerHTML = "<tr><td colspan='7' style='text-align:center; color:#94a3b8; padding:24px;'>Không tìm thấy việc làm phù hợp với bộ lọc hiện tại. Bấm 'Tìm kiếm việc ngay' để quét tin tuyển dụng thực tế mới nhất.</td></tr>";
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" style="text-align:center; padding:48px 20px;">
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;">
+            <div style="width:52px; height:52px; border-radius:50%; background:#f1f5f9; display:flex; align-items:center; justify-content:center; font-size:24px; color:#64748b;">
+              🔍
+            </div>
+            <div style="font-size:15px; font-weight:700; color:#1e293b;">Không tìm thấy việc làm phù hợp với bộ lọc hiện tại</div>
+            <div style="font-size:13px; color:#64748b; max-width:480px; line-height:1.5;">
+              Thử điều chỉnh lại từ khóa, danh mục hoặc bấm nút <b>"Tìm kiếm việc ngay"</b> để hệ thống quét việc làm thực tế trực tiếp từ LinkedIn, TopCV, ITviec.
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="resetAllFilters()" style="margin-top:4px;">
+              🔄 Đặt lại bộ lọc ban đầu
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
     return;
   }
   jobs.forEach(j => {
     const tr = document.createElement("tr");
+    const isNew = newlyFoundJobIds.has(j.id);
+    if (isNew) {
+      tr.classList.add("job-row-new");
+    }
 
     const channelBadge = j.has_hr_email
       ? `<span class="badge badge-green" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:600; font-size:11.5px;">✉️ ${escapeHtml(j.hr_email)}</span>`
@@ -552,7 +639,7 @@ function renderJobsTable(jobs, selector) {
 
     const isLiveJob = (j.id && j.id.startsWith("job_live_")) || (j.notes && j.notes.includes("Tin tuyển dụng thực tế"));
     const liveTag = isLiveJob ? `<span class="badge badge-green" style="background:#ecfdf5; color:#047857; border:1px solid #6ee7b7; font-size:10px; margin-left:4px;" title="Tin tuyển dụng thực tế đang mở tuyển trên cổng">🟢 Đang tuyển</span>` : "";
-    const newTag = newlyFoundJobIds.has(j.id) ? `<span class="badge badge-new" style="font-size:10px; margin-left:4px;">✨ Mới tìm</span>` : "";
+    const newTag = isNew ? `<span class="badge badge-new" style="font-size:10px; margin-left:4px;">✨ Mới tìm</span>` : "";
     const pkgTag = j.has_package ? `<span class="badge badge-pkg-done" style="font-size:10px; margin-left:4px;">✓ Đã tạo CV</span>` : "";
 
     const catBadge = getCategoryBadge(j.category);
@@ -700,7 +787,7 @@ async function markFormAsSubmitted(jobId) {
 
 async function runJobSearch() {
   const btn = document.getElementById("btn-run-search");
-  btn.innerText = "🔍 Đang quét tin thật...";
+  btn.innerHTML = `<span style="display:inline-block; animation:spin 1s linear infinite;">⏳</span> Đang quét tin thật...`;
   btn.disabled = true;
 
   const keywords = (document.getElementById("search-keywords").value || "").trim();
@@ -720,12 +807,13 @@ async function runJobSearch() {
       body: jsonStringifySafe({ keywords, category, location, work_mode, employment_type, market, limit })
     });
     const data = await res.json();
+    const foundJobs = (data.jobs && Array.isArray(data.jobs)) ? data.jobs : [];
 
     // Store newly found jobs so they are highlighted with '✨ Mới tìm' and kept visible
     newlyFoundJobIds.clear();
-    if (data.jobs && Array.isArray(data.jobs)) {
-      data.jobs.forEach(j => newlyFoundJobIds.add(j.id));
-    }
+    foundJobs.forEach(j => {
+      if (j && j.id) newlyFoundJobIds.add(j.id);
+    });
 
     // Reset chip filter to "all" so new jobs are immediately visible to user
     currentJobFilter = "all";
@@ -734,9 +822,18 @@ async function runJobSearch() {
     if (allChip) allChip.classList.add("active");
 
     const liveNote = data.is_live ? " [🟢 Tin thật đang mở tuyển]" : "";
-    showToast(`🎉 Tìm thấy ${data.total_found} tin tuyển dụng thực tế${liveNote}. Hiển thị ngay trên bảng bên dưới.`, "success");
+    showToast(`🎉 Tìm thấy ${data.total_found || foundJobs.length} tin tuyển dụng thực tế${liveNote}. Hiển thị ngay trên bảng bên dưới!`, "success");
+
+    // Refresh database list and render
     await loadJobsList();
+
+    // Smooth scroll to results table
+    const tableEl = document.getElementById("search-results-table");
+    if (tableEl) {
+      tableEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
   } catch (e) {
+    console.error("Search error:", e);
     showToast("Lỗi trong quá trình tìm kiếm việc làm", "error");
   } finally {
     btn.innerHTML = `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg> Tìm kiếm việc ngay`;

@@ -121,18 +121,29 @@ Thay vì dùng 1 bản CV chung chung gửi cho mọi công ty, **ai-find-job** 
 
 ## 6. 🖥️ TRẢI NGHIỆM GIAO DIỆN WEB (WEB UI GUIDE)
 
-Giao diện Web gồm 7 phân hệ chuyên nghiệp:
+Giao diện Web được thiết kế theo phong cách Modern Frosted Glassmorphism với bộ font Google Fonts (*Outfit* & *Plus Jakarta Sans*), màu sắc công nghệ cao cấp và micro-animations mượt mà:
 
-1. **Tổng quan (Dashboard):** Thống kê số lượng việc đã lưu, đã nộp đơn, các việc cần chú ý và hàng đợi tự động.
-2. **Hồ sơ cá nhân (Profile):** Nơi quản lý thông tin gốc, học vấn, kỹ năng, dự án thực tế và ảnh đại diện.
-3. **Tìm việc làm (Job Search):**
-   * Hàng nút danh mục nhanh 11 lĩnh vực (`Quick Category Pills`).
-   * Bộ lọc đa chiều: Khu vực (Đà Nẵng, Hà Nội, TP.HCM, Remote), Hình thức (Full-time, Part-time, Intern), Kênh nộp.
-   * Bảng kết quả hiển thị thông minh: phân loại màu sắc, điểm Match kỹ năng, nút **`⚡ Tạo CV theo Job`** và **`📄 Xem CV`**.
-4. **Bộ hồ sơ & Soạn thảo (Packages):** Xem trực tiếp bản CV HTML/PDF trên iframe, chỉnh sửa Cover Letter và Email Body trước khi gửi.
-5. **Hàng đợi ứng tuyển (Queue):** Quản lý tiến trình gửi email và điền form tự động với cơ chế kiểm soát an toàn.
-6. **Theo dõi đơn ứng tuyển (Tracker):** Bảng quản lý trạng thái hồ sơ (Đã lưu, Đã nộp, Đang phỏng vấn, Đã nhận Offer), hỗ trợ xuất file CSV.
-7. **Cài đặt & Tự động hóa (Settings):** Cấu hình tài khoản Gmail gửi thư (sử dụng *Mật khẩu ứng dụng* an toàn), kiểm tra kết nối Playwright và SMTP.
+<p align="center">
+  <img src="docs/screenshots/01_dashboard_modern.png" alt="Tổng quan hệ thống Dashboard" width="95%" style="border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.12);"/>
+</p>
+
+### 📸 Hình ảnh các tính năng cốt lõi trên giao diện:
+
+| Phân hệ | Hình ảnh giao diện thực tế | Điểm nổi bật & Thao tác |
+| :--- | :---: | :--- |
+| **1. Tổng quan (Dashboard)** | <img src="docs/screenshots/01_dashboard_modern.png" width="360" alt="Dashboard"/> | Thống kê KPI số lượng việc đã lưu, đã nộp, việc cần chú ý, hàng đợi tự động và danh sách việc mới khuyến nghị. |
+| **2. Tìm việc làm đa nền tảng** | <img src="docs/screenshots/02_job_search_results.png" width="360" alt="Job Search"/> | Chọn nhanh 11 lĩnh vực, quét LinkedIn / TopCV / ITviec, gõ từ khóa lọc tức thì, gắn huy hiệu `✨ Mới tìm` và `🟢 Đang tuyển`. |
+| **3. Bảng kết quả & Tạo CV theo Job** | <img src="docs/screenshots/03_job_search_table_verified.png" width="360" alt="Job Table"/> | Hiển thị kênh nộp (Email HR / Nộp Form), điểm Match, nút **`⚡ Tạo CV theo Job`** và **`🚀 Gửi Email 1-Click`**. |
+| **4. Modal Chi tiết JD & Nộp đơn** | <img src="docs/screenshots/04_job_detail_modal.png" width="360" alt="JD Modal"/> | Modal xem trọn vẹn mô tả JD, trích xuất email HR chính thức, nút gửi đơn trực tiếp hoặc hỗ trợ điền form. |
+
+7 phân hệ chính trên thanh điều hướng bên trái:
+1. **Tổng quan (Dashboard):** Trung tâm theo dõi toàn diện với chỉ số KPI và trạng thái hệ thống.
+2. **Hồ sơ cá nhân (Profile):** Quản lý hồ sơ gốc, học vấn, kỹ năng, dự án thực tế và ảnh chân dung.
+3. **Tìm việc làm (Job Search):** Động cơ tìm việc đa nền tảng, 11 nhóm ngành nghề và bộ lọc vị trí/hình thức.
+4. **Bộ hồ sơ & Soạn thảo (Packages):** Xem trực tiếp bản CV HTML/PDF trên iframe, chỉnh sửa thư xin việc.
+5. **Hàng đợi ứng tuyển (Queue):** Quản lý tiến trình gửi email và điền form tự động với cơ chế an toàn.
+6. **Theo dõi đơn ứng tuyển (Tracker):** Bảng quản lý trạng thái hồ sơ ứng tuyển, hỗ trợ xuất file CSV.
+7. **Cài đặt & Tự động hóa (Settings):** Cấu hình tài khoản email SMTP, kiểm tra kết nối Playwright và hệ thống.
 
 ---
 
